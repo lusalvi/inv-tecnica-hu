@@ -770,8 +770,196 @@
         </div>
 
     </div>
+@push('scripts')
+<script>
+    $(document).ready(function() {
 
-</x-app-layout>
+        $('#editPcModal').on('show.bs.modal', function(event) {
+            var modal = $(this);
+            var container = modal.find('#input-container-2');
+            var inputs = container.find('.select');
+            if (inputs.length > 1) { inputs.not(':first').remove(); }
+
+            var materialContainer = modal.find('#material-container-2');
+            var materials = materialContainer.find('.select');
+            if (materials.length > 1) { materials.not(':first').remove(); }
+
+            var button = $(event.relatedTarget);
+            var Id = button.data('id');
+            var Identificador = button.data('identificador');
+            var Nombre = button.data('nombre');
+            var Stock = button.data('stock');
+            var Deposito = button.data('deposito');
+            var Tipo = button.data('tipo');
+            var Ip = button.data('ip');
+            var Area_id = button.data('area');
+            var Deposito_id = button.data('deposito');
+            var enUso = button.data('enuso');
+            var Motherboard = button.data('mother');
+            var Procesador = button.data('proce');
+            var Fuente = button.data('fuente');
+            var Placavid = button.data('placavid');
+
+            var discosIds = button.data('discosids') ? button.data('discosids').toString().split(', ') : [];
+            var DiscosObj = button.data('discosobj');
+            var DiscosArray = Object.values(DiscosObj);
+            var cant_discos = discosIds.length;
+
+            var ramsIds = button.data('ramsids') ? button.data('ramsids').toString().split(', ') : [];
+            var RamsObj = button.data('ramsobj');
+            var RamsArray = Object.values(RamsObj);
+            var cant_rams = ramsIds.length;
+
+            modal.find('#editEn-uso').prop('checked', enUso);
+            if (!enUso) {
+                modal.find('#editDeposito').prop('disabled', false);
+                modal.find('#editArea').prop('disabled', true);
+            } else {
+                modal.find('#editDeposito').prop('disabled', true);
+                modal.find('#editArea').prop('disabled', false);
+            }
+            modal.find('#editNombre').val(Nombre);
+            modal.find('#editId').val(Id);
+            modal.find('#editIdentificador').val(Identificador);
+            modal.find('#editStock').val(Stock);
+            modal.find('#editTipo').val(Tipo);
+            modal.find('#editDeposito').val(Deposito);
+            modal.find('#editIp').val(Ip);
+            modal.find('#editArea').val(Area_id);
+            modal.find('#editDeposito').val(Deposito_id);
+
+            var motherboardToRemove = Motherboard.nombre;
+            var procesadorToRemove = Procesador.nombre;
+            var fuenteToRemove = Fuente.nombre;
+            var placavidToRemove = Placavid.nombre;
+
+            modal.find('#editMotherboard option').each(function() {
+                if ($(this).text() === motherboardToRemove + " - Actual") { $(this).remove(); }
+            });
+            modal.find('#editProcesador option').each(function() {
+                if ($(this).text() === procesadorToRemove + " - Actual") { $(this).remove(); }
+            });
+            modal.find('#editFuente option').each(function() {
+                if ($(this).text() === fuenteToRemove + " - Actual") { $(this).remove(); }
+            });
+            modal.find('#editPlacavid option').each(function() {
+                if ($(this).text() === placavidToRemove + " - Actual") { $(this).remove(); }
+            });
+
+            if (Motherboard.stock == 0 || Motherboard.estado_id == 5) {
+                modal.find('#editMotherboard').append('<option value="' + Motherboard.id + '" selected>' + Motherboard.nombre + " - Actual" + '</option>');
+            } else { modal.find('#editMotherboard').val(Motherboard.id); }
+
+            if (Procesador.stock == 0 || Procesador.estado_id == 5) {
+                modal.find('#editProcesador').append('<option value="' + Procesador.id + '" selected>' + Procesador.nombre + " - Actual" + '</option>');
+            } else { modal.find('#editProcesador').val(Procesador.id); }
+
+            if (Fuente.stock == 0 || Fuente.estado_id == 5) {
+                modal.find('#editFuente').append('<option value="' + Fuente.id + '" selected>' + Fuente.nombre + " - Actual" + '</option>');
+            } else { modal.find('#editFuente').val(Fuente.id); }
+
+            if (Placavid.stock == 0 || Placavid.estado_id == 5) {
+                modal.find('#editPlacavid').append('<option value="' + Placavid.id + '" selected>' + Placavid.nombre + " - Actual" + '</option>');
+            } else { modal.find('#editPlacavid').val(Placavid.id); }
+
+            for (var i = 0; i < cant_discos - 1; i++) { addInputDisc(modal.find('.add-input-disc')); }
+            for (var i = 0; i < cant_rams - 1; i++) { addInputRam(modal.find('.add-input-ram')); }
+
+            container.find('.input-group').each(function(index) {
+                var select = $(this).find('select');
+                select.find('option.deleteable-option').remove();
+                if (index < cant_discos) {
+                    if (DiscosArray[index].stock == 0 || DiscosArray[index].estado_id == 5) {
+                        select.append('<option value="' + DiscosArray[index].id + '" class="deleteable-option" selected>' + DiscosArray[index].nombre + " - " + DiscosArray[index].tipo.nombre + '</option>');
+                    } else { select.val(discosIds[index]); }
+                }
+            });
+
+            materialContainer.find('.input-group').each(function(index) {
+                var select = $(this).find('select');
+                select.find('option.deleteable-option2').remove();
+                if (index < cant_rams) {
+                    if (RamsArray[index].stock == 0 || RamsArray[index].estado_id == 5) {
+                        select.append('<option value="' + RamsArray[index].id + '" class="deleteable-option2" selected>' + RamsArray[index].nombre + " " + RamsArray[index].tipo.nombre + '</option>');
+                    } else { select.val(ramsIds[index]); }
+                }
+            });
+
+            updateDiscos();
+            updateRams();
+        });
+
+        $('#editEn-uso').on('change', function() {
+            var modal = $('#editPcModal');
+            var isChecked = $(this).is(':checked');
+            if (!isChecked) {
+                modal.find('#editDeposito').prop('disabled', false);
+                modal.find('#editArea').prop('disabled', true);
+                modal.find('#editDeposito').val(null);
+                modal.find('#editArea').val(null);
+                $('#addNroConsul_div').css('display', 'none').attr('required', false);
+                $('#editNroConsul_div').css('display', 'none').attr('required', false);
+            } else {
+                modal.find('#editDeposito').prop('disabled', true);
+                modal.find('#editArea').prop('disabled', false);
+                modal.find('#editArea').val(null);
+                modal.find('#editDeposito').val(null);
+            }
+        });
+
+        $('#deleteModal').on('show.bs.modal', function(event) {
+            var modal = $(this);
+            modal.find('#deleteId').val($(event.relatedTarget).data('id'));
+        });
+
+        $('#infoPcModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+            var enUso = button.data('enuso');
+            modal.find('#idenInfo').text(button.data('identificador'));
+            modal.find('#ipInfo').text(button.data('ip'));
+            modal.find('#nombreInfo').text(button.data('nombre'));
+            if (enUso == true) {
+                modal.find('#titleAsig').text("Area:");
+                modal.find('#infoAsig').text(button.data('area'));
+            } else {
+                modal.find('#titleAsig').text("Deposito:");
+                modal.find('#infoAsig').text(button.data('deposito'));
+            }
+            modal.find('#motherInfo').text(button.data('mother'));
+            modal.find('#proceInfo').text(button.data('proce'));
+            modal.find('#fuenteInfo').text(button.data('fuente'));
+            modal.find('#placavidInfo').text(button.data('placavid'));
+            modal.find('#discosInfo').text(button.data('discos'));
+            modal.find('#ramsInfo').text(button.data('rams'));
+        });
+
+        const checkbox = document.getElementById('en-uso');
+        if (checkbox) {
+            const areaSelect = document.getElementById('area-select');
+            const depositoSelect = document.getElementById('deposito-select');
+            checkbox.addEventListener('change', function() {
+                depositoSelect.querySelector('select').selectedIndex = 0;
+                areaSelect.querySelector('select').selectedIndex = 0;
+                if (checkbox.checked) {
+                    areaSelect.querySelector('select').disabled = false;
+                    depositoSelect.querySelector('select').disabled = true;
+                } else {
+                    areaSelect.querySelector('select').disabled = true;
+                    depositoSelect.querySelector('select').disabled = false;
+                }
+            });
+            if (checkbox.checked) {
+                areaSelect.querySelector('select').disabled = false;
+                depositoSelect.querySelector('select').disabled = true;
+            } else {
+                areaSelect.querySelector('select').disabled = true;
+                depositoSelect.querySelector('select').disabled = false;
+            }
+        }
+
+    });
+</script>
 <script>
     $(document).ready(function() {
         $('#en-uso').on('change', function() {
@@ -1335,3 +1523,5 @@
 
     });
 </script>
+@endpush
+</x-app-layout>
