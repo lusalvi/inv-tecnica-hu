@@ -1,185 +1,239 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
+<nav x-data="{ open: false }" style="background-color: #fff; border-bottom: 2px solid var(--hu-azul);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center" style="width: 20%; margin-top: -1%">
-                    <a href="{{ route('inicio') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+        <div class="flex justify-between items-center" style="height: 64px;">
+
+            {{-- Logo --}}
+            <div class="flex items-center gap-6">
+                <a href="{{ route('inicio') }}" class="shrink-0 flex items-center">
+                    <x-hu_logo style="height: 38px; width: auto;" />
+                </a>
+
+                {{-- Links de navegación (desktop) --}}
+                <div class="hidden sm:flex items-center gap-1">
+
+                    {{-- Inicio --}}
+                    <a href="{{ route('inicio') }}"
+                       class="nav-item {{ request()->routeIs('inicio') ? 'nav-item--active' : '' }}">
+                        Inicio
                     </a>
-                </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('inicio')" :active="request()->routeIs('inicio')">
-                        {{ __('Inicio') }}
-                    </x-nav-link>
-                </div>
-                
-                <div class="hidden sm:flex sm:items-center sm:ms-6">
-                    <x-dropdown align="left" width="48">
-                        <x-slot name="trigger">
-                            <button
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-small rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                <div>Gestion</div>
+                    {{-- Gestión (dropdown Alpine) --}}
+                    <div x-data="{ openGestion: false }" class="relative">
+                        <button @click="openGestion = !openGestion" @click.outside="openGestion = false"
+                                class="nav-item flex items-center gap-1">
+                            Gestión
+                            <span class="material-symbols-outlined" style="font-size:1rem; transition: transform 0.2s;"
+                                  :style="openGestion ? 'transform: rotate(180deg)' : ''">expand_more</span>
+                        </button>
+                        <div x-show="openGestion" x-transition
+                             class="nav-dropdown"
+                             style="display:none;">
+                            <a href="{{ route('dispositivos') }}" class="nav-dropdown-item">
+                                <span class="material-symbols-outlined nav-dropdown-icon">devices</span>
+                                Dispositivos
+                            </a>
+                            <a href="{{ route('gest_componentes') }}" class="nav-dropdown-item">
+                                <span class="material-symbols-outlined nav-dropdown-icon">inventory_2</span>
+                                Stock
+                            </a>
+                            @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
+                                <div class="nav-dropdown-divider"></div>
+                                <a href="{{ route('gest_areas') }}" class="nav-dropdown-item">
+                                    <span class="material-symbols-outlined nav-dropdown-icon">location_on</span>
+                                    Áreas
+                                </a>
+                                <a href="{{ route('gest_depositos') }}" class="nav-dropdown-item">
+                                    <span class="material-symbols-outlined nav-dropdown-icon">warehouse</span>
+                                    Depósitos
+                                </a>
+                                <a href="{{ route('gest_tipo_componente') }}" class="nav-dropdown-item">
+                                    <span class="material-symbols-outlined nav-dropdown-icon">category</span>
+                                    Categorías
+                                </a>
+                                <a href="{{ route('gest_state') }}" class="nav-dropdown-item">
+                                    <span class="material-symbols-outlined nav-dropdown-icon">flag</span>
+                                    Estados
+                                </a>
+                            @endif
+                        </div>
+                    </div>
 
-                                <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </button>
-                        </x-slot>
+                    <a href="{{ route('historia') }}"
+                       class="nav-item {{ request()->routeIs('historia') ? 'nav-item--active' : '' }}">
+                        Historia
+                    </a>
 
-                        <x-slot name="content">
-                            <div class="hidden space-x-8 sm:-my-px sm:flex">
-                                <x-dropdown-link :href="route('dispositivos')" :active="request()->routeIs('dispositivos')">
-                                    {{ __('Dispositivos') }}
-                                </x-dropdown-link>
-                            </div><!--
-                            <div class="hidden space-x-8 sm:-my-px sm:flex">
-                                <x-dropdown-link :href="route('gest_pc')" :active="request()->routeIs('gest_pc')">
-                                    {{ __('PCs') }}
-                                </x-dropdown-link>
-                            </div>-->
-                            <div class="hidden space-x-8 sm:-my-px sm:flex">
-                                <x-dropdown-link :href="route('gest_componentes')" :active="request()->routeIs('gest_componentes')">
-                                    {{ __('Stock') }}
-                                </x-dropdown-link>
-                            </div>
-                            @if (Auth::user()->rol->nombre == 'Administrador' || Auth::user()->rol->nombre == 'Super administrador')
-                                <div class="hidden space-x-8 sm:-my-px sm:flex">
-                                    <x-dropdown-link :href="route('gest_areas')" :active="request()->routeIs('gest_areas')">
-                                        {{ __('Areas') }}
-                                    </x-dropdown-link>
-                                </div>
-                            @endif
-                            @if (Auth::user()->rol->nombre == 'Administrador' || Auth::user()->rol->nombre == 'Super administrador')
-                            <div class="hidden space-x-8 sm:-my-px sm:flex">
-                                <x-dropdown-link :href="route('gest_depositos')" :active="request()->routeIs('gest_depositos')">
-                                    {{ __('Depositos') }}
-                                </x-dropdown-link>
-                            </div>
-                            @endif
-                            @if (Auth::user()->rol->nombre == 'Administrador' || Auth::user()->rol->nombre == 'Super administrador')
-                            <div class="hidden space-x-8 sm:-my-px sm:flex">
-                                <x-dropdown-link :href="route('gest_tipo_componente')" :active="request()->routeIs('gest_tipo_componente')">
-                                    {{ __('Categorias') }}
-                                </x-dropdown-link>
-                            </div>
-                            @endif
-                            @if (Auth::user()->rol->nombre == 'Administrador' || Auth::user()->rol->nombre == 'Super administrador')
-                            <div class="hidden space-x-8 sm:-my-px sm:flex">
-                                <x-dropdown-link :href="route('gest_state')" :active="request()->routeIs('gest_state')">
-                                    {{ __('Estados') }}
-                                </x-dropdown-link>
-                            </div>
-                            @endif
-                        </x-slot>
-                    </x-dropdown>
-                </div>
-                
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-left: 1%">
-                    <x-nav-link :href="route('historia')" :active="request()->routeIs('historia')">
-                        {{ __('Historia') }}
-                    </x-nav-link>
-                </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('reportes')" :active="request()->routeIs('reportes')" style="margin-left: -20%">
-                        {{ __('Reportes') }}
-                    </x-nav-link>
+                    <a href="{{ route('reportes') }}"
+                       class="nav-item {{ request()->routeIs('reportes') ? 'nav-item--active' : '' }}">
+                        Reportes
+                    </a>
+
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name . ' - ' . Auth::user()->rol->nombre }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Perfil') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
+            {{-- Usuario (dropdown) --}}
+            <div class="hidden sm:flex items-center">
+                <div x-data="{ openUser: false }" class="relative">
+                    <button @click="openUser = !openUser" @click.outside="openUser = false"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold"
+                            style="color: var(--hu-azul); transition: background 0.15s ease;"
+                            onmouseover="this.style.backgroundColor='#f0f4f8'"
+                            onmouseout="this.style.backgroundColor='transparent'">
+                        <span class="material-symbols-outlined" style="font-size:1.2rem;">account_circle</span>
+                        <span>{{ Auth::user()->name }}</span>
+                        <span style="font-size:0.75rem; color: var(--hu-dorado); font-weight:700;">
+                            {{ Auth::user()->rol->nombre }}
+                        </span>
+                        <span class="material-symbols-outlined" style="font-size:1rem;">expand_more</span>
+                    </button>
+                    <div x-show="openUser" x-transition
+                         class="nav-dropdown" style="right:0; left:auto; display:none;">
+                        <a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
+                            <span class="material-symbols-outlined nav-dropdown-icon">manage_accounts</span>
+                            Perfil
+                        </a>
+                        <div class="nav-dropdown-divider"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Cerrar Sesion') }}
-                            </x-dropdown-link>
+                            <button type="submit" class="nav-dropdown-item w-100 text-start border-0 bg-transparent"
+                                    style="color: #c62828;">
+                                <span class="material-symbols-outlined nav-dropdown-icon" style="color:#c62828;">logout</span>
+                                Cerrar sesión
+                            </button>
                         </form>
-                    </x-slot>
-                </x-dropdown>
+                    </div>
+                </div>
             </div>
 
-            <!-- Hamburger -->
+            {{-- Hamburger (mobile) --}}
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{ 'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                <button @click="open = !open"
+                        class="inline-flex items-center justify-center p-2 rounded-md"
+                        style="color: var(--hu-azul);">
+                    <span class="material-symbols-outlined">{{ 'menu' }}</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('inicio')" :active="request()->routeIs('inicio')">
-                {{ __('Inicio') }}
-            </x-responsive-nav-link>
+    {{-- Mobile menu --}}
+    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden"
+         style="border-top: 1px solid rgba(0,55,100,0.1);">
+        <div class="pt-2 pb-3 space-y-1 px-4">
+            <a href="{{ route('inicio') }}" class="nav-mobile-item">Inicio</a>
+            <a href="{{ route('dispositivos') }}" class="nav-mobile-item">Dispositivos</a>
+            <a href="{{ route('gest_componentes') }}" class="nav-mobile-item">Stock</a>
+            <a href="{{ route('historia') }}" class="nav-mobile-item">Historia</a>
+            <a href="{{ route('reportes') }}" class="nav-mobile-item">Reportes</a>
+            @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
+                <div style="border-top: 1px solid rgba(0,55,100,0.1); margin: 8px 0; padding-top:8px;">
+                    <p style="font-size:0.7rem; font-weight:700; color: var(--hu-dorado); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">
+                        Administración
+                    </p>
+                    <a href="{{ route('gest_areas') }}" class="nav-mobile-item">Áreas</a>
+                    <a href="{{ route('gest_depositos') }}" class="nav-mobile-item">Depósitos</a>
+                    <a href="{{ route('gest_tipo_componente') }}" class="nav-mobile-item">Categorías</a>
+                    <a href="{{ route('gest_state') }}" class="nav-mobile-item">Estados</a>
+                </div>
+            @endif
         </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Perfil') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
+        <div style="border-top: 1px solid rgba(0,55,100,0.1);" class="px-4 pt-3 pb-3">
+            <div style="font-weight:700; font-size:0.9rem; color: var(--hu-azul);">{{ Auth::user()->name }}</div>
+            <div style="font-size:0.75rem; color: var(--hu-dorado); font-weight:600;">{{ Auth::user()->rol->nombre }}</div>
+            <div class="mt-2 space-y-1">
+                <a href="{{ route('profile.edit') }}" class="nav-mobile-item">Perfil</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Cerrar sesion') }}
-                    </x-responsive-nav-link>
+                    <button type="submit" class="nav-mobile-item w-100 text-start border-0 bg-transparent"
+                            style="color:#c62828; padding-left:0;">
+                        Cerrar sesión
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </nav>
+
+<style>
+    .nav-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--hu-texto);
+        text-decoration: none;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-item:hover {
+        background-color: #f0f4f8;
+        color: var(--hu-azul);
+        text-decoration: none;
+    }
+
+    .nav-item--active {
+        color: var(--hu-azul);
+        background-color: rgba(0, 55, 100, 0.08);
+    }
+
+    .nav-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        background: #fff;
+        border: 1px solid rgba(0, 55, 100, 0.12);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 55, 100, 0.12);
+        min-width: 200px;
+        padding: 6px;
+        z-index: 50;
+    }
+
+    .nav-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 0.75rem;
+        border-radius: 7px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--hu-texto);
+        text-decoration: none;
+        transition: background-color 0.15s ease, color 0.15s ease;
+        cursor: pointer;
+    }
+
+    .nav-dropdown-item:hover {
+        background-color: #f0f4f8;
+        color: var(--hu-azul);
+        text-decoration: none;
+    }
+
+    .nav-dropdown-icon {
+        font-size: 1rem;
+        color: var(--hu-azul);
+    }
+
+    .nav-dropdown-divider {
+        border-top: 1px solid rgba(0, 55, 100, 0.08);
+        margin: 4px 0;
+    }
+
+    .nav-mobile-item {
+        display: block;
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--hu-texto);
+        text-decoration: none;
+        border-radius: 6px;
+        transition: color 0.15s ease;
+    }
+
+    .nav-mobile-item:hover {
+        color: var(--hu-azul);
+        text-decoration: none;
+    }
+</style>
