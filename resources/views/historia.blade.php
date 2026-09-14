@@ -2,8 +2,27 @@
     <x-slot name="header">
         <h2 class="font-semibold text-lg leading-tight" style="color: var(--hu-azul);">
             Historia
+            <button type="button" class="btn btn-hu-outline-dorado btn-sm ms-2" data-bs-toggle="modal"
+                data-bs-target="#infoModal" style="padding: 2px 8px; font-size:.78rem;">
+                <span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">info</span>
+            </button>
         </h2>
     </x-slot>
+
+    {{-- Modal info --}}
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Historia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0 text-muted" style="font-size:.9rem;">
+                    Registro de todos los movimientos realizados sobre los dispositivos del inventario.
+                </div>
+            </div>
+        </div>
+    </div>
 
     {{-- Contenido --}}
     <div class="px-4 px-md-5 py-4" style="max-width:1400px;margin:0 auto;">
@@ -79,6 +98,18 @@
             </div>
         </div>
     </div>
+
+    @push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.css">
+    @endpush
+
+    @push('vendor-scripts')
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.js"></script>
+    @endpush
 
     @push('scripts')
     <script>

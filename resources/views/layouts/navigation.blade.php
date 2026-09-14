@@ -25,9 +25,8 @@
                             <span class="material-symbols-outlined" style="font-size:1rem; transition: transform 0.2s;"
                                   :style="openGestion ? 'transform: rotate(180deg)' : ''">expand_more</span>
                         </button>
-                        <div x-show="openGestion" x-transition
-                             class="nav-dropdown"
-                             style="display:none;">
+                        <div x-show="openGestion" x-transition x-cloak
+                             class="nav-dropdown">
                             <a href="{{ route('dispositivos') }}" class="nav-dropdown-item">
                                 <span class="material-symbols-outlined nav-dropdown-icon">devices</span>
                                 Dispositivos
@@ -86,8 +85,8 @@
                         </span>
                         <span class="material-symbols-outlined" style="font-size:1rem;">expand_more</span>
                     </button>
-                    <div x-show="openUser" x-transition
-                         class="nav-dropdown" style="right:0; left:auto; display:none;">
+                    <div x-show="openUser" x-transition x-cloak
+                         class="nav-dropdown" style="right:0; left:auto;">
                         <a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
                             <span class="material-symbols-outlined nav-dropdown-icon">manage_accounts</span>
                             Perfil
