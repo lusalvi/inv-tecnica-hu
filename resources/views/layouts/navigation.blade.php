@@ -1,10 +1,12 @@
+@php($navigationBaseUrl = request()->getBaseUrl())
+
 <nav x-data="{ open: false }" style="background-color: #fff; border-bottom: 2px solid var(--hu-azul);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center" style="height: 64px;">
 
             {{-- Logo --}}
             <div class="flex items-center gap-6">
-                <a href="{{ route('inicio') }}" class="shrink-0 flex items-center">
+                <a href="{{ $navigationBaseUrl . route('inicio', [], false) }}" class="shrink-0 flex items-center">
                     <x-hu_logo style="height: 38px; width: auto;" />
                 </a>
 
@@ -12,7 +14,7 @@
                 <div class="hidden sm:flex items-center gap-1">
 
                     {{-- Inicio --}}
-                    <a href="{{ route('inicio') }}"
+                    <a href="{{ $navigationBaseUrl . route('inicio', [], false) }}"
                        class="nav-item {{ request()->routeIs('inicio') ? 'nav-item--active' : '' }}">
                         Inicio
                     </a>
@@ -27,29 +29,29 @@
                         </button>
                         <div x-show="openGestion" x-transition x-cloak
                              class="nav-dropdown">
-                            <a href="{{ route('dispositivos') }}" class="nav-dropdown-item">
+                            <a href="{{ $navigationBaseUrl . route('dispositivos', [], false) }}" class="nav-dropdown-item">
                                 <span class="material-symbols-outlined nav-dropdown-icon">devices</span>
                                 Dispositivos
                             </a>
-                            <a href="{{ route('gest_componentes') }}" class="nav-dropdown-item">
+                            <a href="{{ $navigationBaseUrl . route('gest_componentes', [], false) }}" class="nav-dropdown-item">
                                 <span class="material-symbols-outlined nav-dropdown-icon">inventory_2</span>
                                 Stock
                             </a>
                             @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
                                 <div class="nav-dropdown-divider"></div>
-                                <a href="{{ route('gest_areas') }}" class="nav-dropdown-item">
+                                <a href="{{ $navigationBaseUrl . route('gest_areas', [], false) }}" class="nav-dropdown-item">
                                     <span class="material-symbols-outlined nav-dropdown-icon">location_on</span>
                                     Áreas
                                 </a>
-                                <a href="{{ route('gest_depositos') }}" class="nav-dropdown-item">
+                                <a href="{{ $navigationBaseUrl . route('gest_depositos', [], false) }}" class="nav-dropdown-item">
                                     <span class="material-symbols-outlined nav-dropdown-icon">warehouse</span>
                                     Depósitos
                                 </a>
-                                <a href="{{ route('gest_tipo_componente') }}" class="nav-dropdown-item">
+                                <a href="{{ $navigationBaseUrl . route('gest_tipo_componente', [], false) }}" class="nav-dropdown-item">
                                     <span class="material-symbols-outlined nav-dropdown-icon">category</span>
                                     Categorías
                                 </a>
-                                <a href="{{ route('gest_state') }}" class="nav-dropdown-item">
+                                <a href="{{ $navigationBaseUrl . route('gest_state', [], false) }}" class="nav-dropdown-item">
                                     <span class="material-symbols-outlined nav-dropdown-icon">flag</span>
                                     Estados
                                 </a>
@@ -57,12 +59,12 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('historia') }}"
+                    <a href="{{ $navigationBaseUrl . route('historia', [], false) }}"
                        class="nav-item {{ request()->routeIs('historia') ? 'nav-item--active' : '' }}">
                         Historia
                     </a>
 
-                    <a href="{{ route('reportes') }}"
+                    <a href="{{ $navigationBaseUrl . route('reportes', [], false) }}"
                        class="nav-item {{ request()->routeIs('reportes') ? 'nav-item--active' : '' }}">
                         Reportes
                     </a>
@@ -87,12 +89,12 @@
                     </button>
                     <div x-show="openUser" x-transition x-cloak
                          class="nav-dropdown" style="right:0; left:auto;">
-                        <a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
+                        <a href="{{ $navigationBaseUrl . route('profile.edit', [], false) }}" class="nav-dropdown-item">
                             <span class="material-symbols-outlined nav-dropdown-icon">manage_accounts</span>
                             Perfil
                         </a>
                         <div class="nav-dropdown-divider"></div>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ $navigationBaseUrl . route('logout', [], false) }}">
                             @csrf
                             <button type="submit" class="nav-dropdown-item w-100 text-start border-0 bg-transparent"
                                     style="color: #c62828;">
@@ -119,20 +121,20 @@
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden"
          style="border-top: 1px solid rgba(0,55,100,0.1);">
         <div class="pt-2 pb-3 space-y-1 px-4">
-            <a href="{{ route('inicio') }}" class="nav-mobile-item">Inicio</a>
-            <a href="{{ route('dispositivos') }}" class="nav-mobile-item">Dispositivos</a>
-            <a href="{{ route('gest_componentes') }}" class="nav-mobile-item">Stock</a>
-            <a href="{{ route('historia') }}" class="nav-mobile-item">Historia</a>
-            <a href="{{ route('reportes') }}" class="nav-mobile-item">Reportes</a>
+            <a href="{{ $navigationBaseUrl . route('inicio', [], false) }}" class="nav-mobile-item">Inicio</a>
+            <a href="{{ $navigationBaseUrl . route('dispositivos', [], false) }}" class="nav-mobile-item">Dispositivos</a>
+            <a href="{{ $navigationBaseUrl . route('gest_componentes', [], false) }}" class="nav-mobile-item">Stock</a>
+            <a href="{{ $navigationBaseUrl . route('historia', [], false) }}" class="nav-mobile-item">Historia</a>
+            <a href="{{ $navigationBaseUrl . route('reportes', [], false) }}" class="nav-mobile-item">Reportes</a>
             @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
                 <div style="border-top: 1px solid rgba(0,55,100,0.1); margin: 8px 0; padding-top:8px;">
                     <p style="font-size:0.7rem; font-weight:700; color: var(--hu-dorado); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">
                         Administración
                     </p>
-                    <a href="{{ route('gest_areas') }}" class="nav-mobile-item">Áreas</a>
-                    <a href="{{ route('gest_depositos') }}" class="nav-mobile-item">Depósitos</a>
-                    <a href="{{ route('gest_tipo_componente') }}" class="nav-mobile-item">Categorías</a>
-                    <a href="{{ route('gest_state') }}" class="nav-mobile-item">Estados</a>
+                    <a href="{{ $navigationBaseUrl . route('gest_areas', [], false) }}" class="nav-mobile-item">Áreas</a>
+                    <a href="{{ $navigationBaseUrl . route('gest_depositos', [], false) }}" class="nav-mobile-item">Depósitos</a>
+                    <a href="{{ $navigationBaseUrl . route('gest_tipo_componente', [], false) }}" class="nav-mobile-item">Categorías</a>
+                    <a href="{{ $navigationBaseUrl . route('gest_state', [], false) }}" class="nav-mobile-item">Estados</a>
                 </div>
             @endif
         </div>
@@ -140,8 +142,8 @@
             <div style="font-weight:700; font-size:0.9rem; color: var(--hu-azul);">{{ Auth::user()->name }}</div>
             <div style="font-size:0.75rem; color: var(--hu-dorado); font-weight:600;">{{ Auth::user()->rol->nombre }}</div>
             <div class="mt-2 space-y-1">
-                <a href="{{ route('profile.edit') }}" class="nav-mobile-item">Perfil</a>
-                <form method="POST" action="{{ route('logout') }}">
+                <a href="{{ $navigationBaseUrl . route('profile.edit', [], false) }}" class="nav-mobile-item">Perfil</a>
+                <form method="POST" action="{{ $navigationBaseUrl . route('logout', [], false) }}">
                     @csrf
                     <button type="submit" class="nav-mobile-item w-100 text-start border-0 bg-transparent"
                             style="color:#c62828; padding-left:0;">
