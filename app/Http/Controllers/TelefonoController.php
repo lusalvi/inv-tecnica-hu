@@ -86,14 +86,14 @@ class TelefonoController extends Controller
         // Guardar historia
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "cargo el telefono: " . $request->input('addIdentificador') . " - " . $request->input('addNombre') . " - " . $request->input('addMarca') . ".";
-        $historia->motivo = "carga de telefono";
+        $historia->detalle = "Cargó el teléfono: " . $request->input('addIdentificador') . " - " . $request->input('addNombre') . " - " . $request->input('addMarca') . ".";
+        $historia->motivo = "Carga de teléfono";
         $historia->componente_id = $telefono->id;
         $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
         $historia->tipo_id = 8;
         $historia->save();
 
-        return redirect()->back()->with('success', 'Telefono guardada correctamente.');
+        return redirect()->back()->with('success', 'Teléfono guardado correctamente.');
     }
 
 
@@ -123,7 +123,7 @@ class TelefonoController extends Controller
         if ($telefono->numero != $request->input('editNumero')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el numero del telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->numero . " a " . $request->input('editNumero') . ".";
+            $historia->detalle = "Cambió el número del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->numero . " a " . $request->input('editNumero') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $telefono->id;
             $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -136,7 +136,7 @@ class TelefonoController extends Controller
         if ($telefono->deposito_id != $request->input('editDeposito') && $request->input('editDeposito') != null) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó el deposito del Telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . (DepositoModel::find($telefono->deposito_id)->nombre ?? "deposito no asignado") . " a " . DepositoModel::find($request->input('editDeposito'))->nombre ?? "deposito no asignado" . ", se quito del area: " . AreaModel::find($telefono->area_id)->nombre ?? "area no asignada" . ".";
+            $historia->detalle = "Editó el depósito del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . (DepositoModel::find($telefono->deposito_id)->nombre ?? "depósito no asignado") . " a " . DepositoModel::find($request->input('editDeposito'))->nombre ?? "depósito no asignado" . ", se quitó del área: " . AreaModel::find($telefono->area_id)->nombre ?? "área no asignada" . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $telefono->id;
             $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -156,7 +156,7 @@ class TelefonoController extends Controller
             if ($areaModel->findByName($area)) {
                 $historia = new HistoriaModel();
                 $historia->tecnico = $user->name;
-                $historia->detalle = "editó el area del telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . (AreaModel::find($telefono->area_id)->nombre ?? " area no asignada") . " a " . $area ?? " area no asignada" . ", se quito del deposito: " . DepositoModel::find($telefono->deposito_id)->nombre ?? "deposito no asignado" . ".";
+                $historia->detalle = "Editó el área del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . (AreaModel::find($telefono->area_id)->nombre ?? "área no asignada") . " a " . $area ?? " área no asignada" . ", se quitó del depósito: " . DepositoModel::find($telefono->deposito_id)->nombre ?? "depósito no asignado" . ".";
                 $historia->motivo = $request->input('editMotivo');
                 $historia->componente_id = $telefono->id;
                 $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -173,7 +173,7 @@ class TelefonoController extends Controller
 
                 $historia = new HistoriaModel();
                 $historia->tecnico = $user->name;
-                $historia->detalle = "editó el area del telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . (AreaModel::find($telefono->area_id)->nombre ?? " area no asignada") . " a " . $area ?? " area no asignada" . ", se quito del deposito: " . DepositoModel::find($telefono->deposito_id)->nombre ?? "deposito no asignado" . ".";
+                $historia->detalle = "Editó el área del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . (AreaModel::find($telefono->area_id)->nombre ?? "área no asignada") . " a " . $area ?? " área no asignada" . ", se quitó del depósito: " . DepositoModel::find($telefono->deposito_id)->nombre ?? "depósito no asignado" . ".";
                 $historia->motivo = $request->input('editMotivo');
                 $historia->componente_id = $telefono->id;
                 $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -187,7 +187,7 @@ class TelefonoController extends Controller
         if ($telefono->ip != $request->input('editIp')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó la IP del telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->ip . " a " . $request->input('editIp') . ".";
+            $historia->detalle = "Editó la IP del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->ip . " a " . $request->input('editIp') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $telefono->id;
             $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -199,7 +199,7 @@ class TelefonoController extends Controller
         if ($telefono->marca_modelo != $request->input('editMarca')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó la marca y el modelo del telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->marca_modelo . " a " . $request->input('editMarca') . ".";
+            $historia->detalle = "Editó la marca y el modelo del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->marca_modelo . " a " . $request->input('editMarca') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $telefono->id;
             $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -211,7 +211,7 @@ class TelefonoController extends Controller
         if ($telefono->nombre != $request->input('editNombre')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó el nombre del telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->nombre . " a " . $request->input('editNombre') . ".";
+            $historia->detalle = "Editó el nombre del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->nombre . " a " . $request->input('editNombre') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $telefono->id;
             $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -224,7 +224,7 @@ class TelefonoController extends Controller
         if ($telefono->identificador != $request->input('editIdentificador')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó el identificador del telefono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->identificador . " a " . $request->input('editIdentificador') . ".";
+            $historia->detalle = "Editó el identificador del teléfono: " . $telefono->identificador . " - " . $telefono->nombre . " de " . $telefono->identificador . " a " . $request->input('editIdentificador') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $telefono->id;
             $historia->tipo_dispositivo = 'Telefono'; // Tipo de transferencia
@@ -247,7 +247,7 @@ class TelefonoController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino la telefono: " . $telefono->identificador . " - " . $telefono->nombre;
+        $historia->detalle = "Eliminó el teléfono: " . $telefono->identificador . " - " . $telefono->nombre;
         $historia->motivo = $request->input('removeMotivo');
         $historia->tipo_id = 8;
         $historia->save();

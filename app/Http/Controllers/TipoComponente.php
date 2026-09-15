@@ -38,8 +38,8 @@ class TipoComponente extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "creo la categoria: ".$request->input('addNombre').".";
-        $historia->motivo = "creacion de categoria.";
+        $historia->detalle = "Creó la categoría: ".$request->input('addNombre').".";
+        $historia->motivo = "Creación de categoría.";
         $historia->tipo_id = 1;
         $historia->save();
 
@@ -57,7 +57,7 @@ class TipoComponente extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "edito el nombre de la categoria: ".$tipo_componente->nombre." a ".$request->input('editNombre').".";
+        $historia->detalle = "Editó el nombre de la categoría: ".$tipo_componente->nombre." a ".$request->input('editNombre').".";
         $historia->motivo = $request->input('editMotivo');
         $historia->tipo_id = 1;
         $historia->save();
@@ -81,13 +81,13 @@ class TipoComponente extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino la categoria: ".$tipo_componente->nombre.".";
+        $historia->detalle = "Eliminó la categoría: ".$tipo_componente->nombre.".";
         $historia->motivo = $request->input("removeMotivo");
         $historia->tipo_id = 1;
         $historia->save();
 
         $tipo_componente->delete();
 
-        return redirect()->back()->with('success', 'Categoria eliminada correctamente.');
+        return redirect()->back()->with('success', 'Categoría eliminada correctamente.');
     }
 }

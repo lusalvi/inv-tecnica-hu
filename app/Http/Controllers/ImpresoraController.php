@@ -90,8 +90,8 @@ class ImpresoraController extends Controller
         // Guardar historia
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "cargo la impresora: " . $request->input('addIdentificador') . " - " . $request->input('addNombre') . " - " . $request->input('addMarca') . ".";
-        $historia->motivo = "carga de Impresora";
+        $historia->detalle = "Cargó la impresora: " . $request->input('addIdentificador') . " - " . $request->input('addNombre') . " - " . $request->input('addMarca') . ".";
+        $historia->motivo = "Carga de Impresora";
         $historia->componente_id = $impresora->id;
         $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
         $historia->tipo_id = 7;
@@ -127,7 +127,7 @@ class ImpresoraController extends Controller
         if ($impresora->toner_id != $request->input('editToner')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el toner de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (ComponenteModel::find($impresora->toner_id)->nombre ?? "toner no asignado") . " a " . (ComponenteModel::find($request->input('editToner'))->nombre) . ".";
+            $historia->detalle = "Cambió el toner de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (ComponenteModel::find($impresora->toner_id)->nombre ?? "toner no asignado") . " a " . (ComponenteModel::find($request->input('editToner'))->nombre) . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $impresora->id;
             $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -144,7 +144,7 @@ class ImpresoraController extends Controller
         if ($impresora->deposito_id != $request->input('editDeposito') && $request->input('editDeposito') != null) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el deposito de la Impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (DepositoModel::find($impresora->deposito_id)->nombre ?? "deposito no asignado") . " a " . (DepositoModel::find($request->input('editDeposito'))->nombre ?? "deposito no asignado") . (($area = AreaModel::find($impresora->area_id)) ? ', se quitó del area ' . ($area->nombre ?? '') : 'asd') . ".";
+            $historia->detalle = "Cambió el depósito de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (DepositoModel::find($impresora->deposito_id)->nombre ?? "depósito no asignado") . " a " . (DepositoModel::find($request->input('editDeposito'))->nombre ?? "depósito no asignado") . (($area = AreaModel::find($impresora->area_id)) ? ', se quitó del área ' . ($area->nombre ?? '') : '') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $impresora->id;
             $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -164,7 +164,7 @@ class ImpresoraController extends Controller
             if ($areaModel->findByName($area)) {
                 $historia = new HistoriaModel();
                 $historia->tecnico = $user->name;
-                $historia->detalle = "cambio el area de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (AreaModel::find($impresora->area_id)->nombre ?? " area no asignada") . " a " . $area ?? " area no asignada" . ", se quito del deposito: " . (($deposito = DepositoModel::find($impresora->deposito_id)) ? ', se quitó del depósito ' . ($deposito->nombre ?? '') : '') . ".";
+                $historia->detalle = "Cambió el área de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (AreaModel::find($impresora->area_id)->nombre ?? "área no asignada") . " a " . $area ?? " área no asignada" . ", se quitó del depósito: " . (($deposito = DepositoModel::find($impresora->deposito_id)) ? ', se quitó del depósito ' . ($deposito->nombre ?? '') : '') . ".";
                 $historia->motivo = $request->input('editMotivo');
                 $historia->componente_id = $impresora->id;
                 $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -181,7 +181,7 @@ class ImpresoraController extends Controller
 
                 $historia = new HistoriaModel();
                 $historia->tecnico = $user->name;
-                $historia->detalle = "cambio el area de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (AreaModel::find($impresora->area_id)->nombre ?? " area no asignada") . " a " . $area ?? " area no asignada" . ", se quito del deposito: " . (($deposito = DepositoModel::find($impresora->deposito_id)) ? ', se quitó del depósito ' . ($deposito->nombre ?? '') : '') . ".";
+                $historia->detalle = "Cambió el área de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . (AreaModel::find($impresora->area_id)->nombre ?? "área no asignada") . " a " . $area ?? " área no asignada" . ", se quitó del depósito: " . (($deposito = DepositoModel::find($impresora->deposito_id)) ? ', se quitó del depósito ' . ($deposito->nombre ?? '') : '') . ".";
                 $historia->motivo = $request->input('editMotivo');
                 $historia->componente_id = $impresora->id;
                 $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -196,7 +196,7 @@ class ImpresoraController extends Controller
         if ($impresora->ip != $request->input('editIp')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio la IP de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->ip . " a " . $request->input('editIp') . ".";
+            $historia->detalle = "Cambió la IP de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->ip . " a " . $request->input('editIp') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $impresora->id;
             $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -208,7 +208,7 @@ class ImpresoraController extends Controller
         if ($impresora->marca_modelo != $request->input('editMarca')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio la marca y el modelo de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->marca_modelo . " a " . $request->input('editMarca') . ".";
+            $historia->detalle = "Cambió la marca y el modelo de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->marca_modelo . " a " . $request->input('editMarca') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $impresora->id;
             $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -220,7 +220,7 @@ class ImpresoraController extends Controller
         if ($impresora->nombre != $request->input('editNombre')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el nombre de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->nombre . " a " . $request->input('editNombre') . ".";
+            $historia->detalle = "Cambió el nombre de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->nombre . " a " . $request->input('editNombre') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $impresora->id;
             $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -233,7 +233,7 @@ class ImpresoraController extends Controller
         if ($impresora->identificador != $request->input('editIdentificador')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el identificador de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->identificador . " a " . $request->input('editIdentificador') . ".";
+            $historia->detalle = "Cambió el identificador de la impresora: " . $impresora->identificador . " - " . $impresora->nombre . " de " . $impresora->identificador . " a " . $request->input('editIdentificador') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $impresora->id;
             $historia->tipo_dispositivo = 'Impresora'; // Tipo de transferencia
@@ -256,7 +256,7 @@ class ImpresoraController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino la impresora: " . $impresora->identificador . " - " . $impresora->nombre;
+        $historia->detalle = "Eliminó la impresora: " . $impresora->identificador . " - " . $impresora->nombre;
         $historia->motivo = $request->input('removeMotivo');
         $historia->tipo_id = 7;
         $historia->save();

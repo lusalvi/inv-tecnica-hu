@@ -53,8 +53,8 @@ class ComponenteController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "creo el componente: " . $request->input('addNombre') . ".";
-        $historia->motivo = "creacion de componente.";
+        $historia->detalle = "Creó el componente: " . $request->input('addNombre') . ".";
+        $historia->motivo = "Creación de componente.";
         $historia->tipo_id = 4;
         $historia->save();
 
@@ -72,11 +72,11 @@ class ComponenteController extends Controller
         $historia->tipo_id = 4;
         $historia->motivo = $request->input('editMotivo');
         if ($componente->nombre != $request->input('editNombre') && $componente->tipo_id != $request->input('editTipo')) {
-            $historia->detalle = "edito el nombre del componente: " . $componente->nombre . " a: " . $request->input('editNombre') . ", y la categoria de: " . ($componente->tipo->nombre ?? 'no asignado') . " a " . TipoComponenteModel::find($request->input('editTipo'))->nombre . ".";
+            $historia->detalle = "Editó el nombre del componente: " . $componente->nombre . " a: " . $request->input('editNombre') . ", y la categoría de: " . ($componente->tipo->nombre ?? 'no asignado') . " a " . TipoComponenteModel::find($request->input('editTipo'))->nombre . ".";
         } elseif ($componente->nombre != $request->input('editNombre')) {
-            $historia->detalle = "edito el nombre del componente: " . $componente->nombre . " a: " . $request->input('editNombre') . ".";
+            $historia->detalle = "Editó el nombre del componente: " . $componente->nombre . " a: " . $request->input('editNombre') . ".";
         } elseif ($componente->tipo_id != $request->input('editTipo')) {
-            $historia->detalle = "edito la categoria del componente: " . $componente->nombre . " de " . ($componente->tipo->nombre ?? 'no asignado') . " a " . TipoComponenteModel::find($request->input('editTipo'))->nombre . ".";
+            $historia->detalle = "Edito la categoría del componente: " . $componente->nombre . " de " . ($componente->tipo->nombre ?? 'no asignado') . " a " . TipoComponenteModel::find($request->input('editTipo'))->nombre . ".";
         }
 
         $componente->tipo_id = $request->input('editTipo');
@@ -100,7 +100,7 @@ class ComponenteController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "agrego " . $request->input('editAddStock') . " componente/s al stock de: " . $componente->nombre . "/s.";
+        $historia->detalle = "Agregó " . $request->input('editAddStock') . " componente/s al stock de: " . $componente->nombre . "/s.";
         $historia->motivo = $request->input('editAddStockMotivo');
         $historia->tipo_id = 4;
         $historia->save();
@@ -125,7 +125,7 @@ class ComponenteController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino " . $request->input('removeStock') . " componente/s del stock de: " . $componente->nombre . "/s.";
+        $historia->detalle = "Eliminó " . $request->input('removeStock') . " componente/s del stock de: " . $componente->nombre . "/s.";
         $historia->motivo = $request->input('removeStockMotivo');
         $historia->tipo_id = 4;
         $historia->save();
@@ -148,7 +148,7 @@ class ComponenteController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino el componente: " . $componente->nombre . ".";
+        $historia->detalle = "Eliminó el componente: " . $componente->nombre . ".";
         $historia->motivo = $request->input('removeMotivo');
         $historia->tipo_id = 4;
         $historia->save();
@@ -215,7 +215,7 @@ class ComponenteController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "transfirio " . $stockToTransfer . " " . $componente->nombre . "/s del deposito: " . $depositoActual . " al deposito: " . DepositoModel::find($depositoDestino)->nombre . ".";
+        $historia->detalle = "Transfirió " . $stockToTransfer . " " . $componente->nombre . "/s del depósito: " . $depositoActual . " al depósito: " . DepositoModel::find($depositoDestino)->nombre . ".";
         $historia->motivo = $motivo;
         $historia->tipo_id = 4; // Tipo de transferencia
         $historia->save();
@@ -282,7 +282,7 @@ class ComponenteController extends Controller
         // Registrar la transferencia en la historia
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "cambio " . $stockToTransfer . " " . $componente->nombre . "/s del estado: " . $estadoActual->nombre . " al estado: " . ($estadoExiste->nombre ?? 'Estado no asignado') . ".";
+        $historia->detalle = "Cambió " . $stockToTransfer . " " . $componente->nombre . "/s del estado: " . $estadoActual->nombre . " al estado: " . ($estadoExiste->nombre ?? 'Estado no asignado') . ".";
         $historia->motivo = $motivo;
         $historia->tipo_id = 4; // Tipo de transferencia
         $historia->save();
@@ -373,14 +373,14 @@ class ComponenteController extends Controller
                 if ($mantenimiento) {
                     $historia = new HistoriaModel();
                     $historia->tecnico = $user->name;
-                    $historia->detalle = "uso " . $stockToTransfer . " " . $componente->nombre . "/s " . " en el mantenimieno de la PC: " . $pc_iden_attr . " - " . $pc_nombre_attr . ".";
+                    $historia->detalle = "Usó " . $stockToTransfer . " " . $componente->nombre . "/s " . " en el mantenimiento de la PC: " . $pc_iden_attr . " - " . $pc_nombre_attr . ".";
                     $historia->motivo = $motivo;
                     $historia->tipo_id = 4; // Tipo de transferencia
                     $historia->save();
                 } else {
                     $historia = new HistoriaModel();
                     $historia->tecnico = $user->name;
-                    $historia->detalle = "uso " . $stockToTransfer . " " . $componente->nombre . "/s " . " para el armado de la PC: " . $pc_iden_attr . " - " . $pc_nombre_attr . ".";
+                    $historia->detalle = "Usó " . $stockToTransfer . " " . $componente->nombre . "/s " . " para el armado de la PC: " . $pc_iden_attr . " - " . $pc_nombre_attr . ".";
                     $historia->motivo = $motivo;
                     $historia->tipo_id = 4; // Tipo de transferencia
                     $historia->save();

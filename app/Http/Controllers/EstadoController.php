@@ -36,8 +36,8 @@ class EstadoController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "creo el estado: ".$request->input('addNombre').".";
-        $historia->motivo = "creacion de estado.";
+        $historia->detalle = "Creó el estado: ".$request->input('addNombre').".";
+        $historia->motivo = "Creación de estado.";
         $historia->tipo_id = 6;
         $historia->save();
 
@@ -55,7 +55,7 @@ class EstadoController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "edito el nombre del estado: ".$estado->nombre." a ".$request->input('editNombre').".";
+        $historia->detalle = "Editó el nombre del estado: ".$estado->nombre." a ".$request->input('editNombre').".";
         $historia->motivo = $request->input('editMotivo');
         $historia->tipo_id = 6;
         $historia->save();
@@ -76,7 +76,7 @@ class EstadoController extends Controller
         
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino el estado: ".$estado->nombre.".";
+        $historia->detalle = "Eliminó el estado: ".$estado->nombre.".";
         $historia->motivo = $request->input('removeMotivo');
         $historia->tipo_id = 6;
         $historia->save();
