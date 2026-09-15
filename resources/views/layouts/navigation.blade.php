@@ -1,6 +1,6 @@
 @php($navigationBaseUrl = request()->getBaseUrl())
 
-<nav x-data="{ open: false }" style="background-color: #fff; border-bottom: 2px solid var(--hu-azul);">
+<nav x-data="{ open: false }" style="position: sticky; top: 0; z-index: 1000; background-color: #fff; border-bottom: 2px solid var(--hu-azul); box-shadow: 0 2px 10px rgba(0, 55, 100, 0.08);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center" style="height: 64px;">
 

@@ -17,20 +17,10 @@ class HistoriaModel extends Model
 
     public function getLastDevicesUpdated()
     {
-        // Subconsulta para obtener la última fecha de actualización por componente_id
-        $subquery = HistoriaModel::select('componente_id', DB::raw('MAX(created_at) as max_created_at'))
-            ->whereNotNull('componente_id')
-            ->groupBy('componente_id');
-
-        // Consulta principal con JOIN para obtener los registros más recientes
-        return HistoriaModel::joinSub($subquery, 'latest', function ($join) {
-            $join->on('historia.componente_id', '=', 'latest.componente_id')
-                ->on('historia.created_at', '=', 'latest.max_created_at');
-        })
-            ->select('historia.componente_id', 'historia.tipo_dispositivo', 'historia.created_at')
-            ->distinct() // Aplicar distinct
-            ->orderBy('historia.created_at', 'DESC') // Ordenar por created_at
-            ->limit(3)
+        return HistoriaModel::whereNotNull('componente_id')
+            ->select('componente_id', 'tipo_dispositivo', 'created_at')
+            ->orderBy('created_at', 'DESC')
+            ->limit(4)
             ->get();
     }
 }
