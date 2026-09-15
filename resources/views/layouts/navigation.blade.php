@@ -1,238 +1,344 @@
-<nav x-data="{ open: false }" style="background-color: #fff; border-bottom: 2px solid var(--hu-azul);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center" style="height: 64px;">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-            {{-- Logo --}}
-            <div class="flex items-center gap-6">
-                <a href="{{ route('inicio') }}" class="shrink-0 flex items-center">
-                    <x-hu_logo style="height: 38px; width: auto;" />
-                </a>
+    <title>Inventario Técnica — HU</title>
+    <link rel="icon" href="{{ asset('images/hu_icon.png') }}" type="image/x-icon">
 
-                {{-- Links de navegación (desktop) --}}
-                <div class="hidden sm:flex items-center gap-1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
 
-                    {{-- Inicio --}}
-                    <a href="{{ route('inicio') }}"
-                       class="nav-item {{ request()->routeIs('inicio') ? 'nav-item--active' : '' }}">
-                        Inicio
-                    </a>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-                    {{-- Gestión (dropdown Alpine) --}}
-                    <div x-data="{ openGestion: false }" class="relative">
-                        <button @click="openGestion = !openGestion" @click.outside="openGestion = false"
-                                class="nav-item flex items-center gap-1">
-                            Gestión
-                            <span class="material-symbols-outlined" style="font-size:1rem; transition: transform 0.2s;"
-                                  :style="openGestion ? 'transform: rotate(180deg)' : ''">expand_more</span>
-                        </button>
-                        <div x-show="openGestion" x-transition x-cloak
-                             class="nav-dropdown">
-                            <a href="{{ route('dispositivos') }}" class="nav-dropdown-item">
-                                <span class="material-symbols-outlined nav-dropdown-icon">devices</span>
-                                Dispositivos
-                            </a>
-                            <a href="{{ route('gest_componentes') }}" class="nav-dropdown-item">
-                                <span class="material-symbols-outlined nav-dropdown-icon">inventory_2</span>
-                                Stock
-                            </a>
-                            @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
-                                <div class="nav-dropdown-divider"></div>
-                                <a href="{{ route('gest_areas') }}" class="nav-dropdown-item">
-                                    <span class="material-symbols-outlined nav-dropdown-icon">location_on</span>
-                                    Áreas
-                                </a>
-                                <a href="{{ route('gest_depositos') }}" class="nav-dropdown-item">
-                                    <span class="material-symbols-outlined nav-dropdown-icon">warehouse</span>
-                                    Depósitos
-                                </a>
-                                <a href="{{ route('gest_tipo_componente') }}" class="nav-dropdown-item">
-                                    <span class="material-symbols-outlined nav-dropdown-icon">category</span>
-                                    Categorías
-                                </a>
-                                <a href="{{ route('gest_state') }}" class="nav-dropdown-item">
-                                    <span class="material-symbols-outlined nav-dropdown-icon">flag</span>
-                                    Estados
-                                </a>
-                            @endif
-                        </div>
-                    </div>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-                    <a href="{{ route('historia') }}"
-                       class="nav-item {{ request()->routeIs('historia') ? 'nav-item--active' : '' }}">
-                        Historia
-                    </a>
+    <style>
+        :root {
+            --hu-azul:   #003764;
+            --hu-dorado: #C7A36E;
+            --hu-texto:  #59595B;
+        }
 
-                    <a href="{{ route('reportes') }}"
-                       class="nav-item {{ request()->routeIs('reportes') ? 'nav-item--active' : '' }}">
-                        Reportes
-                    </a>
+        *, *::before, *::after { box-sizing: border-box; }
 
-                </div>
-            </div>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #e8edf3;
+            color: var(--hu-texto);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
 
-            {{-- Usuario (dropdown) --}}
-            <div class="hidden sm:flex items-center">
-                <div x-data="{ openUser: false }" class="relative">
-                    <button @click="openUser = !openUser" @click.outside="openUser = false"
-                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold"
-                            style="color: var(--hu-azul); transition: background 0.15s ease;"
-                            onmouseover="this.style.backgroundColor='#f0f4f8'"
-                            onmouseout="this.style.backgroundColor='transparent'">
-                        <span class="material-symbols-outlined" style="font-size:1.2rem;">account_circle</span>
-                        <span>{{ Auth::user()->name }}</span>
-                        <span style="font-size:0.75rem; color: var(--hu-dorado); font-weight:700;">
-                            {{ Auth::user()->rol->nombre }}
-                        </span>
-                        <span class="material-symbols-outlined" style="font-size:1rem;">expand_more</span>
-                    </button>
-                    <div x-show="openUser" x-transition x-cloak
-                         class="nav-dropdown" style="right:0; left:auto;">
-                        <a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
-                            <span class="material-symbols-outlined nav-dropdown-icon">manage_accounts</span>
-                            Perfil
-                        </a>
-                        <div class="nav-dropdown-divider"></div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="nav-dropdown-item w-100 text-start border-0 bg-transparent"
-                                    style="color: #c62828;">
-                                <span class="material-symbols-outlined nav-dropdown-icon" style="color:#c62828;">logout</span>
-                                Cerrar sesión
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        /* ── Tarjeta principal ── */
+        .auth-card {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            min-height: 520px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 12px 48px rgba(0, 55, 100, .18);
+            overflow: hidden;
+        }
 
-            {{-- Hamburger (mobile) --}}
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = !open"
-                        class="inline-flex items-center justify-center p-2 rounded-md"
-                        style="color: var(--hu-azul);">
-                    <span class="material-symbols-outlined">{{ 'menu' }}</span>
-                </button>
-            </div>
+        /* ── Panel izquierdo: formulario ── */
+        .auth-form-panel {
+            flex: 0 0 420px;
+            padding: 3rem 2.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-logo {
+            display: block;
+            max-width: 180px;
+            margin-bottom: 2rem;
+        }
+
+        .auth-title {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: var(--hu-azul);
+            margin: 0 0 .35rem;
+            line-height: 1.15;
+        }
+
+        .auth-subtitle {
+            font-size: .8rem;
+            color: #8a9ab0;
+            margin: 0 0 2rem;
+            font-weight: 400;
+        }
+
+        /* ── Inputs underline ── */
+        .auth-field {
+            margin-bottom: 1.4rem;
+        }
+
+        .auth-field label {
+            display: block;
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--hu-azul);
+            margin-bottom: .35rem;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+        }
+
+        .auth-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1.5px solid #ccd6e0;
+            border-radius: 0;
+            padding: .45rem 0 .45rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: .875rem;
+            color: var(--hu-texto);
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .auth-input::placeholder { color: #b0bec8; }
+
+        .auth-input:focus {
+            border-bottom-color: var(--hu-azul);
+        }
+
+        .auth-input.is-invalid {
+            border-bottom-color: #dc3545;
+        }
+
+        .invalid-feedback { font-size: .75rem; }
+
+        /* ── Recordarme ── */
+        .auth-remember {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .auth-remember input[type="checkbox"] {
+            accent-color: var(--hu-azul);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .auth-remember label {
+            font-size: .78rem;
+            color: var(--hu-texto);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* ── Botón principal ── */
+        .btn-hu {
+            display: block;
+            width: 100%;
+            background-color: var(--hu-azul);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: .875rem;
+            padding: .7rem 1rem;
+            cursor: pointer;
+            transition: background-color .2s, box-shadow .2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-hu:hover {
+            background-color: #00254a;
+            box-shadow: 0 6px 18px rgba(0, 55, 100, .28);
+            color: #fff;
+        }
+
+        /* ── Link secundario ── */
+        .auth-link {
+            margin-top: 1.25rem;
+            font-size: .78rem;
+            color: var(--hu-texto);
+            text-align: center;
+        }
+
+        .auth-link a {
+            color: var(--hu-azul);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .auth-link a:hover { text-decoration: underline; }
+
+        /* ── Panel derecho: decoración hexagonal ── */
+        .auth-deco-panel {
+            flex: 1;
+            background-color: var(--hu-azul);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-deco-panel svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ── Registro: card más ancha ── */
+        .auth-card.register-card {
+            max-width: 980px;
+        }
+
+        .auth-card.register-card .auth-form-panel {
+            flex: 0 0 520px;
+            padding: 2.5rem 2.75rem;
+        }
+
+        .register-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 1.5rem;
+        }
+
+        .register-role-note {
+            font-size: .72rem;
+            color: #8a9ab0;
+            margin-top: .4rem;
+        }
+
+        .register-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.75rem;
+        }
+
+        .register-actions .btn-hu {
+            width: auto;
+            min-width: 150px;
+            display: inline-block;
+        }
+
+        .register-login-link {
+            font-size: .78rem;
+            color: var(--hu-texto);
+            text-decoration: none;
+        }
+
+        .register-login-link span {
+            color: var(--hu-azul);
+            font-weight: 700;
+        }
+
+        .register-login-link:hover span { text-decoration: underline; }
+
+        /* ── Responsive ── */
+        @media (max-width: 700px) {
+            .auth-deco-panel { display: none; }
+
+            .auth-card,
+            .auth-card.register-card { max-width: 440px; }
+
+            .auth-form-panel,
+            .auth-card.register-card .auth-form-panel {
+                flex: 1;
+                padding: 2.5rem 1.75rem;
+            }
+
+            .register-grid { grid-template-columns: 1fr; }
+
+            .register-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .register-actions .btn-hu { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-card {{ request()->routeIs('register') ? 'register-card' : '' }}">
+
+        {{-- Panel formulario --}}
+        <div class="auth-form-panel">
+
+            <a href="/login">
+                <img src="{{ asset('images/hu_logo.png') }}" alt="Hospital Universitario" class="auth-logo">
+            </a>
+
+            {{ $slot }}
+
         </div>
+
+        {{-- Panel decorativo hexagonal --}}
+        <div class="auth-deco-panel">
+            <svg viewBox="0 0 480 520" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <!-- Hexágono relleno grande - centro derecha -->
+                <polygon points="310,200 370,165 430,200 430,270 370,305 310,270"
+                         fill="#1a5a9a" opacity="0.85"/>
+                <!-- Hexágono relleno mediano - arriba centro -->
+                <polygon points="230,120 275,95 320,120 320,170 275,195 230,170"
+                         fill="#2a70b8" opacity="0.7"/>
+                <!-- Hexágono outline grande - esquina superior derecha -->
+                <polygon points="360,50 420,15 480,50 480,120 420,155 360,120"
+                         fill="none" stroke="#5a9fd4" stroke-width="2" opacity="0.6"/>
+                <!-- Hexágono outline mediano - derecha medio -->
+                <polygon points="400,270 445,245 490,270 490,320 445,345 400,320"
+                         fill="none" stroke="#4a8fc4" stroke-width="1.5" opacity="0.5"/>
+                <!-- Hexágono relleno pequeño - arriba izquierda -->
+                <polygon points="160,80 192,62 224,80 224,116 192,134 160,116"
+                         fill="#3a80c8" opacity="0.6"/>
+                <!-- Hexágono relleno mini - entre mediano y grande arriba -->
+                <polygon points="280,75 303,62 326,75 326,101 303,114 280,101"
+                         fill="#2a70b8" opacity="0.5"/>
+                <!-- Hexágono outline grande - abajo izquierda -->
+                <polygon points="150,340 220,300 290,340 290,420 220,460 150,420"
+                         fill="none" stroke="#4a8fc4" stroke-width="2" opacity="0.4"/>
+                <!-- Hexágono relleno grande - abajo centro -->
+                <polygon points="270,390 340,352 410,390 410,466 340,504 270,466"
+                         fill="#1a5a9a" opacity="0.6"/>
+                <!-- Hexágono relleno mediano - abajo izquierda -->
+                <polygon points="90,400 130,377 170,400 170,446 130,469 90,446"
+                         fill="#2a70b8" opacity="0.5"/>
+                <!-- Hexágono outline pequeño - centro izquierda -->
+                <polygon points="100,230 128,214 156,230 156,262 128,278 100,262"
+                         fill="none" stroke="#5a9fd4" stroke-width="1.5" opacity="0.55"/>
+                <!-- Hexágono mini relleno - disperso arriba derecha -->
+                <polygon points="440,140 458,130 476,140 476,160 458,170 440,160"
+                         fill="#5a9fd4" opacity="0.5"/>
+                <!-- Hexágono mini outline - disperso medio -->
+                <polygon points="185,285 203,275 221,285 221,305 203,315 185,305"
+                         fill="none" stroke="#6aaee4" stroke-width="1.5" opacity="0.5"/>
+                <!-- Hexágono mini relleno - abajo derecha -->
+                <polygon points="430,460 448,450 466,460 466,480 448,490 430,480"
+                         fill="#4a8fc4" opacity="0.45"/>
+                <!-- Hexágono outline mini - arriba izquierda extremo -->
+                <polygon points="60,60 80,49 100,60 100,82 80,93 60,82"
+                         fill="none" stroke="#5a9fd4" stroke-width="1.5" opacity="0.4"/>
+                <!-- Punto decorativo pequeño -->
+                <polygon points="340,310 350,304 360,310 360,322 350,328 340,322"
+                         fill="#5a9fd4" opacity="0.6"/>
+            </svg>
+        </div>
+
     </div>
 
-    {{-- Mobile menu --}}
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden"
-         style="border-top: 1px solid rgba(0,55,100,0.1);">
-        <div class="pt-2 pb-3 space-y-1 px-4">
-            <a href="{{ route('inicio') }}" class="nav-mobile-item">Inicio</a>
-            <a href="{{ route('dispositivos') }}" class="nav-mobile-item">Dispositivos</a>
-            <a href="{{ route('gest_componentes') }}" class="nav-mobile-item">Stock</a>
-            <a href="{{ route('historia') }}" class="nav-mobile-item">Historia</a>
-            <a href="{{ route('reportes') }}" class="nav-mobile-item">Reportes</a>
-            @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
-                <div style="border-top: 1px solid rgba(0,55,100,0.1); margin: 8px 0; padding-top:8px;">
-                    <p style="font-size:0.7rem; font-weight:700; color: var(--hu-dorado); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">
-                        Administración
-                    </p>
-                    <a href="{{ route('gest_areas') }}" class="nav-mobile-item">Áreas</a>
-                    <a href="{{ route('gest_depositos') }}" class="nav-mobile-item">Depósitos</a>
-                    <a href="{{ route('gest_tipo_componente') }}" class="nav-mobile-item">Categorías</a>
-                    <a href="{{ route('gest_state') }}" class="nav-mobile-item">Estados</a>
-                </div>
-            @endif
-        </div>
-        <div style="border-top: 1px solid rgba(0,55,100,0.1);" class="px-4 pt-3 pb-3">
-            <div style="font-weight:700; font-size:0.9rem; color: var(--hu-azul);">{{ Auth::user()->name }}</div>
-            <div style="font-size:0.75rem; color: var(--hu-dorado); font-weight:600;">{{ Auth::user()->rol->nombre }}</div>
-            <div class="mt-2 space-y-1">
-                <a href="{{ route('profile.edit') }}" class="nav-mobile-item">Perfil</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="nav-mobile-item w-100 text-start border-0 bg-transparent"
-                            style="color:#c62828; padding-left:0;">
-                        Cerrar sesión
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</nav>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<style>
-    .nav-item {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.4rem 0.75rem;
-        border-radius: 8px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--hu-texto);
-        text-decoration: none;
-        transition: background-color 0.15s ease, color 0.15s ease;
-    }
-
-    .nav-item:hover {
-        background-color: #f0f4f8;
-        color: var(--hu-azul);
-        text-decoration: none;
-    }
-
-    .nav-item--active {
-        color: var(--hu-azul);
-        background-color: rgba(0, 55, 100, 0.08);
-    }
-
-    .nav-dropdown {
-        position: absolute;
-        top: calc(100% + 6px);
-        left: 0;
-        background: #fff;
-        border: 1px solid rgba(0, 55, 100, 0.12);
-        border-radius: 10px;
-        box-shadow: 0 8px 24px rgba(0, 55, 100, 0.12);
-        min-width: 200px;
-        padding: 6px;
-        z-index: 50;
-    }
-
-    .nav-dropdown-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0.5rem 0.75rem;
-        border-radius: 7px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--hu-texto);
-        text-decoration: none;
-        transition: background-color 0.15s ease, color 0.15s ease;
-        cursor: pointer;
-    }
-
-    .nav-dropdown-item:hover {
-        background-color: #f0f4f8;
-        color: var(--hu-azul);
-        text-decoration: none;
-    }
-
-    .nav-dropdown-icon {
-        font-size: 1rem;
-        color: var(--hu-azul);
-    }
-
-    .nav-dropdown-divider {
-        border-top: 1px solid rgba(0, 55, 100, 0.08);
-        margin: 4px 0;
-    }
-
-    .nav-mobile-item {
-        display: block;
-        padding: 0.5rem 0;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--hu-texto);
-        text-decoration: none;
-        border-radius: 6px;
-        transition: color 0.15s ease;
-    }
-
-    .nav-mobile-item:hover {
-        color: var(--hu-azul);
-        text-decoration: none;
-    }
-</style>
+</body>
+</html>
