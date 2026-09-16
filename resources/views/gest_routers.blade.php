@@ -2,7 +2,7 @@
 
 <x-app-layout>
     @php
-        $rolActual = optional(Auth::user()->rol)->nombre ?? 'Sin rol';
+        $rolActual = data_get(Auth::user(), 'rol.nombre');
     @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-lg leading-tight" style="color: var(--hu-azul);">

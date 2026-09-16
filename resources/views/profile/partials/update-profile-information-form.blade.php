@@ -36,7 +36,7 @@
             <div>
                 <label class="hu-profile-label">Rol</label>
                 <input type="text" name="rol" id="rol"
-                       value="{{ old('rol', Auth::user()->rol->nombre) }}"
+                       value="{{ old('rol', $user->rol?->label()) }}"
                        class="hu-profile-input hu-profile-input--readonly"
                        readonly>
                 <p class="hu-profile-hint">

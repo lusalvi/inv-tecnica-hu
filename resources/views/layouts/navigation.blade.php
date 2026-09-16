@@ -1,4 +1,5 @@
 @php($navigationBaseUrl = request()->getBaseUrl())
+@php($rolActual = data_get(Auth::user(), 'rol.nombre'))
 
 <nav x-data="{ open: false }" style="position: sticky; top: 0; z-index: 1000; background-color: #fff; border-bottom: 2px solid var(--hu-azul); box-shadow: 0 2px 10px rgba(0, 55, 100, 0.08);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,7 +38,7 @@
                                 <span class="material-symbols-outlined nav-dropdown-icon">inventory_2</span>
                                 Stock
                             </a>
-                            @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
+                            @if (in_array($rolActual, ['Administrador', 'Super administrador'], true))
                                 <div class="nav-dropdown-divider"></div>
                                 <a href="{{ $navigationBaseUrl . route('gest_areas', [], false) }}" class="nav-dropdown-item">
                                     <span class="material-symbols-outlined nav-dropdown-icon">location_on</span>
@@ -83,7 +84,7 @@
                         <span class="material-symbols-outlined" style="font-size:1.2rem;">account_circle</span>
                         <span>{{ Auth::user()->name }}</span>
                         <span style="font-size:0.75rem; color: var(--hu-dorado); font-weight:700;">
-                            {{ Auth::user()->rol->nombre }}
+                            {{ Auth::user()->rol?->label() ?: 'Sin rol' }}
                         </span>
                         <span class="material-symbols-outlined" style="font-size:1rem;">expand_more</span>
                     </button>
@@ -126,7 +127,7 @@
             <a href="{{ $navigationBaseUrl . route('gest_componentes', [], false) }}" class="nav-mobile-item">Stock</a>
             <a href="{{ $navigationBaseUrl . route('historia', [], false) }}" class="nav-mobile-item">Historia</a>
             <a href="{{ $navigationBaseUrl . route('reportes', [], false) }}" class="nav-mobile-item">Reportes</a>
-            @if (Auth::user()->rol->nombre === 'Administrador' || Auth::user()->rol->nombre === 'Super administrador')
+            @if (in_array($rolActual, ['Administrador', 'Super administrador'], true))
                 <div style="border-top: 1px solid rgba(0,55,100,0.1); margin: 8px 0; padding-top:8px;">
                     <p style="font-size:0.7rem; font-weight:700; color: var(--hu-dorado); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">
                         Administración
@@ -140,7 +141,7 @@
         </div>
         <div style="border-top: 1px solid rgba(0,55,100,0.1);" class="px-4 pt-3 pb-3">
             <div style="font-weight:700; font-size:0.9rem; color: var(--hu-azul);">{{ Auth::user()->name }}</div>
-            <div style="font-size:0.75rem; color: var(--hu-dorado); font-weight:600;">{{ Auth::user()->rol->nombre }}</div>
+            <div style="font-size:0.75rem; color: var(--hu-dorado); font-weight:600;">{{ Auth::user()->rol?->label() ?: 'Sin rol' }}</div>
             <div class="mt-2 space-y-1">
                 <a href="{{ $navigationBaseUrl . route('profile.edit', [], false) }}" class="nav-mobile-item">Perfil</a>
                 <form method="POST" action="{{ $navigationBaseUrl . route('logout', [], false) }}">
