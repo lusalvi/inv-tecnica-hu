@@ -30,11 +30,13 @@
 
             {{-- Barra de filtros --}}
             <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
-                <button id="filterButton" class="btn btn-hu-outline btn-sm">
-                    <span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">filter_list</span>
+                <button type="button" id="filterButton" class="btn btn-hu-outline btn-sm">
+                    <span class="material-symbols-outlined"
+                        style="font-size:15px;vertical-align:middle;">filter_list</span>
                     Filtrar
                 </button>
-                <button id="deleteFilters" class="btn btn-sm" style="display:none;border:none;color:var(--hu-texto);">
+                <button type="button" id="deleteFilters" class="btn btn-sm"
+                    style="display:none;border:none;color:var(--hu-texto);">
                     <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">cancel</span>
                     Limpiar filtros
                 </button>
@@ -44,7 +46,8 @@
                 <div class="row g-3 align-items-end">
                     {{-- Filtro técnico --}}
                     <div class="col-auto">
-                        <label for="filtro-tecnicos" class="form-label fw-semibold" style="font-size:.82rem;">Técnico</label>
+                        <label for="filtro-tecnicos" class="form-label fw-semibold"
+                            style="font-size:.82rem;">Técnico</label>
                         <select id="filtro-tecnicos" class="form-select form-select-sm" style="min-width:180px;">
                             <option value="">Todos</option>
                             @foreach ($users as $user)
@@ -59,7 +62,8 @@
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <div class="form-check mb-0">
                                 <input class="form-check-input" type="checkbox" id="filter-range">
-                                <label class="form-check-label" for="filter-range" style="font-size:.82rem;">Rango</label>
+                                <label class="form-check-label" for="filter-range"
+                                    style="font-size:.82rem;">Rango</label>
                             </div>
                         </div>
                         <div id="date-filters">
@@ -100,100 +104,108 @@
     </div>
 
     @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.css">
     @endpush
 
     @push('vendor-scripts')
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.js"></script>
     @endpush
 
     @push('scripts')
-    <script>
-    $(document).ready(function () {
-        // Toggle rango / fecha única
-        $('#filter-range').on('change', function () {
-            if ($(this).is(':checked')) {
-                $('#date-filters').hide();
-                $('#range-filters').show();
-            } else {
-                $('#range-filters').hide();
-                $('#date-filters').show();
-            }
-        });
+        <script>
+            $(document).ready(function() {
+                // Toggle rango / fecha única
+                $('#filter-range').on('change', function() {
+                    if ($(this).is(':checked')) {
+                        $('#date-filters').hide();
+                        $('#range-filters').show();
+                    } else {
+                        $('#range-filters').hide();
+                        $('#date-filters').show();
+                    }
+                });
 
-        // DataTable
-        var his_table = $('#table_historias_local').DataTable({
-            order: [[3, 'desc']],
-            responsive: true,
-            lengthChange: true,
-            autoWidth: true,
-            language: {
-                emptyTable: 'No hay datos disponibles en la tabla',
-                info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
-                infoEmpty: 'Mostrando 0 a 0 de 0 entradas',
-                infoFiltered: '(filtrado de _MAX_ entradas totales)',
-                lengthMenu: '_MENU_',
-                loadingRecords: 'Cargando...',
-                processing: 'Procesando...',
-                search: 'Buscar:',
-                zeroRecords: 'No se encontraron registros coincidentes',
-                paginate: { first: 'Primero', last: 'Último', next: 'Siguiente', previous: 'Anterior' }
-            }
-        });
+                // DataTable
+                var his_table = $('#table_historias_local').DataTable({
+                    order: [
+                        [3, 'desc']
+                    ],
+                    responsive: true,
+                    lengthChange: true,
+                    autoWidth: true,
+                    language: {
+                        emptyTable: 'No hay datos disponibles en la tabla',
+                        info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+                        infoEmpty: 'Mostrando 0 a 0 de 0 entradas',
+                        infoFiltered: '(filtrado de _MAX_ entradas totales)',
+                        lengthMenu: '_MENU_',
+                        loadingRecords: 'Cargando...',
+                        processing: 'Procesando...',
+                        search: 'Buscar:',
+                        zeroRecords: 'No se encontraron registros coincidentes',
+                        paginate: {
+                            first: 'Primero',
+                            last: 'Último',
+                            next: 'Siguiente',
+                            previous: 'Anterior'
+                        }
+                    }
+                });
 
-        function normalizeDate(dateString) {
-            return moment(dateString, 'YYYY-MM-DD').startOf('day');
-        }
-
-        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-            var filterType = $('#filter-range').is(':checked') ? 'range' : 'single';
-            var date = normalizeDate(data[3]);
-
-            var tecnicoFilter = $('#filtro-tecnicos').val();
-            if (tecnicoFilter && data[0] !== tecnicoFilter) return false;
-
-            if (filterType === 'single') {
-                var singleDate = normalizeDate($('#date').val());
-                if (!singleDate.isValid()) return true;
-                return date.isSame(singleDate, 'day');
-            } else {
-                var startDate = normalizeDate($('#start-date').val());
-                var endDate   = normalizeDate($('#end-date').val());
-                if ((!startDate.isValid() && !endDate.isValid()) ||
-                    (!startDate.isValid() && date.isSameOrBefore(endDate)) ||
-                    (startDate.isSameOrBefore(date) && !endDate.isValid()) ||
-                    (startDate.isSameOrBefore(date) && date.isSameOrBefore(endDate))) {
-                    return true;
+                function normalizeDate(dateString) {
+                    return moment(dateString, 'YYYY-MM-DD').startOf('day');
                 }
-                return false;
-            }
-        });
 
-        $('#date, #start-date, #end-date, #filter-range, #filtro-tecnicos').on('change', function () {
-            his_table.draw();
-        });
+                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                    var filterType = $('#filter-range').is(':checked') ? 'range' : 'single';
+                    var date = normalizeDate(data[3]);
 
-        $('#filterButton').on('click', function () {
-            var $filterDiv = $('#filter-div');
-            var $deleteFilters = $('#deleteFilters');
-            if ($filterDiv.is(':hidden')) {
-                $filterDiv.show();
-                $deleteFilters.show();
-            } else {
-                $filterDiv.hide();
-                $deleteFilters.hide();
-            }
-        });
+                    var tecnicoFilter = $('#filtro-tecnicos').val();
+                    if (tecnicoFilter && data[0] !== tecnicoFilter) return false;
 
-        $('#deleteFilters').on('click', function () {
-            $('#filtro-tecnicos, #filter-range, #date, #start-date, #end-date').val(null).trigger('change');
-        });
-    });
-    </script>
+                    if (filterType === 'single') {
+                        var singleDate = normalizeDate($('#date').val());
+                        if (!singleDate.isValid()) return true;
+                        return date.isSame(singleDate, 'day');
+                    } else {
+                        var startDate = normalizeDate($('#start-date').val());
+                        var endDate = normalizeDate($('#end-date').val());
+                        if ((!startDate.isValid() && !endDate.isValid()) ||
+                            (!startDate.isValid() && date.isSameOrBefore(endDate)) ||
+                            (startDate.isSameOrBefore(date) && !endDate.isValid()) ||
+                            (startDate.isSameOrBefore(date) && date.isSameOrBefore(endDate))) {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+                $('#date, #start-date, #end-date, #filter-range, #filtro-tecnicos').on('change', function() {
+                    his_table.draw();
+                });
+
+                $('#filterButton').on('click', function() {
+                    var $filterDiv = $('#filter-div');
+                    var $deleteFilters = $('#deleteFilters');
+                    if ($filterDiv.is(':hidden')) {
+                        $filterDiv.show();
+                        $deleteFilters.show();
+                    } else {
+                        $filterDiv.hide();
+                        $deleteFilters.hide();
+                    }
+                });
+
+                $('#deleteFilters').on('click', function() {
+                    $('#filtro-tecnicos, #filter-range, #date, #start-date, #end-date').val(null).trigger(
+                        'change');
+                });
+            });
+        </script>
     @endpush
 
 </x-app-layout>

@@ -235,7 +235,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="3"
                                 checked><span>Fecha</span></label>
                     </div>
-                    <button id="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -332,7 +332,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="4"
                                 checked><span>Estado</span></label>
                     </div>
-                    <button id="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -382,7 +382,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="6"
                                 checked><span>Ubicación detallada</span></label>
                     </div>
-                    <button id="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -436,7 +436,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="6"
                                 checked><span>Área</span></label>
                     </div>
-                    <button id="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -490,7 +490,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="6"
                                 checked><span>Área</span></label>
                     </div>
-                    <button id="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -540,7 +540,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="4"
                                 checked><span>Área</span></label>
                     </div>
-                    <button id="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -868,7 +868,7 @@
                     }
                 });
 
-                $(document).on('click', '#exportHistorias', function() {
+                $(document).on('click', '.exportHistorias', function() {
                     var data = table.rows().data().toArray();
                     var columnNames = table.columns().header().toArray().map(h => $(h).text());
                     var selectedColumns = [];
@@ -957,34 +957,34 @@
                     });
 
                 $(document).on('change', '#filtro-deposito, #filtro-estado, #filtro-categoria, #filtro-stock',
-                function() {
-                    $('.column-toggle').prop('checked', true);
-                    $.ajax({
-                        url: @json(route('filter_stock', [], false)),
-                        method: 'GET',
-                        data: {
-                            deposito: $('#filtro-deposito').val(),
-                            estado: $('#filtro-estado').val(),
-                            categoria: $('#filtro-categoria').val(),
-                            stock: $('#filtro-stock').val(),
-                        },
-                        success: function(data) {
-                            if (table) table.destroy();
-                            $('#table-componentes tbody').empty();
-                            $.each(data, function(i, c) {
-                                $('#table-componentes tbody').append(
-                                    `<tr><td>${c.categoria}</td><td>${c.nombre}</td><td>${c.deposito}</td><td>${c.stock}</td><td>${c.estado}</td></tr>`
-                                );
-                            });
-                            table = $('#table-componentes').DataTable({
-                                paging: false,
-                                searching: false,
-                                info: false,
-                                autoWidth: true
-                            });
-                        }
+                    function() {
+                        $('.column-toggle').prop('checked', true);
+                        $.ajax({
+                            url: @json(route('filter_stock', [], false)),
+                            method: 'GET',
+                            data: {
+                                deposito: $('#filtro-deposito').val(),
+                                estado: $('#filtro-estado').val(),
+                                categoria: $('#filtro-categoria').val(),
+                                stock: $('#filtro-stock').val(),
+                            },
+                            success: function(data) {
+                                if (table) table.destroy();
+                                $('#table-componentes tbody').empty();
+                                $.each(data, function(i, c) {
+                                    $('#table-componentes tbody').append(
+                                        `<tr><td>${c.categoria}</td><td>${c.nombre}</td><td>${c.deposito}</td><td>${c.stock}</td><td>${c.estado}</td></tr>`
+                                    );
+                                });
+                                table = $('#table-componentes').DataTable({
+                                    paging: false,
+                                    searching: false,
+                                    info: false,
+                                    autoWidth: true
+                                });
+                            }
+                        });
                     });
-                });
             });
         </script>
     @endpush

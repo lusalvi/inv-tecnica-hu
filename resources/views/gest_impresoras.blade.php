@@ -1,6 +1,9 @@
 <?php use App\Models\ComponenteModel; ?>
 
 <x-app-layout>
+    @php
+        $rolActual = optional(Auth::user()->rol)->nombre ?? 'Sin rol';
+    @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-lg leading-tight" style="color: var(--hu-azul);">
             Impresoras
@@ -351,13 +354,11 @@
                                 style="font-size:15px;color:var(--hu-azul);">search</span>
                         </span>
                         <input type="text" id="buscador" class="form-control" placeholder="Buscar..."
-                           style="border:0;box-shadow:none;">
+                            style="border:0;box-shadow:none;">
                     </div>
-                    @if (Auth::user()->rol->nombre == 'Administrador' ||
-                            Auth::user()->rol->nombre == 'Super administrador' ||
-                            Auth::user()->rol->nombre == 'Tecnico')
-                        <button class="btn btn-hu btn-sm" data-bs-toggle="modal" data-bs-target="#addModal"
-                            style="min-width: 180px; white-space: nowrap;">
+                    @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
+                        <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#addModal" style="min-width: 180px; white-space: nowrap;">
                             <span class="material-symbols-outlined"
                                 style="font-size:16px;vertical-align:middle;">add</span>
                             Cargar impresora
@@ -401,7 +402,7 @@
                         </div>
 
                         <div class="d-flex gap-1 mt-auto pt-2">
-                            <button class="btn btn-hu btn-sm flex-fill infoBtn" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-hu btn-sm flex-fill infoBtn" data-bs-toggle="modal"
                                 data-bs-target="#infoImpModal" data-id="{{ $impresora->id }}"
                                 data-identificador="{{ $impresora->identificador }}"
                                 data-nombre="{{ $impresora->nombre }}" data-ip="{{ $impresora->ip }}"
@@ -413,11 +414,10 @@
                                 <span class="material-symbols-outlined" style="font-size:14px;">info</span>
                             </button>
 
-                            @if (Auth::user()->rol->nombre == 'Administrador' ||
-                                    Auth::user()->rol->nombre == 'Super administrador' ||
-                                    Auth::user()->rol->nombre == 'Tecnico')
-                                <button class="btn btn-hu btn-sm flex-fill maintenanceBtn" data-bs-toggle="modal"
-                                    data-bs-target="#editImpModal" data-id="{{ $impresora->id }}"
+                            @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
+                                <button type="button" class="btn btn-hu btn-sm flex-fill maintenanceBtn"
+                                    data-bs-toggle="modal" data-bs-target="#editImpModal"
+                                    data-id="{{ $impresora->id }}"
                                     data-identificador="{{ $impresora->identificador }}"
                                     data-nombre="{{ $impresora->nombre }}" data-ip="{{ $impresora->ip }}"
                                     data-area="{{ $impresora->area_id }}"
@@ -429,15 +429,15 @@
                                 </button>
                             @endif
 
-                            <button class="btn btn-hu btn-sm flex-fill historyBtn" data-bs-toggle="modal"
-                                data-bs-target="#historyImpModal" data-id="{{ $impresora->id }}"
-                                data-nro_inv="{{ $impresora->identificador }}"
+                            <button type="button" class="btn btn-hu btn-sm flex-fill historyBtn"
+                                data-bs-toggle="modal" data-bs-target="#historyImpModal"
+                                data-id="{{ $impresora->id }}" data-nro_inv="{{ $impresora->identificador }}"
                                 data-nombre="{{ $impresora->nombre }}" data-tipo="Impresora" title="Historial">
                                 <span class="material-symbols-outlined" style="font-size:14px;">history</span>
                             </button>
 
-                            @if (Auth::user()->rol->nombre == 'Super administrador')
-                                <button class="btn btn-danger btn-sm flex-fill" data-bs-toggle="modal"
+                            @if ($rolActual === 'Super administrador')
+                                <button type="button" class="btn btn-danger btn-sm flex-fill" data-bs-toggle="modal"
                                     data-bs-target="#deleteModal" data-id="{{ $impresora->id }}" title="Eliminar">
                                     <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
                                 </button>
@@ -457,16 +457,16 @@
     </div>
 
     @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     @endpush
 
     @push('vendor-scripts')
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.1.0/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.1.0/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     @endpush
 
     @push('scripts')

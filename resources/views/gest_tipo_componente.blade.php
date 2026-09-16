@@ -1,4 +1,7 @@
 <x-app-layout>
+    @php
+        $rolActual = optional(Auth::user()->rol)->nombre ?? 'Sin rol';
+    @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-lg leading-tight" style="color: var(--hu-azul);">
             Categorías
@@ -36,7 +39,8 @@
                     <form action="{{ route('store_tipo') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="addNombre" class="form-label fw-semibold" style="font-size:.85rem;">Nombre</label>
+                            <label for="addNombre" class="form-label fw-semibold"
+                                style="font-size:.85rem;">Nombre</label>
                             <input type="text" class="form-control @error('addNombre') is-invalid @enderror"
                                 id="addNombre" name="addNombre" required>
                         </div>
@@ -61,18 +65,23 @@
                         @csrf
                         <input type="hidden" id="editId" name="editId">
                         <div class="mb-3">
-                            <label for="editNombre" class="form-label fw-semibold" style="font-size:.85rem;">Nombre</label>
+                            <label for="editNombre" class="form-label fw-semibold"
+                                style="font-size:.85rem;">Nombre</label>
                             <input type="text" class="form-control @error('editNombre') is-invalid @enderror"
                                 id="editNombre" name="editNombre" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editMotivo" class="form-label fw-semibold" style="font-size:.85rem;">Motivo del cambio</label>
+                            <label for="editMotivo" class="form-label fw-semibold" style="font-size:.85rem;">Motivo del
+                                cambio</label>
                             <input type="text" class="form-control @error('editMotivo') is-invalid @enderror"
                                 id="editMotivo" name="editMotivo" required>
                         </div>
-                        <div class="p-2 rounded-2 mb-3" style="background:#FEF2F2;border:1px solid #FECACA;font-size:.82rem;color:#991B1B;">
-                            <span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">warning</span>
-                            Al cambiar el nombre de la categoría, no podrás encontrar los componentes vinculados a ella al armar una PC o impresora.
+                        <div class="p-2 rounded-2 mb-3"
+                            style="background:#FEF2F2;border:1px solid #FECACA;font-size:.82rem;color:#991B1B;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:15px;vertical-align:middle;">warning</span>
+                            Al cambiar el nombre de la categoría, no podrás encontrar los componentes vinculados a ella
+                            al armar una PC o impresora.
                         </div>
                         <button type="submit" class="btn btn-hu w-100">Guardar cambios</button>
                     </form>
@@ -94,16 +103,20 @@
                         @csrf
                         <input type="hidden" id="deleteId" name="deleteId">
                         <div class="mb-3">
-                            <label for="removeMotivo" class="form-label fw-semibold" style="font-size:.85rem;">Motivo</label>
+                            <label for="removeMotivo" class="form-label fw-semibold"
+                                style="font-size:.85rem;">Motivo</label>
                             <input type="text" class="form-control @error('removeMotivo') is-invalid @enderror"
                                 id="removeMotivo" name="removeMotivo" required>
                         </div>
-                        <div class="p-2 rounded-2 mb-3" style="background:#FEF2F2;border:1px solid #FECACA;font-size:.82rem;color:#991B1B;">
-                            <span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">warning</span>
+                        <div class="p-2 rounded-2 mb-3"
+                            style="background:#FEF2F2;border:1px solid #FECACA;font-size:.82rem;color:#991B1B;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:15px;vertical-align:middle;">warning</span>
                             Todos los componentes asociados a esta categoría se desvincularán de la misma.
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-hu-outline flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-hu-outline flex-fill"
+                                data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-danger flex-fill">Eliminar</button>
                         </div>
                     </form>
@@ -116,61 +129,69 @@
     <div class="px-4 px-md-5 py-4" style="max-width:1400px;margin:0 auto;">
 
         @error('addNombre')
-            <div class="p-2 rounded-2 mb-3" style="background:#FEF2F2;border:1px solid #FECACA;font-size:.85rem;color:#991B1B;">{{ $message }}</div>
+            <div class="alert-hu-error mb-3">{{ $message }}</div>
         @enderror
         @if (session('success'))
-            <div class="p-2 rounded-2 mb-3" style="background:#F0FDF4;border:1px solid #BBF7D0;font-size:.85rem;color:#166534;">{{ session('success') }}</div>
+            <div class="alert-hu-success mb-3">{{ session('success') }}</div>
         @endif
 
         <div class="bg-white rounded-3 p-4" style="box-shadow:0 2px 12px rgba(0,55,100,.08);">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="fw-semibold" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--hu-azul);">
+                <span class="fw-semibold"
+                    style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--hu-azul);">
                     Listado de categorías
                 </span>
-                <button class="btn btn-hu btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
+                <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
                     <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">add</span>
                     Nueva categoría
                 </button>
             </div>
 
-            <div class="table-responsive">
-                <table id="table" class="table table-bordered table-striped w-100">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th style="width:120px;">Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($tipos as $tipo)
+            @if ($tipos->isEmpty())
+                <div class="hu-empty-state mt-3">
+                    <span class="material-symbols-outlined">category</span>
+                    <p>No hay categorías cargadas todavía.</p>
+                </div>
+            @else
+                <div class="table-responsive">
+                    <table id="table" class="table table-bordered table-striped w-100">
+                        <thead>
                             <tr>
-                                <td><b>{{ $tipo->nombre }}</b></td>
-                                <td>
-                                    <div class="d-flex justify-content-end gap-1">
-                                        <button class="btn btn-hu btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#editModal"
-                                            data-id="{{ $tipo->id }}"
-                                            data-nombre="{{ $tipo->nombre }}"
-                                            title="Editar">
-                                            <span class="material-symbols-outlined" style="font-size:15px;">edit</span>
-                                        </button>
-                                        @if (Auth::user()->rol->nombre == 'Super administrador')
-                                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal"
-                                                data-id="{{ $tipo->id }}"
-                                                title="Eliminar">
-                                                <span class="material-symbols-outlined" style="font-size:15px;">delete</span>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
+                                <th>Nombre</th>
+                                <th style="width:120px;">Opciones</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @foreach ($tipos as $tipo)
+                                <tr>
+                                    <td><b>{{ $tipo->nombre }}</b></td>
+                                    <td>
+                                        <div class="d-flex justify-content-end gap-1">
+                                            <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#editModal" data-id="{{ $tipo->id }}"
+                                                data-nombre="{{ $tipo->nombre }}" title="Editar">
+                                                <span class="material-symbols-outlined"
+                                                    style="font-size:15px;">edit</span>
+                                            </button>
+                                            @if ($rolActual === 'Super administrador')
+                                                <button type="button" class="btn btn-danger btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                    data-id="{{ $tipo->id }}" title="Eliminar">
+                                                    <span class="material-symbols-outlined"
+                                                        style="font-size:15px;">delete</span>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
 
-            <h2 class="mt-4 mb-3 fw-semibold" style="font-size:1rem;color:var(--hu-azul);border-top:2px solid var(--hu-azul);padding-top:1rem;">
+            <h2 class="mt-4 mb-3 fw-semibold"
+                style="font-size:1rem;color:var(--hu-azul);border-top:2px solid var(--hu-azul);padding-top:1rem;">
                 Historial de cambios
             </h2>
             <div class="table-responsive">
@@ -199,18 +220,18 @@
     </div>
 
     @push('scripts')
-    <script>
-    $(document).ready(function () {
-        $('#editModal').on('show.bs.modal', function (event) {
-            const btn = $(event.relatedTarget);
-            $(this).find('#editId').val(btn.data('id'));
-            $(this).find('#editNombre').val(btn.data('nombre'));
-        });
-        $('#deleteModal').on('show.bs.modal', function (event) {
-            $(this).find('#deleteId').val($(event.relatedTarget).data('id'));
-        });
-    });
-    </script>
+        <script>
+            $(document).ready(function() {
+                $('#editModal').on('show.bs.modal', function(event) {
+                    const btn = $(event.relatedTarget);
+                    $(this).find('#editId').val(btn.data('id'));
+                    $(this).find('#editNombre').val(btn.data('nombre'));
+                });
+                $('#deleteModal').on('show.bs.modal', function(event) {
+                    $(this).find('#deleteId').val($(event.relatedTarget).data('id'));
+                });
+            });
+        </script>
     @endpush
 
 </x-app-layout>
