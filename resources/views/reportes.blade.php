@@ -235,7 +235,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="3"
                                 checked><span>Fecha</span></label>
                     </div>
-                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias btn btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -332,7 +332,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="4"
                                 checked><span>Estado</span></label>
                     </div>
-                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias btn btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -382,7 +382,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="6"
                                 checked><span>Ubicación detallada</span></label>
                     </div>
-                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias btn btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -436,7 +436,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="6"
                                 checked><span>Área</span></label>
                     </div>
-                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias btn btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -490,7 +490,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="6"
                                 checked><span>Área</span></label>
                     </div>
-                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias btn btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -540,7 +540,7 @@
                         <label class="rep-toggle"><input class="column-toggle" type="checkbox" data-column="4"
                                 checked><span>Área</span></label>
                     </div>
-                    <button type="button" class="exportHistorias" class="btn-hu-outline rep-export-btn">
+                    <button type="button" class="exportHistorias btn btn-hu-outline rep-export-btn">
                         <span class="material-symbols-outlined"
                             style="font-size:1rem; vertical-align:middle;">download</span>
                         Exportar Excel
@@ -830,14 +830,20 @@
                             paging: false,
                             searching: false,
                             info: false,
-                            autoWidth: true
+                            autoWidth: true,
+                            language: {
+                                emptyTable: 'No hay datos disponibles en la tabla.'
+                            }
                         });
                     } else {
                         table = $('#table-' + getTableId()).DataTable({
                             paging: false,
                             searching: false,
                             info: false,
-                            autoWidth: true
+                            autoWidth: true,
+                            language: {
+                                emptyTable: 'No hay datos disponibles en la tabla.'
+                            }
                         });
                     }
 
@@ -950,7 +956,10 @@
                                     paging: false,
                                     searching: false,
                                     info: false,
-                                    autoWidth: true
+                                    autoWidth: true,
+                                    language: {
+                                        emptyTable: 'No hay datos disponibles en la tabla.'
+                                    }
                                 });
                             }
                         });
@@ -980,7 +989,10 @@
                                     paging: false,
                                     searching: false,
                                     info: false,
-                                    autoWidth: true
+                                    autoWidth: true,
+                                    language: {
+                                        emptyTable: 'No hay datos disponibles en la tabla.'
+                                    }
                                 });
                             }
                         });

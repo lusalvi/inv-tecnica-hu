@@ -157,7 +157,7 @@
                         <tbody>
                             @foreach ($areas as $area)
                                 <tr>
-                                    <td><b>{{ $area->nombre }}</b></td>
+                                    <td>{{ $area->nombre }}</td>
                                     <td>
                                         <div class="d-flex justify-content-end gap-1">
                                             <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"

@@ -30,19 +30,30 @@
 
             {{-- Barra de filtros --}}
             <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
-                <button type="button" id="filterButton" class="btn btn-hu-outline btn-sm">
+                <button type="button" id="filterButton" class="btn btn-hu-outline btn-sm"
+                    style="border:1px solid var(--hu-azul);">
                     <span class="material-symbols-outlined"
                         style="font-size:15px;vertical-align:middle;">filter_list</span>
                     Filtrar
                 </button>
-                <button type="button" id="deleteFilters" class="btn btn-sm"
-                    style="display:none;border:none;color:var(--hu-texto);">
-                    <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">cancel</span>
+                <button type="button" id="deleteFilters"
+                    class="btn btn-hu-outline btn-sm d-none align-items-center gap-1">
+                    <span class="material-symbols-outlined"
+                        style="font-size:16px;line-height:1;">close</span>
                     Limpiar filtros
                 </button>
+                <div class="input-group input-group-sm ms-auto"
+                    style="max-width:220px;border:1px solid #ced4da;border-radius:.375rem;">
+                    <span class="input-group-text" style="background:#fff;border:0;">
+                        <span class="material-symbols-outlined"
+                            style="font-size:15px;color:var(--hu-azul);">search</span>
+                    </span>
+                    <input type="text" id="history-search" class="form-control" placeholder="Buscar..."
+                        style="border:0;box-shadow:none;">
+                </div>
             </div>
 
-            <div id="filter-div" style="display:none;" class="mb-3">
+            <div id="filter-div" class="d-none mb-3 p-3 rounded-3" style="background:#F4F6F9;">
                 <div class="row g-3 align-items-end">
                     {{-- Filtro técnico --}}
                     <div class="col-auto">
@@ -59,19 +70,19 @@
                     {{-- Filtro fecha --}}
                     <div class="col-auto">
                         <label class="form-label fw-semibold" style="font-size:.82rem;">Fecha</label>
-                        <div class="d-flex align-items-center gap-2 mb-1">
+                        <div class="d-flex align-items-center gap-2">
                             <div class="form-check mb-0">
                                 <input class="form-check-input" type="checkbox" id="filter-range">
                                 <label class="form-check-label" for="filter-range"
                                     style="font-size:.82rem;">Rango</label>
                             </div>
-                        </div>
-                        <div id="date-filters">
-                            <input class="form-control form-control-sm" type="date" id="date">
-                        </div>
-                        <div id="range-filters" style="display:none;" class="d-flex gap-2">
-                            <input class="form-control form-control-sm" type="date" id="start-date">
-                            <input class="form-control form-control-sm" type="date" id="end-date">
+                            <div id="date-filters">
+                                <input class="form-control form-control-sm" type="date" id="date">
+                            </div>
+                            <div id="range-filters" class="d-none gap-2">
+                                <input class="form-control form-control-sm" type="date" id="start-date">
+                                <input class="form-control form-control-sm" type="date" id="end-date">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -121,11 +132,11 @@
                 // Toggle rango / fecha única
                 $('#filter-range').on('change', function() {
                     if ($(this).is(':checked')) {
-                        $('#date-filters').hide();
-                        $('#range-filters').show();
+                        $('#date-filters').addClass('d-none');
+                        $('#range-filters').removeClass('d-none').addClass('d-flex');
                     } else {
-                        $('#range-filters').hide();
-                        $('#date-filters').show();
+                        $('#range-filters').removeClass('d-flex').addClass('d-none');
+                        $('#date-filters').removeClass('d-none');
                     }
                 });
 
@@ -134,11 +145,12 @@
                     order: [
                         [3, 'desc']
                     ],
+                    dom: 'lrtip',
                     responsive: true,
                     lengthChange: true,
                     autoWidth: true,
                     language: {
-                        emptyTable: 'No hay datos disponibles en la tabla',
+                        emptyTable: 'No hay datos disponibles en la tabla.',
                         info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
                         infoEmpty: 'Mostrando 0 a 0 de 0 entradas',
                         infoFiltered: '(filtrado de _MAX_ entradas totales)',
@@ -186,23 +198,34 @@
 
                 $('#date, #start-date, #end-date, #filter-range, #filtro-tecnicos').on('change', function() {
                     his_table.draw();
+                    updateClearFiltersButton();
                 });
 
                 $('#filterButton').on('click', function() {
                     var $filterDiv = $('#filter-div');
-                    var $deleteFilters = $('#deleteFilters');
-                    if ($filterDiv.is(':hidden')) {
-                        $filterDiv.show();
-                        $deleteFilters.show();
-                    } else {
-                        $filterDiv.hide();
-                        $deleteFilters.hide();
-                    }
+                    var visible = !$filterDiv.hasClass('d-none');
+                    $filterDiv.toggleClass('d-none', visible);
                 });
 
+                function updateClearFiltersButton() {
+                    var hasActiveFilters = $('#filtro-tecnicos').val() ||
+                        $('#date').val() ||
+                        $('#start-date').val() ||
+                        $('#end-date').val();
+
+                    $('#deleteFilters').toggleClass('d-none', !hasActiveFilters)
+                        .toggleClass('d-inline-flex', !!hasActiveFilters);
+                }
+
                 $('#deleteFilters').on('click', function() {
-                    $('#filtro-tecnicos, #filter-range, #date, #start-date, #end-date').val(null).trigger(
-                        'change');
+                    $('#filtro-tecnicos, #date, #start-date, #end-date').val('');
+                    $('#filter-range').prop('checked', false).trigger('change');
+                    his_table.draw();
+                    updateClearFiltersButton();
+                });
+
+                $('#history-search').on('input', function() {
+                    his_table.search(this.value).draw();
                 });
             });
         </script>

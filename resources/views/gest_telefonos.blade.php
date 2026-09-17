@@ -578,8 +578,8 @@
                                         hour: '2-digit',
                                         minute: '2-digit'
                                     });
-                                return [`<b>${h.tecnico}</b>`, `<b>${h.detalle}</b>`,
-                                    `<b>${h.motivo||''}</b>`, `<b>${f}</b>`
+                                return [h.tecnico, h.detalle,
+                                    h.motivo || '', f
                                 ];
                             })).draw();
                         },
@@ -603,7 +603,7 @@
                     lengthChange: true,
                     autoWidth: true,
                     language: {
-                        emptyTable: 'No hay datos disponibles',
+                        emptyTable: 'No hay datos disponibles en la tabla.',
                         info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
                         infoEmpty: 'Mostrando 0 a 0 de 0 entradas',
                         infoFiltered: '(filtrado de _MAX_ totales)',

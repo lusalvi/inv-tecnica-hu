@@ -141,8 +141,8 @@
             </div>
 
             @if ($depositos->isEmpty())
-                <div class="hu-empty-state mt-3">
-                    <span class="material-symbols-outlined">warehouse</span>
+                <div class="hu-empty-state mt-3 d-flex flex-column align-items-center justify-content-center text-center w-100 py-4">
+                    <span class="material-symbols-outlined" style="font-size:2.5rem;">warehouse</span>
                     <p>No hay depósitos cargados todavía.</p>
                 </div>
             @else
@@ -157,7 +157,7 @@
                         <tbody>
                             @foreach ($depositos as $deposito)
                                 <tr>
-                                    <td><b>{{ $deposito->nombre }}</b></td>
+                                    <td>{{ $deposito->nombre }}</td>
                                     <td>
                                         <div class="d-flex justify-content-end gap-1">
                                             <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"

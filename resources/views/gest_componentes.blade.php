@@ -481,13 +481,19 @@
 
             {{-- Barra de acciones --}}
             <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="fw-semibold me-2"
+                    style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--hu-azul);">
+                    Listado de componentes
+                </span>
                 <button type="button" id="filterButton" class="btn btn-hu-outline btn-sm">
                     <span class="material-symbols-outlined"
                         style="font-size:16px;vertical-align:middle;">filter_list</span>
                     Filtrar
                 </button>
-                <button type="button" id="deleteFilters" class="btn btn-hu-outline btn-sm" style="display:none;">
-                    <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">close</span>
+                <button type="button" id="deleteFilters"
+                    class="btn btn-hu-outline btn-sm d-none align-items-center gap-1">
+                    <span class="material-symbols-outlined"
+                        style="font-size:16px;line-height:1;">close</span>
                     Limpiar filtros
                 </button>
 
@@ -526,8 +532,8 @@
             </div>
 
             {{-- Panel de filtros --}}
-            <div id="filter-div" class="d-flex flex-wrap gap-3 mb-3 p-3 rounded-3"
-                style="display:none !important; background:#F4F6F9;">
+            <div id="filter-div" class="d-none flex-wrap gap-3 mb-3 p-3 rounded-3"
+                style="background:#F4F6F9;">
                 <div>
                     <label for="filtro-deposito" class="form-label fw-semibold"
                         style="font-size:.8rem;">Depósito</label>
@@ -583,11 +589,11 @@
                     <tbody>
                         @foreach ($componentes as $componente)
                             <tr>
-                                <td><b>{{ $componente->tipo->nombre ?? 'Sin categoría' }}</b></td>
-                                <td><b>{{ $componente->nombre }}</b></td>
-                                <td><b>Depósito: {{ $componente->deposito->nombre ?? 'No asignado' }}</b></td>
-                                <td><b>Stock: {{ $componente->stock }}</b></td>
-                                <td><b>Estado: {{ $componente->estado->nombre ?? 'No asignado' }}</b></td>
+                                <td>{{ $componente->tipo->nombre ?? 'Sin categoría' }}</td>
+                                <td>{{ $componente->nombre }}</td>
+                                <td>Depósito: {{ $componente->deposito->nombre ?? 'No asignado' }}</td>
+                                <td>Stock: {{ $componente->stock }}</td>
+                                <td>Estado: {{ $componente->estado->nombre ?? 'No asignado' }}</td>
                                 <td>
                                     @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
                                         <div class="d-flex justify-content-end gap-1">
@@ -640,10 +646,10 @@
                     <tbody>
                         @foreach ($historias as $historia)
                             <tr>
-                                <td><b>{{ $historia->tecnico }}</b></td>
-                                <td><b>{{ $historia->detalle }}</b></td>
-                                <td><b>{{ $historia->motivo }}</b></td>
-                                <td><b>{{ $historia->created_at }}</b></td>
+                                <td>{{ $historia->tecnico }}</td>
+                                <td>{{ $historia->detalle }}</td>
+                                <td>{{ $historia->motivo }}</td>
+                                <td>{{ $historia->created_at }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -711,11 +717,53 @@
                 // ── Filtros ──
                 $('#filterButton').on('click', function() {
                     const $div = $('#filter-div');
-                    const $del = $('#deleteFilters');
-                    const visible = $div.css('display') !== 'none';
-                    $div.css('display', visible ? 'none' : 'flex');
-                    $del.css('display', visible ? 'none' : 'inline-flex');
+                    const visible = !$div.hasClass('d-none');
+                    $div.toggleClass('d-none', visible).toggleClass('d-flex', !visible);
                 });
+
+                function updateClearFiltersButton() {
+                    const hasActiveFilters = $('#filtro-deposito, #filtro-estado, #filtro-categoria, #filtro-stock')
+                        .filter(function() {
+                            return $(this).val() !== '';
+                        }).length > 0;
+
+                    $('#deleteFilters').toggleClass('d-none', !hasActiveFilters)
+                        .toggleClass('d-inline-flex', hasActiveFilters);
+                }
+
+                function applyFilters() {
+                    const deposito = $('#filtro-deposito').val().toLowerCase();
+                    const estado = $('#filtro-estado').val().toLowerCase();
+                    const categoria = $('#filtro-categoria').val().toLowerCase();
+                    const stockFilter = $('#filtro-stock').val();
+
+                    $('#table_componentes tbody tr').each(function() {
+                        const $cells = $(this).children('td');
+                        const rowDeposito = $cells.eq(2).text().replace(/^depósito:\s*/i, '').trim()
+                            .toLowerCase();
+                        const rowEstado = $cells.eq(4).text().replace(/^estado:\s*/i, '').trim()
+                            .toLowerCase();
+                        const rowCategoria = $cells.eq(0).text().trim().toLowerCase();
+                        const rowStock = Number($cells.eq(3).text().replace(/[^0-9-]/g, ''));
+
+                        const matchesStock = !stockFilter ||
+                            (stockFilter === 'poco-stock' && rowStock > 0 && rowStock < 10) ||
+                            (stockFilter === 'sin-stock' && rowStock === 0);
+
+                        $(this).toggle(
+                            (!deposito || rowDeposito === deposito) &&
+                            (!estado || rowEstado === estado) &&
+                            (!categoria || rowCategoria === categoria) &&
+                            matchesStock
+                        );
+                    });
+                }
+
+                $('#filtro-deposito, #filtro-estado, #filtro-categoria, #filtro-stock').on('change', function() {
+                    applyFilters();
+                    updateClearFiltersButton();
+                });
+
                 $('#deleteFilters').on('click', function() {
                     $('#filtro-deposito, #filtro-estado, #filtro-categoria, #filtro-stock').val('').trigger(
                         'change');

@@ -154,7 +154,7 @@
                         <tbody>
                             @foreach ($estados as $estado)
                                 <tr>
-                                    <td><b>{{ $estado->nombre }}</b></td>
+                                    <td>{{ $estado->nombre }}</td>
                                     <td>
                                         <div class="d-flex justify-content-end gap-1">
                                             <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"

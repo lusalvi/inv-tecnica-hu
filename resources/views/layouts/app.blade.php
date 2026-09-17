@@ -87,8 +87,14 @@
 
         table.dataTable tbody td {
             color: var(--hu-texto) !important;
+            font-weight: 400 !important;
             border: none !important;
             vertical-align: middle;
+        }
+
+        table tbody td b,
+        table tbody td strong {
+            font-weight: 400 !important;
         }
 
         table.dataTable {

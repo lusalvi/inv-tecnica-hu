@@ -616,15 +616,13 @@
         <div class="bg-white rounded-3 p-4" style="box-shadow:0 2px 12px rgba(0,55,100,.08);">
 
             {{-- Barra superior --}}
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
-                <div class="d-flex gap-2">
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-semibold"
+                        style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--hu-azul);">
+                        Listado de PCs
+                    </span>
                     @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
-                        <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#addModal">
-                            <span class="material-symbols-outlined"
-                                style="font-size:15px;vertical-align:middle;">add</span>
-                            Armar PC
-                        </button>
                         <button type="button" class="btn btn-hu-outline-dorado btn-sm" data-bs-toggle="modal"
                             data-bs-target="#infoAddPc" style="padding:2px 8px;font-size:.78rem;">
                             <span class="material-symbols-outlined"
@@ -632,9 +630,24 @@
                         </button>
                     @endif
                 </div>
-                <div>
-                    <input class="form-control form-control-sm" id="search_pc" type="text"
-                        placeholder="Buscar PC..." style="min-width:200px;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="input-group input-group-sm"
+                        style="max-width:220px;border:1px solid #ced4da;border-radius:.375rem;">
+                        <span class="input-group-text" style="background:#fff;border:0;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:15px; color:var(--hu-azul);">search</span>
+                        </span>
+                        <input type="text" id="search_pc" class="form-control" placeholder="Buscar..."
+                            style="border:0;box-shadow:none;">
+                    </div>
+                    @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
+                        <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#addModal" style="min-width: 150px; white-space: nowrap;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:16px;vertical-align:middle;">add</span>
+                            Armar PC
+                        </button>
+                    @endif
                 </div>
             </div>
 
@@ -696,14 +709,14 @@
                                     data-nombre="{{ $pc->nombre }}" data-ip="{{ $pc->ip }}"
                                     data-area="{{ $pc->area_id }}" data-deposito="{{ $pc->deposito_id }}"
                                     data-enuso="{{ $pc->area_id ? 'true' : 'false' }}"
-                                    data-mother="{{ $pc->componentes->firstWhere('tipo_id', 5) }}"
-                                    data-proce="{{ $pc->componentes->firstWhere('tipo_id', 4) }}"
-                                    data-fuente="{{ $pc->componentes->firstWhere('tipo_id', 2) }}"
-                                    data-placavid="{{ $pc->componentes->firstWhere('tipo_id', 7) }}"
+                                    data-mother='@json($pc->componentes->firstWhere('tipo_id', 5))'
+                                    data-proce='@json($pc->componentes->firstWhere('tipo_id', 4))'
+                                    data-fuente='@json($pc->componentes->firstWhere('tipo_id', 2))'
+                                    data-placavid='@json($pc->componentes->firstWhere('tipo_id', 7))'
                                     data-discosids="{{ $pc->componentes->whereIn('tipo_id', [6, 3])->pluck('id')->implode(', ') }}"
                                     data-discosobj='@json($pc->componentes->whereIn('tipo_id', [6, 3]))'
                                     data-ramsids="{{ $pc->componentes->where('tipo_id', 1)->pluck('id')->implode(', ') }}"
-                                    data-ramsobj="{{ $pc->componentes->where('tipo_id', 1) }}">
+                                    data-ramsobj='@json($pc->componentes->where('tipo_id', 1))'>
                                     <span class="material-symbols-outlined" style="font-size:14px;">build</span>
                                 </button>
                             @endif
@@ -724,6 +737,14 @@
                         </div>
                     </div>
                 @endforeach
+
+                @if ($pcs->isEmpty())
+                    <div class="text-center text-muted py-5 w-100" style="font-size:.9rem;">
+                        <span class="material-symbols-outlined d-block mb-2"
+                            style="font-size:2.5rem;">computer</span>
+                        No hay PCs registradas.
+                    </div>
+                @endif
             </div>
 
         </div>
@@ -745,6 +766,20 @@
     @push('scripts')
         <script>
             $(document).ready(function() {
+
+                function addInputDisc(button) {
+                    const $group = $(button).closest('.input-group');
+                    const $clone = $group.clone();
+                    $clone.find('select').val('');
+                    $group.parent().append($clone);
+                }
+
+                function addInputRam(button) {
+                    const $group = $(button).closest('.input-group');
+                    const $clone = $group.clone();
+                    $clone.find('select').val('');
+                    $group.parent().append($clone);
+                }
 
                 // ── Modal editar: cargar datos ──────────────────────────────────────
                 $('#editPcModal').on('show.bs.modal', function(event) {
@@ -776,12 +811,12 @@
 
                     var discosIds = button.data('discosids') ? button.data('discosids').toString().split(', ') :
                         [];
-                    var DiscosObj = button.data('discosobj');
+                    var DiscosObj = button.data('discosobj') || {};
                     var DiscosArray = Object.values(DiscosObj);
                     var cant_discos = discosIds.length;
 
                     var ramsIds = button.data('ramsids') ? button.data('ramsids').toString().split(', ') : [];
-                    var RamsObj = button.data('ramsobj');
+                    var RamsObj = button.data('ramsobj') || {};
                     var RamsArray = Object.values(RamsObj);
                     var cant_rams = ramsIds.length;
 
@@ -1272,7 +1307,7 @@
                     lengthChange: true,
                     autoWidth: true,
                     language: {
-                        emptyTable: 'No hay datos disponibles',
+                        emptyTable: 'No hay datos disponibles en la tabla.',
                         info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
                         infoEmpty: 'Mostrando 0 a 0 de 0 entradas',
                         infoFiltered: '(filtrado de _MAX_ entradas totales)',
