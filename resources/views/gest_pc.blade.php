@@ -12,6 +12,627 @@
         </h2>
     </x-slot>
 
+    <style>
+        /* Wizard de alta de PC — identidad visual Hospital Universitario */
+        .hu-wizard {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .hu-wizard .modal-content {
+            border-radius: 12px;
+            border: 0;
+            box-shadow: 0 12px 40px rgba(0, 55, 100, .16);
+        }
+
+        .hu-wizard .wizard-stepper {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+        }
+
+        .hu-wizard .wizard-step {
+            flex: 1;
+            position: relative;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .hu-wizard .wizard-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: calc(50% + 17px);
+            right: calc(-50% + 17px);
+            height: 2px;
+            background: #dfe5ea;
+            z-index: 0;
+        }
+
+        .hu-wizard .wizard-step.is-complete:not(:last-child)::after,
+        .hu-wizard .wizard-step.is-active:not(:last-child)::after {
+            background: var(--hu-azul);
+        }
+
+        .hu-wizard .wizard-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 auto 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            background: #eef1f4;
+            color: #8a949d;
+            font-size: .76rem;
+            font-weight: 700;
+        }
+
+        .hu-wizard .wizard-step.is-active .wizard-dot {
+            background: var(--hu-azul);
+            color: #fff;
+        }
+
+        .hu-wizard .wizard-step.is-complete .wizard-dot {
+            background: var(--hu-azul);
+            color: #fff;
+        }
+
+        .hu-wizard .wizard-label {
+            display: block;
+            font-size: .68rem;
+            line-height: 1.2;
+            color: #7c8790;
+            font-weight: 600;
+        }
+
+        .hu-wizard .wizard-step.is-active .wizard-label,
+        .hu-wizard .wizard-step.is-complete .wizard-label {
+            color: var(--hu-azul);
+        }
+
+        .hu-wizard .wizard-panel {
+            border: 1px solid #e5e9ed;
+            border-radius: 12px;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .hu-wizard .wizard-panel-title {
+            color: var(--hu-azul);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .hu-wizard .wizard-panel-help {
+            color: #737d85;
+            font-size: .76rem;
+            margin-bottom: 18px;
+        }
+
+        .hu-wizard .location-choice {
+            border: 1.5px solid #dfe5ea;
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            transition: .18s ease;
+            height: 100%;
+        }
+
+        .hu-wizard .location-choice:hover {
+            border-color: var(--hu-azul);
+            background: #fbfdff;
+        }
+
+        .hu-wizard .location-choice.is-selected {
+            border-color: var(--hu-azul);
+            box-shadow: 0 0 0 2px rgba(0, 55, 100, .08);
+            background: #f7fbff;
+        }
+
+        .hu-wizard .location-choice .material-symbols-outlined {
+            color: var(--hu-azul);
+            font-size: 22px;
+        }
+
+        .hu-wizard .location-choice-title {
+            color: #27333d;
+            font-weight: 700;
+            font-size: .82rem;
+        }
+
+        .hu-wizard .location-choice-help {
+            color: #7a858d;
+            font-size: .72rem;
+            line-height: 1.35;
+        }
+
+        .hu-wizard .comp-card {
+            border: 1px solid #e5e9ed;
+            border-radius: 10px;
+            padding: 13px;
+            background: #fff;
+        }
+
+        .hu-wizard .hu-component-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hu-wizard .hu-component-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .hu-wizard .hu-component-row {
+            min-height: 58px;
+            display: grid;
+            grid-template-columns: 38px minmax(0, 1fr) minmax(190px, 42%);
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border: 1px solid #e5e9ed;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .hu-wizard .hu-component-row:hover {
+            border-color: #cbd9e3;
+        }
+
+        .hu-wizard .hu-component-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4f5c67;
+        }
+
+        .hu-wizard .hu-component-icon .material-symbols-outlined {
+            font-size: 25px;
+        }
+
+        .hu-wizard .hu-component-label {
+            min-width: 0;
+            color: #27333d;
+            font-size: .8rem;
+            font-weight: 700;
+        }
+
+        .hu-wizard .hu-component-label small {
+            display: block;
+            color: #7a858d;
+            font-size: .67rem;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+
+        .hu-wizard .hu-required {
+            color: #c0392b;
+        }
+
+        .hu-wizard .hu-component-selected {
+            color: #7b858d;
+            font-size: .67rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .hu-wizard .hu-component-selected.is-selected {
+            color: var(--hu-azul);
+            font-weight: 600;
+        }
+
+        .hu-wizard .hu-component-action {
+            min-width: 0;
+        }
+
+        .hu-wizard .hu-component-open {
+            width: 100%;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            border: 1.5px solid #9cc8ff;
+            border-radius: 7px;
+            background: #fff;
+            color: #1478e8;
+            font-family: 'Montserrat', sans-serif;
+            font-size: .76rem;
+            font-weight: 700;
+            transition: .16s ease;
+        }
+
+        .hu-wizard .hu-component-open:hover {
+            background: #f5faff;
+            border-color: #1478e8;
+        }
+
+        .hu-wizard .hu-component-open .material-symbols-outlined {
+            font-size: 19px;
+        }
+
+        .hu-wizard .component-hidden-field {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        .hu-wizard .hu-add-multi {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            border: 0;
+            background: transparent;
+            color: var(--hu-azul);
+            font-size: .72rem;
+            font-weight: 700;
+            padding: 2px 8px 2px 45px;
+        }
+
+        .hu-wizard .hu-add-multi:hover {
+            text-decoration: underline;
+        }
+
+        .hu-wizard .hu-add-multi .material-symbols-outlined {
+            font-size: 17px;
+        }
+
+        .hu-wizard .hu-multi-remove {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            background: transparent;
+            color: #8a949d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .hu-wizard .hu-multi-remove:hover {
+            background: #f3f4f5;
+            color: #b02a37;
+        }
+
+        .hu-wizard .hu-multi-remove .material-symbols-outlined {
+            font-size: 17px;
+        }
+
+        .hu-wizard .hu-component-detail-panel {
+            padding: 16px;
+        }
+
+        .hu-wizard .hu-component-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            margin-bottom: 10px;
+            color: #66727c;
+            font-family: 'Montserrat', sans-serif;
+            font-size: .72rem;
+            font-weight: 600;
+        }
+
+        .hu-wizard .hu-component-back:hover {
+            color: var(--hu-azul);
+        }
+
+        .hu-wizard .hu-component-back .material-symbols-outlined {
+            font-size: 17px;
+        }
+
+        .hu-wizard .hu-component-detail-heading {
+            margin-bottom: 13px;
+        }
+
+        .hu-wizard .hu-component-tabs {
+            display: flex;
+            border-bottom: 1px solid #e1e6ea;
+            margin-bottom: 14px;
+        }
+
+        .hu-wizard .hu-component-tab {
+            flex: 1;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+            color: #7a858d;
+            padding: 9px 8px 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: .72rem;
+            font-weight: 600;
+        }
+
+        .hu-wizard .hu-component-tab:hover {
+            color: var(--hu-azul);
+        }
+
+        .hu-wizard .hu-component-tab.is-active {
+            color: #1478e8;
+            border-bottom-color: #1478e8;
+        }
+
+        .hu-wizard .hu-component-search-wrap {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .hu-wizard .hu-component-search-wrap .material-symbols-outlined {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8b969f;
+            font-size: 19px;
+            pointer-events: none;
+        }
+
+        .hu-wizard .hu-component-search-wrap .form-control {
+            padding-left: 35px;
+            font-size: .76rem;
+        }
+
+        .hu-wizard .hu-component-table-wrap {
+            max-height: 300px;
+            overflow: auto;
+            border: 1px solid #e5e9ed;
+            border-radius: 8px;
+        }
+
+        .hu-wizard .hu-component-table {
+            font-size: .7rem;
+        }
+
+        .hu-wizard .hu-component-table thead th {
+            background: #f7f9fa;
+            color: #596670;
+            font-weight: 700;
+            border-bottom: 1px solid #e1e6ea;
+            white-space: nowrap;
+        }
+
+        .hu-wizard .hu-component-table td {
+            color: #35424d;
+            border-color: #edf0f2;
+        }
+
+        .hu-wizard .hu-component-table tr.hu-stock-row {
+            cursor: pointer;
+        }
+
+        .hu-wizard .hu-component-table tr.hu-stock-row:hover {
+            background: #f7fbff;
+        }
+
+        .hu-wizard .hu-component-table tr.hu-stock-row.is-selected {
+            background: #eef6ff;
+        }
+
+        .hu-wizard .hu-stock-radio {
+            width: 17px;
+            height: 17px;
+            accent-color: #1478e8;
+        }
+
+        .hu-wizard .hu-stock-name {
+            font-weight: 700;
+        }
+
+        .hu-wizard .hu-stock-meta {
+            color: #7a858d;
+            font-size: .64rem;
+        }
+
+        .hu-wizard .hu-component-info {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding: 10px 12px;
+            border: 1px solid #b9d8ff;
+            border-radius: 8px;
+            background: #f2f8ff;
+            color: #285273;
+            font-size: .69rem;
+            line-height: 1.45;
+        }
+
+        .hu-wizard .hu-component-info .material-symbols-outlined {
+            color: #1478e8;
+            font-size: 18px;
+        }
+
+        .hu-wizard .hu-component-warning {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 13px;
+            border: 1px solid #f2c77a;
+            border-radius: 8px;
+            background: #fff7e8;
+            color: #7a5b00;
+            font-size: .7rem;
+            line-height: 1.45;
+        }
+
+        .hu-wizard .hu-component-warning .material-symbols-outlined {
+            color: #e58b00;
+            font-size: 20px;
+        }
+
+        .hu-wizard .hu-component-detail-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #edf0f2;
+            margin-top: 16px;
+            padding-top: 13px;
+        }
+
+        @media (max-width: 767px) {
+            .hu-wizard .hu-component-row {
+                grid-template-columns: 34px minmax(0, 1fr);
+            }
+
+            .hu-wizard .hu-component-action {
+                grid-column: 2;
+            }
+
+            .hu-wizard .hu-add-multi {
+                padding-left: 39px;
+            }
+
+            .hu-wizard .hu-component-table-wrap {
+                max-height: 260px;
+            }
+        }
+
+        .hu-wizard .comp-card-title {
+            font-size: .8rem;
+            font-weight: 700;
+            color: #27333d;
+        }
+
+        .hu-wizard .comp-card .form-control {
+            font-size: .78rem;
+        }
+
+        .hu-wizard .hu-summary-section {
+            border: 1px solid #e5e9ed;
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .hu-wizard .hu-summary-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #7b858d;
+            font-weight: 700;
+        }
+
+        .hu-wizard .hu-summary-value {
+            font-size: .82rem;
+            color: #27333d;
+            font-weight: 600;
+        }
+
+        .hu-wizard .hu-summary-component {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .hu-wizard .hu-summary-component:last-child {
+            border-bottom: 0;
+        }
+
+        .hu-wizard .hu-pill {
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+            align-self: flex-start;
+            white-space: nowrap;
+            border-radius: 6px;
+            padding: 3px 10px;
+            line-height: 1.3;
+            border: 1px solid #d6e3ec;
+            background: #f0f5f8;
+            color: var(--hu-azul);
+            font-size: .68rem;
+            font-weight: 600;
+            letter-spacing: .01em;
+        }
+
+        .hu-wizard .hu-pill--stock {
+            background: #eaf2f8;
+            border-color: #cfe0ee;
+            color: var(--hu-azul);
+        }
+
+        .hu-wizard .hu-pill--sin-stock {
+            background: #fdf5e4;
+            border-color: #f1dfb2;
+            color: #8a6410;
+        }
+
+        .hu-wizard .hu-pill--registrar {
+            background: #e9f6ee;
+            border-color: #c6e6d2;
+            color: #1f6b3d;
+        }
+
+        .hu-wizard .hu-pill--no-identificada {
+            background: #f1f3f5;
+            border-color: #dde1e5;
+            color: #5d6770;
+        }
+
+
+        .hu-wizard .btn-hu-confirm {
+            border-radius: 999px;
+            background: var(--hu-azul);
+            border: 1px solid var(--hu-azul);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .hu-wizard .btn-hu-confirm:hover {
+            background: #002d52;
+            border-color: #002d52;
+            color: #fff;
+        }
+
+        .hu-wizard .btn-hu-gold {
+            border-radius: 999px;
+            background: var(--hu-dorado);
+            border: 1px solid var(--hu-dorado);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .hu-wizard .btn-hu-gold:hover {
+            filter: brightness(.94);
+            color: #fff;
+        }
+
+        @media (max-width: 767px) {
+            .hu-wizard .wizard-label {
+                font-size: .6rem;
+            }
+
+            .hu-wizard .wizard-panel {
+                padding: 14px;
+            }
+
+            .hu-wizard .wizard-step:not(:last-child)::after {
+                left: calc(50% + 16px);
+                right: calc(-50% + 16px);
+            }
+        }
+    </style>
+
     {{-- Modal info --}}
     <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -112,222 +733,656 @@
         </div>
     </div>
 
-    {{-- Modal: Armar PC --}}
+    {{-- Modal: Armar PC (multistep) --}}
     <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content"
-                style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Armar PC</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-content hu-wizard"
+                style="border-radius:12px;border:none;box-shadow:0 12px 40px rgba(0,55,100,.16);">
+                <div class="modal-header border-0 pb-0">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="modal-title fw-semibold mb-1" style="color:var(--hu-azul);">Agregar PC</h5>
+                                <div class="text-muted" style="font-size:.72rem;">Completá los datos para registrar y
+                                    armar la PC.</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        {{-- Stepper del wizard --}}
+                        <div class="wizard-stepper" aria-label="Progreso del alta de PC">
+                            <div class="wizard-step is-active" data-wizard-step="1">
+                                <div class="wizard-dot">1</div>
+                                <span class="wizard-label">Datos generales</span>
+                            </div>
+                            <div class="wizard-step" data-wizard-step="2">
+                                <div class="wizard-dot">2</div>
+                                <span class="wizard-label">Ubicación</span>
+                            </div>
+                            <div class="wizard-step" data-wizard-step="3">
+                                <div class="wizard-dot">3</div>
+                                <span class="wizard-label">Componentes</span>
+                            </div>
+                            <div class="wizard-step" data-wizard-step="4">
+                                <div class="wizard-dot">4</div>
+                                <span class="wizard-label">Resumen</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="modal-body">
                     <form action="{{ route('store_pc') }}" method="POST" id="addPcForm"
                         style="display:flex;flex-direction:column;gap:20px;">
                         @csrf
 
-                        {{-- Checkboxes --}}
-                        <div class="d-flex gap-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="en-uso">
-                                <label class="form-check-label" style="font-size:.85rem;" for="en-uso">En
-                                    uso</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="componentes-no-identificables">
-                                <label class="form-check-label" style="font-size:.85rem;"
-                                    for="componentes-no-identificables">
-                                    Componentes no identificables
-                                </label>
-                            </div>
-                        </div>
-
-                        {{-- Identificador / Nombre / IP --}}
-                        <div class="row g-3">
-                            <div class="col-auto">
-                                <label for="addIdentificador" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Nº Inventario</label>
-                                <input type="text"
-                                    class="form-control @error('addIdentificador') is-invalid @enderror"
-                                    id="addIdentificador" name="addIdentificador" placeholder="Nº Inventario"
-                                    style="max-width:165px;" required>
-                            </div>
-                            <div class="col-auto">
-                                <label for="addNombre" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Nombre</label>
-                                <input type="text" class="form-control @error('addNombre') is-invalid @enderror"
-                                    id="addNombre" name="addNombre" placeholder="Nombre" style="max-width:165px;"
-                                    required>
-                            </div>
-                            <div class="col-auto">
-                                <label for="addIp" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">IPv4</label>
-                                <input type="text" class="form-control @error('addIp') is-invalid @enderror"
-                                    id="addIp" name="addIp" placeholder="Dirección IPv4"
-                                    style="max-width:165px;" required>
+                        {{-- ── PASO 1: Datos generales ── --}}
+                        <div id="add-step-1">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Datos generales</div>
+                                <div class="wizard-panel-help">Completá la información básica de la PC.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-4">
+                                        <label for="addIdentificador" class="form-label fw-semibold"
+                                            style="font-size:.78rem;">Nº de inventario <span
+                                                style="color:#b02a37;">*</span></label>
+                                        <input type="text"
+                                            class="form-control @error('addIdentificador') is-invalid @enderror"
+                                            id="addIdentificador" name="addIdentificador" placeholder="PC-2025-001"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label for="addNombre" class="form-label fw-semibold"
+                                            style="font-size:.78rem;">Nombre <span
+                                                style="color:#b02a37;">*</span></label>
+                                        <input type="text"
+                                            class="form-control @error('addNombre') is-invalid @enderror"
+                                            id="addNombre" name="addNombre" placeholder="PC Administración 01"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <label for="addIp" class="form-label fw-semibold"
+                                            style="font-size:.78rem;">IPv4 <span
+                                                class="text-muted fw-normal">(opcional)</span></label>
+                                        <input type="text"
+                                            class="form-control @error('addIp') is-invalid @enderror" id="addIp"
+                                            name="addIp" placeholder="192.168.1.25">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {{-- Área / Depósito --}}
-                        <div class="row g-3">
-                            <div class="col-auto" id="content-container">
-                                <div id="area-select">
+                        {{-- ── PASO 2: Ubicación ── --}}
+                        <div id="add-step-2" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Ubicación</div>
+                                <div class="wizard-panel-help">Indicá si la PC queda instalada en un área o permanece
+                                    en un depósito.</div>
+
+                                <input type="hidden" id="addEnUso" name="addEnUso" value="0">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block is-selected" id="location-use-card">
+                                            <input type="radio" name="pc_ubicacion" value="uso"
+                                                id="location-use" class="visually-hidden" checked>
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">domain</span>
+                                                <div>
+                                                    <div class="location-choice-title">Está en uso</div>
+                                                    <div class="location-choice-help">Asignala a un área de la
+                                                        institución.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block" id="location-storage-card">
+                                            <input type="radio" name="pc_ubicacion" value="deposito"
+                                                id="location-storage" class="visually-hidden">
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">inventory_2</span>
+                                                <div>
+                                                    <div class="location-choice-title">No está en uso</div>
+                                                    <div class="location-choice-help">Asignala a un depósito para
+                                                        indicar dónde queda físicamente.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="location-area-panel">
                                     <label for="addArea" class="form-label fw-semibold"
-                                        style="font-size:.85rem;">Área</label>
+                                        style="font-size:.78rem;">Área <span style="color:#b02a37;">*</span></label>
                                     <select class="form-control @error('addArea') is-invalid @enderror" id="addArea"
-                                        name="addArea" style="min-width:165px;max-width:165px;" required>
-                                        <option value="" disabled selected>Selecciona un área</option>
+                                        name="addArea">
+                                        <option value="" selected>Seleccioná un área</option>
                                         @foreach ($areas as $area)
                                             <option value="{{ $area->id }}">{{ $area->nombre }}</option>
                                         @endforeach
                                     </select>
                                     <div class="mt-2" id="addNroConsul_div" style="display:none;">
                                         <label for="addNroConsul" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Nº consultorio</label>
+                                            style="font-size:.78rem;">Nº de consultorio</label>
                                         <input type="text"
                                             class="form-control @error('addNroConsul') is-invalid @enderror"
-                                            id="addNroConsul" name="addNroConsul" placeholder="Nº de consultorio"
-                                            style="max-width:165px;">
+                                            id="addNroConsul" name="addNroConsul" placeholder="Nº de consultorio">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-auto" id="deposito-select">
-                                <label for="addDeposito" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Depósito</label>
-                                <select class="form-control @error('addDeposito') is-invalid @enderror"
-                                    id="addDeposito" name="addDeposito" style="min-width:165px;max-width:165px;"
-                                    required>
-                                    <option value="" disabled selected>Selecciona un depósito</option>
-                                    @foreach ($depositos as $deposito)
-                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
 
-                        {{-- Componentes --}}
-                        <div id="div-componentes-add"
-                            style="display:flex;flex-direction:row;gap:20px;flex-wrap:wrap;">
-                            <div style="display:flex;flex-direction:column;gap:20px;">
-                                <div class="row g-3">
-                                    <div class="col-auto">
-                                        <label for="addMotherboard" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Placa madre</label>
-                                        <select class="form-control @error('addMotherboard') is-invalid @enderror"
-                                            id="addMotherboard" name="addMotherboard" style="max-width:165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona una placa madre
-                                            </option>
-                                            @foreach ($motherboards as $motherboard)
-                                                <option value="{{ $motherboard->id }}">
-                                                    {{ $motherboard->nombre . ' - ' . ($motherboard->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-auto">
-                                        <label for="addProcesador" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Procesador</label>
-                                        <select class="form-control @error('addProcesador') is-invalid @enderror"
-                                            id="addProcesador" name="addProcesador" style="max-width:165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona un procesador</option>
-                                            @foreach ($procesadores as $procesador)
-                                                <option value="{{ $procesador->id }}">
-                                                    {{ $procesador->nombre . ' - ' . ($procesador->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row g-3">
-                                    <div class="col-auto">
-                                        <label for="addPlacavid" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Placa de video</label>
-                                        <select class="form-control @error('addPlacavid') is-invalid @enderror"
-                                            id="addPlacavid" name="addPlacavid" style="max-width:165px;">
-                                            <option value="" disabled selected>Selecciona una placa de video
-                                            </option>
-                                            @foreach ($placasvid as $placavid)
-                                                <option value="{{ $placavid->id }}">
-                                                    {{ $placavid->nombre . ' - ' . ($placavid->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-auto">
-                                        <label for="addFuente" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Fuente</label>
-                                        <select class="form-control @error('addFuente') is-invalid @enderror"
-                                            id="addFuente" name="addFuente" style="max-width:165px;" required>
-                                            <option value="" disabled selected>Selecciona una fuente</option>
-                                            @foreach ($fuentes as $fuente)
-                                                <option value="{{ $fuente->id }}">
-                                                    {{ $fuente->nombre . ' - ' . ($fuente->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Discos</label>
-                                <div id="input-container-1">
-                                    <div class="form-group input-group mb-3">
-                                        <select id="discos1-1" name="discos1[]" class="form-control"
-                                            style="border-top-left-radius:5px;border-bottom-left-radius:5px;max-width:165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona un disco</option>
-                                            @foreach ($discos as $disco)
-                                                <option value="{{ $disco->id }}"
-                                                    data-stock="{{ $disco->stock }}">
-                                                    @if ($disco->tipo->nombre == 'SDD')
-                                                        {{ $disco->nombre . ' - SDD - ' . ($disco->deposito->nombre ?? 'no asignado') }}
-                                                    @endif
-                                                    @if ($disco->tipo->nombre == 'HDD')
-                                                        {{ $disco->nombre . ' - HDD - ' . ($disco->deposito->nombre ?? 'no asignado') }}
-                                                    @endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-hu-outline add-input-disc"
-                                                type="button">+</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">RAMs</label>
-                                <div id="material-container-1">
-                                    <div class="form-group input-group mb-3">
-                                        <select id="rams1-1" name="rams1[]" class="form-control"
-                                            style="border-top-left-radius:5px;border-bottom-left-radius:5px;max-width:165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona una RAM</option>
-                                            @foreach ($rams as $ram)
-                                                <option value="{{ $ram->id }}"
-                                                    data-stock="{{ $ram->stock }}">
-                                                    {{ $ram->nombre . ' - ' . ($ram->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-hu-outline add-input-ram" type="button">+</button>
-                                        </div>
-                                    </div>
+                                <div id="location-storage-panel" style="display:none;">
+                                    <label for="addDeposito" class="form-label fw-semibold"
+                                        style="font-size:.78rem;">Depósito <span
+                                            style="color:#b02a37;">*</span></label>
+                                    <select class="form-control @error('addDeposito') is-invalid @enderror"
+                                        id="addDeposito" name="addDeposito">
+                                        <option value="" selected>Seleccioná un depósito</option>
+                                        @foreach ($depositos as $deposito)
+                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="modal-footer border-0 px-0 pb-0">
-                            <button type="submit" class="btn btn-hu">Agregar PC</button>
+                        {{-- ── PASO 3: Componentes ── --}}
+                        <div id="add-step-3" style="display:none;">
+                            @php
+                                $componentesSingulares = [
+                                    [
+                                        'key' => 'Motherboard',
+                                        'label' => 'Placa madre',
+                                        'icon' => 'developer_board',
+                                        'items' => $motherboards,
+                                        'required' => true,
+                                    ],
+                                    [
+                                        'key' => 'Procesador',
+                                        'label' => 'Procesador',
+                                        'icon' => 'memory',
+                                        'items' => $procesadores,
+                                        'required' => true,
+                                    ],
+                                    [
+                                        'key' => 'Fuente',
+                                        'label' => 'Fuente',
+                                        'icon' => 'power',
+                                        'items' => $fuentes,
+                                        'required' => true,
+                                    ],
+                                    [
+                                        'key' => 'Placavid',
+                                        'label' => 'Placa de video',
+                                        'icon' => 'videogame_asset',
+                                        'items' => $placasvid,
+                                        'required' => false,
+                                    ],
+                                ];
+                            @endphp
+
+                            {{-- Vista principal del paso 3 --}}
+                            <div id="component-list-view">
+                                <div class="wizard-panel">
+                                    <div class="wizard-panel-title">Componentes</div>
+                                    <div class="wizard-panel-help">Seleccioná los componentes que forman parte de esta
+                                        PC. Podés elegirlos desde el stock, registrar uno nuevo o marcarlo como no
+                                        identificado.</div>
+
+                                    <div class="hu-component-list">
+                                        @foreach ($componentesSingulares as $comp)
+                                            @php $field = 'add' . $comp['key']; @endphp
+                                            <div class="hu-component-row" data-component-key="{{ $comp['key'] }}"
+                                                data-component-kind="singular" data-field="{{ $field }}">
+                                                <div class="hu-component-icon">
+                                                    <span class="material-symbols-outlined">{{ $comp['icon'] }}</span>
+                                                </div>
+                                                <div class="hu-component-label">
+                                                    <div>{{ $comp['label'] }} @if ($comp['required'])
+                                                            <span class="hu-required">*</span>
+                                                        @endif
+                                                    </div>
+                                                    @if (!$comp['required'])
+                                                        <small>Opcional</small>
+                                                    @endif
+                                                    <div class="hu-component-selected"
+                                                        data-selection-label="{{ $field }}">Sin seleccionar
+                                                    </div>
+                                                </div>
+                                                <div class="hu-component-action">
+                                                    <button type="button" class="hu-component-open"
+                                                        data-component-key="{{ $comp['key'] }}"
+                                                        data-component-kind="singular"
+                                                        data-field="{{ $field }}">
+                                                        <span class="material-symbols-outlined">add_circle</span>
+                                                        <span class="component-open-label">Seleccionar
+                                                            componente</span>
+                                                    </button>
+                                                </div>
+
+                                                <input type="hidden" name="{{ $field }}_modo"
+                                                    value="stock">
+                                                <select id="{{ $field }}" name="{{ $field }}"
+                                                    class="component-hidden-field">
+                                                    <option value=""></option>
+                                                    @foreach ($comp['items'] as $item)
+                                                        <option value="{{ $item->id }}">
+                                                            {{ $item->nombre . ' — ' . ($item->deposito->nombre ?? 'sin depósito') }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="hidden" name="{{ $field }}_nombre"
+                                                    value="">
+
+                                                <select name="{{ $field }}_deposito_origen"
+                                                    class="component-hidden-field">
+                                                    <option value="">Depósito de origen desconocido</option>
+                                                    @foreach ($depositos as $deposito)
+                                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <input type="hidden" name="{{ $field }}_cantidad"
+                                                    value="1">
+                                                <input type="hidden" name="{{ $field }}_motivo"
+                                                    value="">
+                                                <input type="hidden" name="{{ $field }}_observaciones"
+                                                    value="">
+                                            </div>
+                                        @endforeach
+
+                                        {{-- Discos --}}
+                                        <div class="hu-component-group" id="input-container-1"
+                                            data-component-group="discos">
+                                            <div class="hu-component-row hu-component-row-multi"
+                                                data-component-key="Disco" data-component-kind="multi"
+                                                data-group="discos">
+                                                <div class="hu-component-icon"><span
+                                                        class="material-symbols-outlined">hard_drive</span></div>
+                                                <div class="hu-component-label">
+                                                    <div>Discos</div><small>Opcional</small>
+                                                    <div class="hu-component-selected" data-selection-label="discos">
+                                                        Sin seleccionar</div>
+                                                </div>
+                                                <div class="hu-component-action">
+                                                    <button type="button" class="hu-component-open"
+                                                        data-component-key="Disco" data-component-kind="multi"
+                                                        data-group="discos">
+                                                        <span class="material-symbols-outlined">add_circle</span>
+                                                        <span class="component-open-label">Seleccionar
+                                                            componente</span>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" name="discos1_modo[]" value="stock">
+                                                <select name="discos1[]" class="component-hidden-field">
+                                                    <option value=""></option>
+                                                    @foreach ($discos as $disco)
+                                                        <option value="{{ $disco->id }}"
+                                                            data-stock="{{ $disco->stock }}">
+                                                            {{ $disco->nombre . ' - ' . $disco->tipo->nombre . ' — ' . ($disco->deposito->nombre ?? 'sin depósito') }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="hidden" name="discos1_nombre[]" value="">
+
+                                                <select name="discos1_deposito_origen[]"
+                                                    class="component-hidden-field">
+                                                    <option value="">Depósito de origen desconocido</option>
+                                                    @foreach ($depositos as $deposito)
+                                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <input type="hidden" name="discos1_cantidad[]" value="1">
+                                                <input type="hidden" name="discos1_motivo[]" value="">
+                                                <input type="hidden" name="discos1_observaciones[]" value="">
+                                                <button type="button" class="hu-multi-remove remove-multi-row"
+                                                    style="display:none;" aria-label="Quitar disco"><span
+                                                        class="material-symbols-outlined">close</span></button>
+                                            </div>
+                                            <button type="button" class="hu-add-multi add-disco-row"><span
+                                                    class="material-symbols-outlined">add</span> Agregar otro
+                                                disco</button>
+                                        </div>
+
+                                        {{-- RAMs --}}
+                                        <div class="hu-component-group" id="material-container-1"
+                                            data-component-group="rams">
+                                            <div class="hu-component-row hu-component-row-multi"
+                                                data-component-key="RAM" data-component-kind="multi"
+                                                data-group="rams">
+                                                <div class="hu-component-icon"><span
+                                                        class="material-symbols-outlined">memory_alt</span></div>
+                                                <div class="hu-component-label">
+                                                    <div>RAMs</div><small>Opcional</small>
+                                                    <div class="hu-component-selected" data-selection-label="rams">Sin
+                                                        seleccionar</div>
+                                                </div>
+                                                <div class="hu-component-action">
+                                                    <button type="button" class="hu-component-open"
+                                                        data-component-key="RAM" data-component-kind="multi"
+                                                        data-group="rams">
+                                                        <span class="material-symbols-outlined">add_circle</span>
+                                                        <span class="component-open-label">Seleccionar
+                                                            componente</span>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" name="rams1_modo[]" value="stock">
+                                                <select name="rams1[]" class="component-hidden-field">
+                                                    <option value=""></option>
+                                                    @foreach ($rams as $ram)
+                                                        <option value="{{ $ram->id }}"
+                                                            data-stock="{{ $ram->stock }}">
+                                                            {{ $ram->nombre . ' — ' . ($ram->deposito->nombre ?? 'sin depósito') }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="hidden" name="rams1_nombre[]" value="">
+
+                                                <select name="rams1_deposito_origen[]" class="component-hidden-field">
+                                                    <option value="">Depósito de origen desconocido</option>
+                                                    @foreach ($depositos as $deposito)
+                                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+
+                                                <input type="hidden" name="rams1_cantidad[]" value="1">
+                                                <input type="hidden" name="rams1_motivo[]" value="">
+                                                <input type="hidden" name="rams1_observaciones[]" value="">
+                                                <button type="button" class="hu-multi-remove remove-multi-row"
+                                                    style="display:none;" aria-label="Quitar RAM"><span
+                                                        class="material-symbols-outlined">close</span></button>
+                                            </div>
+                                            <button type="button" class="hu-add-multi add-ram-row"><span
+                                                    class="material-symbols-outlined">add</span> Agregar otra
+                                                RAM</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Vista interna del wizard para seleccionar/configurar un componente. No es un modal. --}}
+                            <div id="component-detail-view" style="display:none;">
+                                <div class="wizard-panel hu-component-detail-panel">
+                                    <button type="button" class="hu-component-back" id="component-detail-back">
+                                        <span class="material-symbols-outlined">arrow_back</span> Componentes
+                                    </button>
+                                    <div class="hu-component-detail-heading">
+                                        <div class="wizard-panel-title" id="component-detail-title">Seleccionar
+                                            componente</div>
+                                        <div class="wizard-panel-help mb-0" id="component-detail-subtitle">Placa madre
+                                        </div>
+                                    </div>
+
+                                    <div class="hu-component-tabs" role="tablist">
+                                        <button type="button" class="hu-component-tab is-active"
+                                            data-detail-mode="stock">Desde stock</button>
+                                        <button type="button" class="hu-component-tab"
+                                            data-detail-mode="registrar">Registrar nuevo</button>
+                                        <button type="button" class="hu-component-tab"
+                                            data-detail-mode="no-identificada">No identificado</button>
+                                    </div>
+
+                                    <div class="hu-component-detail-content">
+                                        <div class="hu-detail-panel" data-detail-panel="stock">
+                                            <div class="hu-component-search-wrap">
+                                                <span class="material-symbols-outlined">search</span>
+                                                <input type="search" id="component-detail-search"
+                                                    class="form-control"
+                                                    placeholder="Buscar por componente o depósito..."
+                                                    autocomplete="off">
+                                            </div>
+                                            <div class="table-responsive hu-component-table-wrap">
+                                                <table class="table table-sm align-middle mb-0 hu-component-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:42px;"></th>
+                                                            <th>Componente</th>
+                                                            <th>Depósito</th>
+                                                            <th class="text-end">Stock</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="component-detail-stock-body"></tbody>
+                                                </table>
+                                            </div>
+                                            <div id="component-detail-empty" class="text-muted text-center py-4"
+                                                style="display:none;font-size:.78rem;">No hay componentes disponibles
+                                                para mostrar.</div>
+                                            <div id="component-detail-stock-replenishment" style="display:none;"
+                                                class="mt-3">
+
+                                                <div class="hu-component-info">
+                                                    <span class="material-symbols-outlined">inventory</span>
+                                                    <div>
+                                                        <strong>Este componente está sin stock.</strong>
+                                                        <div>
+                                                            Para utilizarlo en esta PC primero se debe ingresar stock.
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row g-3 mt-1">
+                                                    <div class="col-12 col-md-6">
+                                                        <label for="component-detail-stock-quantity"
+                                                            class="form-label fw-semibold" style="font-size:.78rem;">
+                                                            Cantidad a ingresar <span class="hu-required">*</span>
+                                                        </label>
+
+                                                        <input type="number" id="component-detail-stock-quantity"
+                                                            class="form-control" min="1" step="1"
+                                                            value="1">
+                                                    </div>
+
+                                                    <div class="col-12 col-md-6">
+                                                        <label for="component-detail-stock-reason"
+                                                            class="form-label fw-semibold" style="font-size:.78rem;">
+                                                            Motivo <span class="hu-required">*</span>
+                                                        </label>
+
+                                                        <input type="text" id="component-detail-stock-reason"
+                                                            class="form-control"
+                                                            placeholder="Ej. Componente recibido">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="hu-detail-panel" data-detail-panel="registrar"
+                                            style="display:none;">
+                                            <div class="row g-3">
+                                                <div class="col-12">
+                                                    <label for="component-detail-name" class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">
+                                                        Nombre del componente <span class="hu-required">*</span>
+                                                    </label>
+                                                    <input type="text" id="component-detail-name"
+                                                        class="form-control"
+                                                        placeholder="Ej. NVIDIA GeForce GT 1030 2 GB">
+                                                </div>
+
+                                                <div class="col-12 col-md-4">
+                                                    <label for="component-detail-origin"
+                                                        class="form-label fw-semibold" style="font-size:.78rem;">
+                                                        Depósito de origen <span class="hu-required">*</span>
+                                                    </label>
+                                                    <select id="component-detail-origin" class="form-control">
+                                                        <option value="">Seleccioná un depósito</option>
+                                                        @foreach ($depositos as $deposito)
+                                                            <option value="{{ $deposito->id }}">
+                                                                {{ $deposito->nombre }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-12 col-md-4">
+                                                    <label for="component-detail-quantity"
+                                                        class="form-label fw-semibold" style="font-size:.78rem;">
+                                                        Cantidad <span class="hu-required">*</span>
+                                                    </label>
+                                                    <input type="number" id="component-detail-quantity"
+                                                        class="form-control" min="1" step="1"
+                                                        value="1">
+                                                </div>
+
+                                                <div class="col-12 col-md-4">
+                                                    <label for="component-detail-reason"
+                                                        class="form-label fw-semibold" style="font-size:.78rem;">
+                                                        Motivo <span class="hu-required">*</span>
+                                                    </label>
+                                                    <input type="text" id="component-detail-reason"
+                                                        class="form-control" placeholder="Ej. Componente recibido">
+                                                </div>
+                                            </div>
+
+                                            <div class="hu-component-info mt-3">
+                                                <span class="material-symbols-outlined">info</span>
+                                                <span>
+                                                    El componente se registrará como <strong>En uso</strong> y se
+                                                    asignará directamente a esta PC.
+                                                    El depósito indicado se guarda como origen.
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="hu-detail-panel" data-detail-panel="no-identificada"
+                                            style="display:none;">
+                                            <div class="hu-component-warning">
+                                                <span class="material-symbols-outlined">warning</span>
+                                                <div>
+                                                    <strong>Este componente no está identificado</strong>
+                                                    <div>Podés usar esta opción si la PC tiene el componente, pero no se
+                                                        conoce la marca, el modelo o el número de serie. Podrás
+                                                        identificarlo y reemplazarlo más adelante.</div>
+                                                </div>
+                                            </div>
+                                            <label class="form-label fw-semibold mt-3"
+                                                style="font-size:.78rem;">Observaciones <span
+                                                    class="text-muted fw-normal">(opcional)</span></label>
+                                            <textarea id="component-detail-observations" class="form-control" rows="4"
+                                                placeholder="Ej.: Placa madre genérica, se desconoce el modelo, etc."></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="hu-component-detail-footer">
+                                        <button type="button" class="btn btn-hu-outline"
+                                            id="component-detail-cancel">Cancelar</button>
+                                        <button type="button" class="btn btn-hu-confirm"
+                                            id="component-detail-confirm">Seleccionar componente</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        {{-- ── PASO 4: Resumen ── --}}
+                        <div id="add-step-4" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Resumen</div>
+                                <div class="wizard-panel-help">Revisá la información antes de guardar la PC.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-5">
+                                        <div class="hu-summary-section mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Datos generales</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-summary-back="1"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nº inventario</div>
+                                                <div class="hu-summary-value" id="summary-identificador">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nombre</div>
+                                                <div class="hu-summary-value" id="summary-nombre">—</div>
+                                            </div>
+                                            <div>
+                                                <div class="hu-summary-label">IPv4</div>
+                                                <div class="hu-summary-value" id="summary-ip">—</div>
+                                            </div>
+                                        </div>
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Ubicación</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-summary-back="2"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Estado</div>
+                                                <div class="hu-summary-value" id="summary-estado">—</div>
+                                            </div>
+                                            <div>
+                                                <div class="hu-summary-label">Ubicación asignada</div>
+                                                <div class="hu-summary-value" id="summary-ubicacion">—</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-7">
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Componentes</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-summary-back="3"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div id="summary-components"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Footer con navegación --}}
+                        <div class="modal-footer border-0 px-0 pb-0 d-flex justify-content-between">
+                            <button type="button" id="btn-step-back" class="btn btn-hu-outline"
+                                style="display:none;">
+                                <span class="material-symbols-outlined"
+                                    style="font-size:16px;vertical-align:middle;">arrow_back</span> Atrás
+                            </button>
+                            <div class="ms-auto d-flex gap-2">
+                                <button type="button" id="btn-step-next" class="btn btn-hu-confirm">
+                                    Siguiente <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">arrow_forward</span>
+                                </button>
+                                <button type="submit" id="btn-step-submit" class="btn btn-hu-gold"
+                                    style="display:none;">
+                                    <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">check</span> Guardar PC
+                                </button>
+                            </div>
+                        </div>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    @if (session('success') === 'PC guardada correctamente.')
+        <div class="modal fade" id="pcSuccessModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content hu-wizard"
+                    style="border-radius:12px;border:0;box-shadow:0 12px 40px rgba(0,55,100,.16);">
+                    <div class="modal-body text-center p-4 p-md-5">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                            style="width:64px;height:64px;border-radius:50%;background:#e8f6ee;color:#198754;">
+                            <span class="material-symbols-outlined" style="font-size:38px;">check_circle</span>
+                        </div>
+                        <h5 class="fw-bold mb-2" style="color:var(--hu-azul);">PC agregada correctamente</h5>
+                        <p class="text-muted mb-4" style="font-size:.8rem;">La PC se registró correctamente junto con
+                            los componentes seleccionados.</p>
+                        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                            <button type="button" class="btn btn-hu-outline" data-bs-dismiss="modal">Agregar otra
+                                PC</button>
+                            <button type="button" class="btn btn-hu-confirm" data-bs-dismiss="modal">Ir al listado
+                                de PCs</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     {{-- Modal: Editar PC --}}
     <div class="modal fade" id="editPcModal" tabindex="-1" aria-hidden="true">
@@ -540,11 +1595,63 @@
                                 id="editMotivo" name="editMotivo" required>
                         </div>
 
-                        <div class="modal-footer border-0 px-0 pb-0">
+                        <div class="modal-footer border-0 px-0 pb-0 d-flex justify-content-between gap-2">
+                            <button type="button" class="btn btn-outline-danger" id="abrirRetirarRotoBtn" disabled>
+                                <span class="material-symbols-outlined"
+                                    style="font-size:15px;vertical-align:middle;">build_circle</span>
+                                Retirar componente como roto
+                            </button>
                             <button type="submit" class="btn btn-hu">Guardar cambios</button>
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal: Retirar componente como roto --}}
+    <div class="modal fade" id="retirarRotoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content"
+                style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
+                <div class="modal-header border-0">
+                    <div>
+                        <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Retirar componente como roto
+                        </h5>
+                        <div id="retirarRotoPcLabel" class="text-muted" style="font-size:.8rem;"></div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ route('retirar_componente_roto') }}" method="POST" id="retirarRotoForm">
+                    @csrf
+                    <input type="hidden" name="pc_id" id="retirarRotoPcId">
+                    <input type="hidden" name="pc_identificador" id="retirarRotoPcIdentificador">
+                    <input type="hidden" name="pc_nombre" id="retirarRotoPcNombre">
+                    <div class="modal-body">
+                        <div class="rounded-3 p-3 mb-3"
+                            style="background:#FEF2F2;border-left:4px solid #DC2626;font-size:.85rem;color:#7f1d1d;">
+                            El componente se quitará de la PC y se registrará como <strong>Roto</strong>.
+                            Si tiene depósito de origen, volverá a ese depósito.
+                        </div>
+                        <div class="mb-3">
+                            <label for="retirarRotoComponente" class="form-label fw-semibold"
+                                style="font-size:.85rem;">Componente</label>
+                            <select class="form-control" name="componente_id" id="retirarRotoComponente" required>
+                                <option value="" selected disabled>Seleccioná el componente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="retirarRotoMotivo" class="form-label fw-semibold"
+                                style="font-size:.85rem;">Motivo</label>
+                            <input type="text" class="form-control" name="motivo" id="retirarRotoMotivo"
+                                maxlength="1000" required placeholder="Ej.: falla, daño físico, no enciende...">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-hu-outline" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Retirar como roto</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -729,8 +1836,9 @@
                             </button>
 
                             @if ($rolActual === 'Super administrador')
-                                <button type="button" class="btn btn-danger btn-sm flex-fill" data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal" data-id="{{ $pc->id }}">
+                                <button type="button" class="btn btn-danger btn-sm flex-fill"
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                    data-id="{{ $pc->id }}">
                                     <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
                                 </button>
                             @endif
@@ -766,6 +1874,8 @@
     @push('scripts')
         <script>
             $(document).ready(function() {
+
+                let componentesPcActuales = [];
 
                 function addInputDisc(button) {
                     const $group = $(button).closest('.input-group');
@@ -819,6 +1929,18 @@
                     var RamsObj = button.data('ramsobj') || {};
                     var RamsArray = Object.values(RamsObj);
                     var cant_rams = ramsIds.length;
+
+                    componentesPcActuales = [Motherboard, Procesador, Fuente, Placavid]
+                        .concat(DiscosArray, RamsArray)
+                        .filter(function(componente) {
+                            return componente && componente.id;
+                        });
+
+                    var $retirarRotoBtn = modal.find('#abrirRetirarRotoBtn');
+                    $retirarRotoBtn.prop('disabled', componentesPcActuales.length === 0);
+                    $retirarRotoBtn.data('pc-id', Id);
+                    $retirarRotoBtn.data('pc-identificador', Identificador);
+                    $retirarRotoBtn.data('pc-nombre', Nombre);
 
                     modal.find('#editEn-uso').prop('checked', enUso);
                     if (!enUso) {
@@ -964,51 +2086,804 @@
                     modal.find('#ramsInfo').text(button.data('rams'));
                 });
 
-                // ── En uso (add modal) ──────────────────────────────────────────────
-                const checkbox = document.getElementById('en-uso');
-                if (checkbox) {
-                    const areaSelect = document.getElementById('area-select');
-                    const depositoSelect = document.getElementById('deposito-select');
-                    checkbox.addEventListener('change', function() {
-                        depositoSelect.querySelector('select').selectedIndex = 0;
-                        areaSelect.querySelector('select').selectedIndex = 0;
-                        if (checkbox.checked) {
-                            areaSelect.querySelector('select').disabled = false;
-                            depositoSelect.querySelector('select').disabled = true;
-                        } else {
-                            areaSelect.querySelector('select').disabled = true;
-                            depositoSelect.querySelector('select').disabled = false;
-                        }
-                    });
-                    if (checkbox.checked) {
-                        areaSelect.querySelector('select').disabled = false;
-                        depositoSelect.querySelector('select').disabled = true;
+                @php
+                    $catalogBuilder = function ($items, $includeTipo = false) {
+                        return $items
+                            ->map(function ($item) use ($includeTipo) {
+                                $nombre = $item->nombre;
+                                if ($includeTipo) {
+                                    $nombre .= ' - ' . ($item->tipo->nombre ?? '');
+                                }
+
+                                return [
+                                    'id' => $item->id,
+                                    'nombre' => $nombre,
+                                    'deposito' => $item->deposito->nombre ?? 'Sin depósito',
+                                    'stock' => (int) $item->stock,
+                                    'estado_id' => (int) $item->estado_id,
+                                ];
+                            })
+                            ->values();
+                    };
+
+                    $motherboardCatalog = $catalogBuilder($motherboards);
+                    $procesadorCatalog = $catalogBuilder($procesadores);
+                    $fuenteCatalog = $catalogBuilder($fuentes);
+                    $placavidCatalog = $catalogBuilder($placasvid);
+                    $discoCatalog = $catalogBuilder($discos, true);
+                    $ramCatalog = $catalogBuilder($rams);
+                @endphp
+
+                // ── Wizard: Armar PC ─────────────────────────────────────────────────
+                var currentStep = 1;
+
+                function setLocationMode(mode) {
+                    var enUso = mode === 'uso';
+                    $('#location-use-card').toggleClass('is-selected', enUso);
+                    $('#location-storage-card').toggleClass('is-selected', !enUso);
+                    $('#location-area-panel').toggle(enUso);
+                    $('#location-storage-panel').toggle(!enUso);
+                    $('#addEnUso').val(enUso ? '1' : '0');
+                    $('#addArea').prop('disabled', !enUso).prop('required', enUso);
+                    $('#addDeposito').prop('disabled', enUso).prop('required', !enUso);
+                    if (enUso) {
+                        $('#addDeposito').val('');
                     } else {
-                        areaSelect.querySelector('select').disabled = true;
-                        depositoSelect.querySelector('select').disabled = false;
+                        $('#addArea').val('');
+                        $('#addNroConsul').val('');
+                        $('#addNroConsul_div').hide();
                     }
                 }
 
-                // ── Componentes no identificables ───────────────────────────────────
-                $('#componentes-no-identificables').on('change', function() {
-                    var noIdent = $(this).is(':checked');
-                    var $div = $('#div-componentes-add');
-                    if (noIdent) {
-                        $div.hide();
-                        $div.find('select').prop('required', false).val('');
+                function updateWizardStepper(step) {
+                    $('.wizard-step').each(function() {
+                        var n = parseInt($(this).data('wizard-step'), 10);
+                        $(this).removeClass('is-active is-complete');
+                        if (n < step) $(this).addClass('is-complete');
+                        if (n === step) $(this).addClass('is-active');
+                        if (n < step) $(this).find('.wizard-dot').text('✓');
+                        else $(this).find('.wizard-dot').text(n);
+                    });
+                }
+
+                function componentModeLabel(mode) {
+                    if (mode === 'stock') return 'Desde stock';
+                    if (mode === 'sin-stock') return 'Ingreso de stock';
+                    if (mode === 'registrar') return 'Registrar nuevo';
+                    return 'No identificado';
+                }
+
+                const componentCatalogs = {
+                    Motherboard: @json($motherboardCatalog),
+                    Procesador: @json($procesadorCatalog),
+                    Fuente: @json($fuenteCatalog),
+                    Placavid: @json($placavidCatalog),
+                    Disco: @json($discoCatalog),
+                    RAM: @json($ramCatalog)
+                };
+
+                let activeComponentTarget = null;
+                let activeComponentMode = 'stock';
+
+                function getTargetRow(target) {
+                    if (!target) return $();
+                    if (target.kind === 'singular') return $(
+                        '.hu-component-row[data-component-kind="singular"][data-field="' + target.field + '"]');
+                    return target.row;
+                }
+
+                function getTargetFieldName(target, suffix) {
+                    if (target.kind === 'singular') return target.field + suffix;
+                    return target.group === 'discos' ? 'discos1' + suffix + '[]' : 'rams1' + suffix + '[]';
+                }
+
+                function getTargetValue(target, suffix) {
+                    var row = getTargetRow(target);
+                    var name = getTargetFieldName(target, suffix);
+                    return row.find('[name="' + name + '"]').val() || '';
+                }
+
+                function setTargetValue(target, suffix, value) {
+                    var row = getTargetRow(target);
+                    var name = getTargetFieldName(target, suffix);
+                    row.find('[name="' + name + '"]').val(value || '');
+                }
+
+                function targetCatalogKey(target) {
+                    return target.kind === 'singular' ? target.key : (target.group === 'discos' ? 'Disco' : 'RAM');
+                }
+
+                function targetLabel(target) {
+                    if (target.kind === 'singular') return ({
+                        Motherboard: 'Placa madre',
+                        Procesador: 'Procesador',
+                        Fuente: 'Fuente',
+                        Placavid: 'Placa de video'
+                    })[target.key];
+                    return target.group === 'discos' ? 'Disco' : 'RAM';
+                }
+
+                function targetIsRequired(target) {
+                    return target.kind === 'singular' && ['Motherboard', 'Procesador', 'Fuente'].includes(target.key);
+                }
+
+                // ── Helpers para leer el estado de una fila del paso 3 ──────────────
+                function rowTarget($row) {
+                    return $row.data('component-kind') === 'singular' ? {
+                        kind: 'singular',
+                        key: $row.data('component-key'),
+                        field: $row.data('field')
+                    } : {
+                        kind: 'multi',
+                        group: $row.data('group'),
+                        row: $row
+                    };
+                }
+
+                function getRowMode($row) {
+                    return $row.find('input[name$="_modo"], input[name$="_modo[]"]').first().val() || 'stock';
+                }
+
+                // Devuelve { mode, text, detail } describiendo lo que el usuario eligió.
+                // Cada modo se describe por separado: sin-stock NO es no-identificada.
+                function describeRowSelection($row) {
+                    var target = rowTarget($row);
+                    var mode = getRowMode($row);
+                    var text = '';
+                    var detail = '';
+
+                    if (mode === 'stock' || mode === 'sin-stock') {
+                        text = $row.find('[name="' + getTargetFieldName(target, '') + '"] option:selected')
+                            .text().trim();
+                        if (text === 'Selecciona una opción') text = '';
+                        if (mode === 'sin-stock' && text) {
+                            var cant = getTargetValue(target, '_cantidad');
+                            var motivo = getTargetValue(target, '_motivo').trim();
+                            detail = 'Se ingresarán ' + cant + (Number(cant) === 1 ? ' unidad' : ' unidades') +
+                                (motivo ? ' · Motivo: ' + motivo : '');
+                        }
+                    } else if (mode === 'registrar') {
+                        text = getTargetValue(target, '_nombre').trim();
                     } else {
-                        $div.show();
-                        $('#addMotherboard, #addProcesador, #addFuente').prop('required', true);
-                        $div.find('select[name="discos1[]"], select[name="rams1[]"]').prop('required', true);
+                        text = 'No identificado';
+                    }
+
+                    return {
+                        mode: mode,
+                        text: text,
+                        detail: detail
+                    };
+                }
+
+                function countSelectedStock(catalogKey, exceptTarget) {
+                    var counts = {};
+                    $('.hu-component-row').each(function() {
+                        var $row = $(this);
+                        var isSame = exceptTarget && getTargetRow(exceptTarget).is($row);
+                        if (isSame) return;
+                        var key = $row.data('component-kind') === 'singular' ?
+                            $row.data('component-key') :
+                            ($row.data('group') === 'discos' ? 'Disco' : 'RAM');
+                        if (key !== catalogKey) return;
+                        var mode = $row.find('input[name$="_modo"], input[name$="_modo[]"]').first().val() ||
+                            'stock';
+                        if (mode !== 'stock') return;
+                        var value = $row.find('select[name="' + ($row.data('component-kind') === 'singular' ?
+                            'add' + $row.data('component-key') : ($row.data('group') === 'discos' ?
+                                'discos1[]' : 'rams1[]')) + '"]').val();
+                        if (value) counts[value] = (counts[value] || 0) + 1;
+                    });
+                    return counts;
+                }
+
+                function renderComponentStockOptions() {
+                    var catalogKey = targetCatalogKey(activeComponentTarget);
+                    var items = componentCatalogs[catalogKey] || [];
+                    var selectedId = getTargetValue(activeComponentTarget, activeComponentTarget.kind === 'singular' ?
+                        '' : '');
+                    var counts = countSelectedStock(catalogKey, activeComponentTarget);
+                    var search = ($('#component-detail-search').val() || '').trim().toLowerCase();
+                    var $body = $('#component-detail-stock-body').empty();
+                    var visible = 0;
+
+                    items.forEach(function(item) {
+                        var haystack = (item.nombre + ' ' + item.deposito).toLowerCase();
+                        if (search && !haystack.includes(search)) return;
+                        var available = item.stock - (counts[item.id] || 0);
+                        var isSelected = String(item.id) === String(selectedId);
+                        var isSinStock = item.estado_id === 7 || item.estado_id === 5 || available <= 0;
+
+                        if (!isSinStock && !isSelected && available <= 0) return;
+                        visible++;
+                        var checked = isSelected ? ' checked' : '';
+                        var disabled = (available <= 0 && !isSinStock && !isSelected) ? ' disabled' : '';
+                        var rowClass = isSelected ? 'hu-stock-row is-selected' : 'hu-stock-row';
+                        $body.append(
+                            '<tr class="' + rowClass + '" data-component-id="' + item.id + '">' +
+                            '<td><input class="hu-stock-radio" type="radio" name="component_detail_stock" value="' +
+                            item.id + '"' + checked + disabled + '></td>' +
+                            '<td><span class="hu-stock-name">' + $('<div>').text(item.nombre).html() +
+                            '</span></td>' +
+                            '<td>' + $('<div>').text(item.deposito).html() + '</td>' +
+                            '<td class="text-end">' + (isSinStock ?
+                                '<span class="badge bg-secondary">Sin stock</span>' : available) + '</td>' +
+                            '</tr>'
+                        );
+                    });
+                    $('#component-detail-empty').toggle(visible === 0);
+                }
+
+                function setDetailMode(mode) {
+                    activeComponentMode = mode;
+
+                    $('.hu-component-tab').each(function() {
+                        $(this).toggleClass('is-active', $(this).data('detail-mode') === mode);
+                    });
+
+                    $('.hu-detail-panel').each(function() {
+                        $(this).toggle($(this).data('detail-panel') === mode);
+                    });
+
+                    $('#component-detail-confirm').text(mode === 'stock' ? 'Seleccionar componente' :
+                        'Confirmar selección');
+
+                    if (mode === 'stock') {
+                        $('#component-detail-stock-replenishment').hide();
+                        $('#component-detail-stock-quantity').val('1');
+                        $('#component-detail-stock-reason').val('');
+                        renderComponentStockOptions();
+                    }
+                }
+
+                function openComponentSelector(target) {
+                    activeComponentTarget = target;
+                    var row = getTargetRow(target);
+                    $('#component-detail-title').text('Seleccionar componente');
+                    $('#component-detail-subtitle').text(targetLabel(target));
+                    $('#component-detail-search').val('');
+
+                    var mode = getRowMode(row);
+
+                    // sin-stock se edita desde la pestaña "Desde stock", pero conserva
+                    // su selección, cantidad y motivo al volver a abrir el selector.
+                    var restoreSinStock = (mode === 'sin-stock');
+                    if (restoreSinStock) {
+                        mode = 'stock';
+                    }
+
+                    setDetailMode(mode);
+
+                    var currentName = getTargetValue(target, target.kind === 'singular' ? '_nombre' : '_nombre');
+                    var currentOrigin = getTargetValue(target, target.kind === 'singular' ? '_deposito_origen' :
+                        '_deposito_origen');
+                    var currentObs = getTargetValue(target, target.kind === 'singular' ? '_observaciones' :
+                        '_observaciones');
+                    var currentStock = getTargetValue(target, '');
+                    var currentStockName = row.find('select[name="' + (target.kind === 'singular' ? target.field : (
+                        target.group === 'discos' ? 'discos1[]' : 'rams1[]')) + '"] option:selected').text().trim();
+
+                    var currentQuantity = getTargetValue(
+                        activeComponentTarget,
+                        '_cantidad'
+                    );
+
+                    var currentReason = getTargetValue(
+                        activeComponentTarget,
+                        '_motivo'
+                    );
+
+                    $('#component-detail-name').val(currentName || '');
+                    $('#component-detail-origin').val(currentOrigin || '');
+                    $('#component-detail-quantity').val(currentQuantity || '1');
+                    $('#component-detail-reason').val(currentReason || '');
+                    $('#component-detail-observations').val(currentObs || '');
+
+                    $('#component-detail-stock-body').data('selected-name', currentStockName || '');
+                    $('#component-list-view').hide();
+                    $('#component-detail-view').show();
+                    $('#btn-step-next, #btn-step-submit, #btn-step-back').hide();
+                    setDetailMode(mode);
+
+                    if (restoreSinStock) {
+                        // setDetailMode('stock') limpia el panel de reposición; se restaura.
+                        $('#component-detail-stock-quantity').val(currentQuantity || '1');
+                        $('#component-detail-stock-reason').val(currentReason || '');
+                        $('#component-detail-stock-replenishment').show();
+                    }
+                }
+
+                function closeComponentSelector() {
+                    activeComponentTarget = null;
+                    $('#component-detail-view').hide();
+                    $('#component-list-view').show();
+                    $('#btn-step-back').toggle(currentStep > 1);
+                    $('#btn-step-next').toggle(currentStep < 4);
+                    $('#btn-step-submit').toggle(currentStep === 4);
+                    refreshComponentRows();
+                }
+
+                function refreshComponentRows() {
+                    $('.hu-component-row').each(function() {
+                        var $row = $(this);
+                        var info = describeRowSelection($row);
+                        var text = info.text || 'Sin seleccionar';
+                        var $summary = $row.find('.hu-component-selected');
+                        $summary.text(text).toggleClass('is-selected', text !== 'Sin seleccionar');
+
+                        var $detail = $row.find('.hu-component-selected-detail');
+                        if (!$detail.length) {
+                            $detail = $(
+                                '<div class="hu-component-selected-detail text-muted" style="font-size:.72rem;"></div>'
+                            );
+                            $summary.after($detail);
+                        }
+                        $detail.text(info.detail).toggle(!!info.detail);
+
+                        var $button = $row.find('.component-open-label');
+                        $button.text(text === 'Sin seleccionar' ? 'Seleccionar componente' :
+                            'Cambiar componente');
+                    });
+                }
+
+                function validateComponentTarget(target) {
+                    var mode = getTargetValue(target, '_modo');
+
+                    if (mode === 'stock') {
+                        var selectedId = getTargetValue(target, '');
+
+                        // Un componente opcional sin seleccionar es válido (se omite).
+                        return !!selectedId || !targetIsRequired(target);
+                    }
+
+                    if (mode === 'sin-stock') {
+                        var selectedId = getTargetValue(target, '');
+                        var cantidad = parseInt(getTargetValue(target, '_cantidad'), 10);
+                        var motivo = getTargetValue(target, '_motivo').trim();
+
+                        return !!selectedId &&
+                            Number.isInteger(cantidad) &&
+                            cantidad >= 1 &&
+                            !!motivo;
+                    }
+
+                    if (mode === 'registrar') {
+                        var nombre = getTargetValue(target, '_nombre').trim();
+                        var origen = getTargetValue(target, '_deposito_origen');
+                        var cantidad = parseInt(getTargetValue(target, '_cantidad'), 10);
+                        var motivo = getTargetValue(target, '_motivo').trim();
+
+                        return !!nombre &&
+                            !!origen &&
+                            Number.isInteger(cantidad) &&
+                            cantidad >= 1 &&
+                            !!motivo;
+                    }
+
+                    return true;
+                }
+
+                function buildComponentSummary() {
+                    var components = [];
+                    $('.hu-component-row').each(function() {
+                        var $row = $(this);
+                        var info = describeRowSelection($row);
+                        if (!info.text) return;
+                        components.push({
+                            label: targetLabel(rowTarget($row)),
+                            text: info.text,
+                            detail: info.detail,
+                            mode: componentModeLabel(info.mode)
+                        });
+                    });
+                    var $summary = $('#summary-components').empty();
+                    if (!components.length) {
+                        $summary.html(
+                            '<div class="text-muted" style="font-size:.78rem;">No se seleccionaron componentes.</div>'
+                        );
+                        return;
+                    }
+                    components.forEach(function(component) {
+                        $summary.append(
+                            '<div class="hu-summary-component"><div><div class="hu-summary-label">' + $(
+                                '<div>').text(component.label).html() +
+                            '</div><div class="hu-summary-value">' + $('<div>').text(component.text)
+                            .html() + '</div>' +
+                            (component.detail ? '<div class="text-muted" style="font-size:.72rem;">' +
+                                $('<div>').text(component.detail).html() + '</div>' : '') +
+                            '</div><span class="hu-pill">' + $('<div>').text(component.mode)
+                            .html() + '</span></div>');
+                    });
+                }
+
+                function updateSummary() {
+                    $('#summary-identificador').text($('#addIdentificador').val().trim() || '—');
+                    $('#summary-nombre').text($('#addNombre').val().trim() || '—');
+                    $('#summary-ip').text($('#addIp').val().trim() || 'Sin asignar');
+                    var enUso = $('#location-use').is(':checked');
+                    $('#summary-estado').text(enUso ? 'Está en uso' : 'No está en uso');
+                    if (enUso) {
+                        var areaText = $('#addArea option:selected').text().trim();
+                        if ($('#addNroConsul').val().trim()) areaText += ' ' + $('#addNroConsul').val().trim();
+                        $('#summary-ubicacion').text(areaText || 'Sin área');
+                    } else {
+                        $('#summary-ubicacion').text($('#addDeposito option:selected').text().trim() || 'Sin depósito');
+                    }
+                    buildComponentSummary();
+                }
+
+                function validateStep(step) {
+                    if (step === 1) {
+                        var valid = true;
+                        ['#addIdentificador', '#addNombre'].forEach(function(selector) {
+                            var $field = $(selector),
+                                ok = $field.val().trim() !== '';
+                            $field.toggleClass('is-invalid', !ok);
+                            if (!ok && valid) $field.focus();
+                            valid = valid && ok;
+                        });
+                        return valid;
+                    }
+                    if (step === 2) {
+                        var enUso = $('#location-use').is(':checked');
+                        if (enUso) {
+                            var okArea = !!$('#addArea').val();
+                            $('#addArea').toggleClass('is-invalid', !okArea);
+                            if (!okArea) $('#addArea').focus();
+                            return okArea;
+                        }
+                        var okDeposito = !!$('#addDeposito').val();
+                        $('#addDeposito').toggleClass('is-invalid', !okDeposito);
+                        if (!okDeposito) $('#addDeposito').focus();
+                        return okDeposito;
+                    }
+                    if (step === 3) {
+                        var validComponents = true;
+                        $('.hu-component-row').each(function() {
+                            var $row = $(this),
+                                target = $row.data('component-kind') === 'singular' ? {
+                                    kind: 'singular',
+                                    key: $row.data('component-key'),
+                                    field: $row.data('field')
+                                } : {
+                                    kind: 'multi',
+                                    group: $row.data('group'),
+                                    row: $row
+                                };
+                            if (!validateComponentTarget(target))
+                                validComponents = false;
+                        });
+                        $('.hu-component-row[data-component-kind="singular"]').each(function() {
+                            var $row = $(this),
+                                target = {
+                                    kind: 'singular',
+                                    key: $row.data('component-key'),
+                                    field: $row.data('field')
+                                };
+                            if (targetIsRequired(target) && !validateComponentTarget(target)) validComponents =
+                                false;
+                        });
+                        if (!validComponents) {
+                            var first = $('.hu-component-row').filter(function() {
+                                var $r = $(this),
+                                    t = $r.data('component-kind') === 'singular' ? {
+                                        kind: 'singular',
+                                        key: $r.data('component-key'),
+                                        field: $r.data('field')
+                                    } : {
+                                        kind: 'multi',
+                                        group: $r.data('group'),
+                                        row: $r
+                                    };
+                                return (t.kind === 'singular' && targetIsRequired(t) && !
+                                    validateComponentTarget(t));
+                            }).first();
+                            if (first.length) openComponentSelector(first.data('component-kind') === 'singular' ? {
+                                kind: 'singular',
+                                key: first.data('component-key'),
+                                field: first.data('field')
+                            } : {
+                                kind: 'multi',
+                                group: first.data('group'),
+                                row: first
+                            });
+                        }
+                        return validComponents;
+                    }
+                    return true;
+                }
+
+                function goToStep(step) {
+                    if ($('#component-detail-view').is(':visible')) closeComponentSelector();
+                    currentStep = step;
+                    $('#add-step-1, #add-step-2, #add-step-3, #add-step-4').hide();
+                    $('#add-step-' + step).show();
+                    $('#btn-step-back').toggle(step > 1);
+                    $('#btn-step-next').toggle(step < 4);
+                    $('#btn-step-submit').toggle(step === 4);
+                    updateWizardStepper(step);
+                    if (step === 4) updateSummary();
+                }
+
+                $('#location-use, #location-storage').on('change', function() {
+                    setLocationMode($(this).val());
+                });
+                $('#addArea').on('change', function() {
+                    if ($(this).val() == 27) $('#addNroConsul_div').show();
+                    else {
+                        $('#addNroConsul_div').hide();
+                        $('#addNroConsul').val('');
                     }
                 });
 
-                $('#addModal').on('hidden.bs.modal', function() {
-                    $('#componentes-no-identificables').prop('checked', false);
-                    $('#div-componentes-add').show();
-                    $('#addMotherboard, #addProcesador, #addFuente').prop('required', true);
-                    $('select[name="discos1[]"], select[name="rams1[]"]').prop('required', true);
+                $(document).on('click', '.hu-component-open', function() {
+                    var $row = $(this).closest('.hu-component-row');
+                    openComponentSelector($row.data('component-kind') === 'singular' ? {
+                        kind: 'singular',
+                        key: $row.data('component-key'),
+                        field: $row.data('field')
+                    } : {
+                        kind: 'multi',
+                        group: $row.data('group'),
+                        row: $row
+                    });
                 });
+                $(document).on('click', '.hu-component-tab', function() {
+                    setDetailMode($(this).data('detail-mode'));
+                });
+                $('#component-detail-search').on('input', renderComponentStockOptions);
+                $(document).on('click', '#component-detail-stock-body .hu-stock-row', function() {
+                    $(this).find('.hu-stock-radio').prop('checked', true).trigger('change');
+                });
+                $(document).on('change', '#component-detail-stock-body .hu-stock-radio', function() {
+                    var selectedId = String($(this).val());
+                    var catalogKey = targetCatalogKey(activeComponentTarget);
+
+                    var item = (componentCatalogs[catalogKey] || []).find(function(item) {
+                        return String(item.id) === selectedId;
+                    });
+
+                    var catalogKey = targetCatalogKey(activeComponentTarget);
+                    var counts = countSelectedStock(catalogKey, activeComponentTarget);
+                    var available = item ? (item.stock - (counts[item.id] || 0)) : 1;
+                    var isSinStock = item && (Number(item.estado_id) === 7 || Number(item.estado_id) === 5 ||
+                        available <= 0);
+
+                    $('#component-detail-stock-body .hu-stock-row').removeClass('is-selected');
+                    $(this).closest('.hu-stock-row').addClass('is-selected');
+
+                    $('#component-detail-stock-replenishment').toggle(!!isSinStock);
+
+                    if (!isSinStock) {
+                        $('#component-detail-stock-quantity').val('1');
+                        $('#component-detail-stock-reason').val('');
+                    }
+                });
+
+                $('#component-detail-confirm').on('click', function() {
+                    if (!activeComponentTarget) return;
+
+                    var target = activeComponentTarget;
+                    var mode = activeComponentMode;
+
+                    if (mode === 'stock') {
+                        var value = $(
+                            '#component-detail-stock-body input[name="component_detail_stock"]:checked'
+                        ).val();
+
+                        if (!value) {
+                            $('#component-detail-empty')
+                                .text('Seleccioná un componente para continuar.')
+                                .show();
+                            return;
+                        }
+
+                        var catalogKey = targetCatalogKey(target);
+                        var item = (componentCatalogs[catalogKey] || []).find(function(item) {
+                            return String(item.id) === String(value);
+                        });
+
+                        var counts2 = countSelectedStock(catalogKey, target);
+                        var available2 = item ? (item.stock - (counts2[item.id] || 0)) : 1;
+                        var isSinStockItem = item && (Number(item.estado_id) === 7 || Number(item.estado_id) ===
+                            5 || available2 <= 0);
+                        var cantidad, motivo;
+
+                        if (isSinStockItem) {
+                            // El componente está en Sin Stock:
+                            // se debe ingresar stock antes de asignarlo a la PC.
+                            cantidad = parseInt($('#component-detail-stock-quantity').val(), 10);
+                            motivo = $('#component-detail-stock-reason').val().trim();
+
+                            $('#component-detail-stock-quantity').toggleClass('is-invalid',
+                                !Number.isInteger(cantidad) || cantidad < 1);
+                            $('#component-detail-stock-reason').toggleClass('is-invalid', !motivo);
+
+                            if (!Number.isInteger(cantidad) || cantidad < 1) {
+                                $('#component-detail-stock-quantity').focus();
+                                return;
+                            }
+
+                            if (!motivo) {
+                                $('#component-detail-stock-reason').focus();
+                                return;
+                            }
+                        }
+
+                        // Recién acá, con todo validado, se escribe la selección.
+                        setTargetValue(target, '', value);
+                        setTargetValue(target, '_nombre', '');
+                        setTargetValue(target, '_deposito_origen', '');
+                        setTargetValue(target, '_observaciones', '');
+
+                        if (isSinStockItem) {
+                            setTargetValue(target, '_modo', 'sin-stock');
+                            setTargetValue(target, '_cantidad', cantidad);
+                            setTargetValue(target, '_motivo', motivo);
+                        } else {
+                            // Componente que ya tiene stock disponible.
+                            setTargetValue(target, '_modo', 'stock');
+                            setTargetValue(target, '_cantidad', '1');
+                            setTargetValue(target, '_motivo', '');
+                        }
+
+                    } else if (mode === 'registrar') {
+                        var nombre = $('#component-detail-name').val().trim();
+                        var origen = $('#component-detail-origin').val();
+                        var cantidad = parseInt($('#component-detail-quantity').val(), 10);
+                        var motivo = $('#component-detail-reason').val().trim();
+
+                        $('#component-detail-name').toggleClass('is-invalid', !nombre);
+                        $('#component-detail-origin').toggleClass('is-invalid', !origen);
+                        $('#component-detail-quantity').toggleClass(
+                            'is-invalid',
+                            !Number.isInteger(cantidad) || cantidad < 1
+                        );
+                        $('#component-detail-reason').toggleClass('is-invalid', !motivo);
+
+                        if (!nombre) {
+                            $('#component-detail-name').focus();
+                            return;
+                        }
+
+                        if (!origen) {
+                            $('#component-detail-origin').focus();
+                            return;
+                        }
+
+                        if (!Number.isInteger(cantidad) || cantidad < 1) {
+                            $('#component-detail-quantity').focus();
+                            return;
+                        }
+
+                        if (!motivo) {
+                            $('#component-detail-reason').focus();
+                            return;
+                        }
+
+                        setTargetValue(target, '', '');
+                        setTargetValue(target, '_modo', 'registrar');
+                        setTargetValue(target, '_nombre', nombre);
+                        setTargetValue(target, '_deposito_origen', origen);
+                        setTargetValue(target, '_cantidad', cantidad);
+                        setTargetValue(target, '_motivo', motivo);
+                        setTargetValue(target, '_observaciones', '');
+
+                    } else {
+                        setTargetValue(target, '', '');
+                        setTargetValue(target, '_modo', 'no-identificada');
+                        setTargetValue(target, '_nombre', '');
+                        setTargetValue(target, '_deposito_origen', '');
+                        setTargetValue(
+                            target,
+                            '_observaciones',
+                            $('#component-detail-observations').val().trim()
+                        );
+                    }
+
+                    closeComponentSelector();
+                });
+
+                $('#component-detail-back, #component-detail-cancel').on('click', closeComponentSelector);
+
+                $('#btn-step-next').on('click', function() {
+                    if (!validateStep(currentStep)) return;
+                    goToStep(currentStep + 1);
+                });
+                $('#btn-step-back').on('click', function() {
+                    goToStep(currentStep - 1);
+                });
+                $(document).on('click', '[data-summary-back]', function() {
+                    goToStep(parseInt($(this).data('summary-back'), 10));
+                });
+                $('#addPcForm').on('submit', function(e) {
+                    if (currentStep !== 4) {
+                        e.preventDefault();
+                        if (validateStep(currentStep)) goToStep(currentStep + 1);
+                        return;
+                    }
+                    if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
+                        e.preventDefault();
+                        if (!validateStep(1)) goToStep(1);
+                        else if (!validateStep(2)) goToStep(2);
+                        else goToStep(3);
+                    }
+                });
+
+                $('#addModal').on('show.bs.modal', function() {
+                    setLocationMode('uso');
+                    goToStep(1);
+                });
+                $('#addModal').on('hidden.bs.modal', function() {
+                    $('#addPcForm')[0].reset();
+                    $('#input-container-1 .hu-component-row-multi:not(:first)').remove();
+                    $('#material-container-1 .hu-component-row-multi:not(:first)').remove();
+                    // form.reset() NO restaura los <input type="hidden"> modificados por JS:
+                    // se limpian a mano para no arrastrar modo/nombre/cantidad de la carga anterior.
+                    $('.hu-component-row').each(function() {
+                        resetComponentRow($(this));
+                    });
+                    $('#component-detail-view').hide();
+                    $('#component-list-view').show();
+                    activeComponentTarget = null;
+                    refreshComponentRows();
+                    setLocationMode('uso');
+                    goToStep(1);
+                });
+
+                // Deja una fila del paso 3 en su estado inicial (sin selección).
+                function resetComponentRow($row) {
+                    $row.find('select').val('');
+                    $row.find('input[type="hidden"]').val('');
+                    $row.find('input[name$="_modo"], input[name$="_modo[]"]').val('stock');
+                    $row.find('input[name$="_cantidad"], input[name$="_cantidad[]"]').val('1');
+                    $row.find('.hu-component-selected-detail').remove();
+                }
+
+                // Clona la primera fila de un grupo (discos / RAM), la deja vacía y
+                // la inserta justo antes del botón "Agregar otro/a".
+                function addMultiRow(containerSelector) {
+                    var $container = $(containerSelector);
+                    var $first = $container.find('.hu-component-row-multi').first();
+                    if (!$first.length) return;
+
+                    var $clone = $first.clone();
+                    resetComponentRow($clone);
+                    $clone.find('.hu-component-selected').text('Sin seleccionar').removeClass('is-selected');
+                    $clone.find('.component-open-label').text('Seleccionar componente');
+                    $clone.find('.hu-multi-remove').show();
+
+                    $container.find('.hu-add-multi').before($clone);
+
+                    refreshComponentRows();
+
+                    if (containerSelector === '#input-container-1') {
+                        updateOptionsDisc();
+                    } else if (containerSelector === '#material-container-1') {
+                        updateOptionsRam();
+                    }
+                }
+
+                $(document).on('click', '.add-disco-row', function() {
+                    addMultiRow('#input-container-1');
+                });
+                $(document).on('click', '.add-ram-row', function() {
+                    addMultiRow('#material-container-1');
+                });
+                $(document).on('click', '.remove-multi-row', function() {
+                    var $row = $(this).closest('.hu-component-row-multi');
+                    var group = $row.data('group');
+
+                    $row.remove();
+
+                    refreshComponentRows();
+
+                    if (group === 'discos') {
+                        updateOptionsDisc();
+                    } else if (group === 'rams') {
+                        updateOptionsRam();
+                    }
+                });
+                refreshComponentRows();
 
                 // ── Área con nro consultorio ────────────────────────────────────────
                 $('#en-uso').on('change', function() {
@@ -1091,10 +2966,12 @@
                     }
                 }
                 $(document).on('change', 'select[name="discos1[]"]', updateOptionsDisc);
-                $(document).on('click', '.remove-input-disc', function() {
-                    $(this).closest('.input-group').remove();
-                    updateOptionsDisc();
-                });
+                $(document).on('click',
+                    '.remove-input-disc',
+                    function() {
+                        $(this).closest('.input-group').remove();
+                        updateOptionsDisc();
+                    });
                 $(document).on('click', '.add-input-disc', function() {
                     setTimeout(updateOptionsDisc, 0);
                 });
@@ -1136,10 +3013,12 @@
                     }
                 }
                 $(document).on('change', 'select[name="rams1[]"]', updateOptionsRam);
-                $(document).on('click', '.remove-input-ram', function() {
-                    $(this).closest('.input-group').remove();
-                    updateOptionsRam();
-                });
+                $(document).on('click',
+                    '.remove-input-ram',
+                    function() {
+                        $(this).closest('.input-group').remove();
+                        updateOptionsRam();
+                    });
                 $(document).on('click', '.add-input-ram', function() {
                     setTimeout(updateOptionsRam, 0);
                 });
@@ -1174,10 +3053,12 @@
                     });
                 }
                 $(document).on('change', 'select[name="discos2[]"]', updateOptionsDiscModal2);
-                $(document).on('click', '.remove-input-disc-modal2', function() {
-                    $(this).closest('.input-group').remove();
-                    updateOptionsDiscModal2();
-                });
+                $(document).on('click',
+                    '.remove-input-disc-modal2',
+                    function() {
+                        $(this).closest('.input-group').remove();
+                        updateOptionsDiscModal2();
+                    });
                 $(document).on('click', '.add-input-disc-modal2', function() {
                     setTimeout(updateOptionsDiscModal2, 0);
                 });
@@ -1211,10 +3092,12 @@
                     });
                 }
                 $(document).on('change', 'select[name="rams2[]"]', updateOptionsRamModal2);
-                $(document).on('click', '.remove-input-ram-modal2', function() {
-                    $(this).closest('.input-group').remove();
-                    updateOptionsRamModal2();
-                });
+                $(document).on('click',
+                    '.remove-input-ram-modal2',
+                    function() {
+                        $(this).closest('.input-group').remove();
+                        updateOptionsRamModal2();
+                    });
                 $(document).on('click', '.add-input-ram-modal2', function() {
                     setTimeout(updateOptionsRamModal2, 0);
                 });
@@ -1225,6 +3108,40 @@
                 window.updateDiscos = function() {
                     updateOptionsDiscModal2();
                 };
+
+                // ── Retirar componente como roto ──────────────────────────────────
+                $('#abrirRetirarRotoBtn').on('click', function() {
+                    if (!componentesPcActuales.length) return;
+
+                    var pcId = $(this).data('pc-id');
+                    var pcIdentificador = $(this).data('pc-identificador');
+                    var pcNombre = $(this).data('pc-nombre');
+                    var $select = $('#retirarRotoComponente');
+
+                    $select.empty().append(
+                        '<option value="" selected disabled>Seleccioná el componente</option>');
+
+                    componentesPcActuales.forEach(function(componente) {
+                        var tipo = componente.tipo && componente.tipo.nombre ? componente.tipo.nombre :
+                            'Componente';
+                        $select.append(
+                            $('<option>', {
+                                value: componente.id,
+                                text: componente.nombre + ' — ' + tipo
+                            })
+                        );
+                    });
+
+                    $('#retirarRotoPcId').val(pcId);
+                    $('#retirarRotoPcIdentificador').val(pcIdentificador);
+                    $('#retirarRotoPcNombre').val(pcNombre);
+                    $('#retirarRotoPcLabel').text('PC: ' + pcIdentificador + ' — ' + pcNombre);
+                    $('#retirarRotoMotivo').val('');
+
+                    $('#editPcModal').one('hidden.bs.modal', function() {
+                        $('#retirarRotoModal').modal('show');
+                    }).modal('hide');
+                });
 
                 // ── Historia de la PC ───────────────────────────────────────────────
                 var modalHandlerAttached = false;
@@ -1326,6 +3243,13 @@
                 });
 
             });
+
+            @if (session('success') === 'PC guardada correctamente.')
+                $(function() {
+                    var successModal = document.getElementById('pcSuccessModal');
+                    if (successModal) bootstrap.Modal.getOrCreateInstance(successModal).show();
+                });
+            @endif
         </script>
     @endpush
 
