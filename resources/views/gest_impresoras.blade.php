@@ -538,7 +538,7 @@
                         $(this).find('#editDeposito').prop('disabled', false).val(btn.data('deposito'));
                     }
 
-                    // Toner — si está agotado o en uso, lo inyectamos como opción seleccionada
+                    // Tóner — si está sin stock o en uso, lo inyectamos como opción seleccionada
                     const modal = $(this);
                     modal.find('#editToner option.deleteable-toner').remove();
                     if (Toner && (Toner.stock == 0 || Toner.estado_id == 5)) {

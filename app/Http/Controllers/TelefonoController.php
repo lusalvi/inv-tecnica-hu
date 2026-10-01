@@ -235,7 +235,7 @@ class TelefonoController extends Controller
 
         $telefono->update();
 
-        return redirect()->back()->with('success', 'Telefono editado correctamente.');
+        return redirect()->back()->with('success', 'Teléfono editado correctamente.');
     }
 
     public function delete(Request $request)
@@ -254,7 +254,7 @@ class TelefonoController extends Controller
 
         $telefono->delete();
 
-        return redirect()->back()->with('success', 'Telefono eliminado correctamente.');
+        return redirect()->back()->with('success', 'Teléfono eliminado correctamente.');
     }
 
     public function getHistoria($id)
