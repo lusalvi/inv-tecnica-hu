@@ -20,6 +20,11 @@ class ComponenteModel extends Model
         return $this->belongsTo(DepositoModel::class, 'deposito_id');
     }
 
+    public function depositoOrigen()
+    {
+        return $this->belongsTo(DepositoModel::class, 'deposito_origen_id');
+    }
+
     // Definir la relación con TipoComponenteModel
     public function tipo()
     {
@@ -76,6 +81,24 @@ class ComponenteModel extends Model
             ->with(['tipo', 'deposito'])
             ->get();
     }
+
+    public function getComponenteByTipoForPc($tipoNombre, $tipoNombre2)
+{
+    return self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
+        $query->where('nombre', $tipoNombre)
+            ->orWhere('nombre', $tipoNombre2);
+    })
+        ->where(function ($query) {
+            $query->where(function ($q) {
+                $q->where('estado_id', 4)
+                    ->where('stock', '>', 0);
+            })
+            ->orWhere('estado_id', 7)
+            ->orWhere('estado_id', 5);
+        })
+        ->with(['tipo', 'deposito'])
+        ->get();
+}
 
     public function pcs()
     {

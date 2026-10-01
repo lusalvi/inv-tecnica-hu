@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/gest_componentes/patch',       [ComponenteController::class, 'edit'])->name('edit_componentes');
     Route::post('/gest_componentes/transfer',     [ComponenteController::class, 'transfer'])->name('transfer_componentes');
     Route::post('/gest_componentes/state',        [ComponenteController::class, 'transferState'])->name('state_componentes');
+    Route::post('/gest_componentes/retirar_roto', [ComponenteController::class, 'retirarComponenteRotoFromRequest'])->name('retirar_componente_roto');
 
     Route::get('/gest_pc',           [PcController::class, 'index'])->name('gest_pc');
     Route::post('/gest_pc/store',    [PcController::class, 'store'])->name('store_pc');

@@ -144,9 +144,12 @@
                                 id="editNombreStock" name="editNombreStock" required>
                                 <option value="">Selecciona un componente</option>
                                 @foreach ($componentes as $componente)
-                                    <option value="{{ $componente->id }}" data-addStock="{{ $componente->stock }}">
-                                        {{ $componente->nombre . ' — ' . $componente->estado->nombre . ' — ' . ($componente->deposito->nombre ?? 'sin depósito') }}
-                                    </option>
+                                    @if (in_array((int) $componente->estado_id, [4, 7], true))
+                                        <option value="{{ $componente->id }}"
+                                            data-addStock="{{ $componente->stock }}">
+                                            {{ $componente->nombre . ' — ' . $componente->estado->nombre . ' — ' . ($componente->deposito->nombre ?? 'Sin depósito') }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -195,10 +198,12 @@
                                 id="removeNombreStock" name="removeNombreStock" required>
                                 <option value="">Selecciona un componente</option>
                                 @foreach ($componentes as $componente)
-                                    <option value="{{ $componente->id }}"
-                                        data-removeStock="{{ $componente->stock }}">
-                                        {{ $componente->nombre . ' — ' . $componente->estado->nombre . ' — ' . ($componente->deposito->nombre ?? 'sin depósito') }}
-                                    </option>
+                                    @if ((int) $componente->estado_id === 4 && (int) $componente->stock > 0)
+                                        <option value="{{ $componente->id }}"
+                                            data-removeStock="{{ $componente->stock }}">
+                                            {{ $componente->nombre . ' — ' . $componente->estado->nombre . ' — ' . ($componente->deposito->nombre ?? 'Sin depósito') }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -335,9 +340,13 @@
                                     id="transferNombre" name="transferNombre" required>
                                     <option value="">Seleccionar</option>
                                     @foreach ($componentes as $componente)
-                                        <option value="{{ $componente->id }}" data-stock="{{ $componente->stock }}">
-                                            {{ $componente->nombre . ' — ' . $componente->estado->nombre . ' — ' . ($componente->deposito->nombre ?? 'sin depósito') }}
-                                        </option>
+                                        @if (in_array((int) $componente->estado_id, [2, 4], true) && (int) $componente->stock > 0)
+                                            <option value="{{ $componente->id }}"
+                                                data-stock="{{ $componente->stock }}"
+                                                data-estado="{{ $componente->estado_id }}">
+                                                {{ $componente->nombre . ' — ' . $componente->estado->nombre . ' — ' . ($componente->deposito->nombre ?? 'Sin depósito') }}
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -404,23 +413,31 @@
                                     id="transferStateNombre" name="transferStateNombre" required>
                                     <option value="">Seleccionar</option>
                                     @foreach ($componentes as $componente)
-                                        <option value="{{ $componente->id }}"
-                                            data-statestock="{{ $componente->stock }}">
-                                            {{ ($componente->nombre ?? '—') . ' — ' . ($componente->estado->nombre ?? '—') . ' — ' . ($componente->deposito->nombre ?? 'sin depósito') }}
-                                        </option>
+                                        @if (in_array((int) $componente->estado_id, [2, 4], true) && $componente->stock > 0)
+                                            <option value="{{ $componente->id }}"
+                                                data-statestock="{{ $componente->stock }}"
+                                                data-estado="{{ $componente->estado_id }}">
+                                                {{ ($componente->nombre ?? '—') . ' — ' . ($componente->estado->nombre ?? '—') . ' — ' . ($componente->deposito->nombre ?? 'Sin depósito') }}
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-6">
-                                <label for="transferStateEstado" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Nuevo estado</label>
-                                <select class="form-control @error('transferStateEstado') is-invalid @enderror"
-                                    id="transferStateEstado" name="transferStateEstado" required>
-                                    <option value="">Seleccionar</option>
-                                    @foreach ($estados as $estado)
-                                        <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Cambio de
+                                    estado</label>
+
+                                <div id="transferStateCambio"
+                                    class="form-control d-flex align-items-center justify-content-center gap-2"
+                                    style="background:#f8f9fa; min-height:38px; color:#6c757d;">
+                                    <span id="transferStateOrigen">Seleccionar</span>
+                                    <span id="transferStateFlecha" class="material-symbols-outlined d-none"
+                                        style="font-size:18px;">arrow_forward</span>
+                                    <span id="transferStateDestino"></span>
+                                </div>
+
+                                <input type="hidden" id="transferStateEstado" name="transferStateEstado"
+                                    value="">
                             </div>
                         </div>
                         <div class="row g-3 mb-3">
@@ -430,7 +447,7 @@
                                 <div class="input-group">
                                     <input type="number"
                                         class="form-control @error('transferStateStock') is-invalid @enderror"
-                                        id="transferStateStock" name="transferStateStock" min="0" required
+                                        id="transferStateStock" name="transferStateStock" min="1" required
                                         readonly>
                                     <button class="btn btn-hu-outline all-state-button" type="button"
                                         disabled>Todo</button>
@@ -492,8 +509,7 @@
                 </button>
                 <button type="button" id="deleteFilters"
                     class="btn btn-hu-outline btn-sm d-none align-items-center gap-1">
-                    <span class="material-symbols-outlined"
-                        style="font-size:16px;line-height:1;">close</span>
+                    <span class="material-symbols-outlined" style="font-size:16px;line-height:1;">close</span>
                     Limpiar filtros
                 </button>
 
@@ -532,8 +548,7 @@
             </div>
 
             {{-- Panel de filtros --}}
-            <div id="filter-div" class="d-none flex-wrap gap-3 mb-3 p-3 rounded-3"
-                style="background:#F4F6F9;">
+            <div id="filter-div" class="d-none flex-wrap gap-3 mb-3 p-3 rounded-3" style="background:#F4F6F9;">
                 <div>
                     <label for="filtro-deposito" class="form-label fw-semibold"
                         style="font-size:.8rem;">Depósito</label>
@@ -573,52 +588,459 @@
                 </div>
             </div>
 
-            {{-- Tabla de componentes --}}
-            <div class="table-responsive">
-                <table id="table_componentes" class="table table-bordered table-striped w-100">
-                    <thead style="display:none;">
+            {{-- ============================================================
+     TABLA AGRUPADA DE COMPONENTES
+     ============================================================ --}}
+            <style>
+                .componentes-table-wrapper {
+                    overflow-x: auto;
+                    border: 1px solid #e4eaf0;
+                    border-radius: 12px;
+                }
+
+                #table_componentes {
+                    margin: 0 !important;
+                    border: 0 !important;
+                    border-collapse: separate;
+                    border-spacing: 0;
+                    color: #263b53;
+                    min-width: 980px;
+                }
+
+                #table_componentes thead th {
+                    background: #f7f9fb;
+                    border: 0;
+                    border-bottom: 1px solid #e4eaf0;
+                    color: #68788b;
+                    font-size: .72rem;
+                    font-weight: 700;
+                    letter-spacing: .055em;
+                    text-transform: uppercase;
+                    padding: 14px 18px;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                }
+
+                #table_componentes tbody td {
+                    background: #fff;
+                    border: 0;
+                    border-bottom: 1px solid #edf1f5;
+                    padding: 17px 18px;
+                    vertical-align: middle;
+                }
+
+                #table_componentes tbody tr:last-child td {
+                    border-bottom: 0;
+                }
+
+                #table_componentes tbody tr {
+                    transition: background-color .15s ease;
+                }
+
+                #table_componentes tbody tr:hover td {
+                    background: #fafcff;
+                }
+
+                /* Tipo */
+                .componente-tipo {
+                    color: #5f7084;
+                    font-size: .82rem;
+                    font-weight: 600;
+                }
+
+                /* Nombre */
+                .componente-nombre {
+                    color: var(--hu-azul);
+                    font-size: .9rem;
+                    font-weight: 600;
+                    line-height: 1.35;
+                }
+
+                /* Depósito */
+                .componente-deposito {
+                    color: #526579;
+                    font-size: .84rem;
+                    line-height: 1.35;
+                }
+
+                .componente-deposito-label {
+                    color: #8a98a8;
+                    font-size: .72rem;
+                    display: block;
+                    margin-bottom: 2px;
+                }
+
+                /* Resumen de estados */
+                .estados-resumen {
+                    display: flex;
+                    align-items: stretch;
+                    width: fit-content;
+                    min-width: 270px;
+                }
+
+                .estado-metrica {
+                    min-width: 82px;
+                    padding: 0 18px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+
+                .estado-metrica:first-child {
+                    padding-left: 0;
+                }
+
+                .estado-metrica+.estado-metrica {
+                    border-left: 1px solid #dfe5eb;
+                }
+
+                .estado-numero {
+                    font-size: 1.05rem;
+                    font-weight: 700;
+                    line-height: 1.15;
+                    margin-bottom: 3px;
+                }
+
+                .estado-numero.disponible {
+                    color: #198754;
+                }
+
+                .estado-numero.en-uso {
+                    color: #1769aa;
+                }
+
+                .estado-numero.roto {
+                    color: #dc3545;
+                }
+
+                .estado-numero.sin-stock {
+                    color: #7d8b99;
+                }
+
+                .estado-label {
+                    color: #7b8998;
+                    font-size: .7rem;
+                    line-height: 1.15;
+                    white-space: nowrap;
+                }
+
+                /* Total */
+                .componente-total {
+                    text-align: center;
+                    min-width: 65px;
+                }
+
+                .componente-total-numero {
+                    color: var(--hu-azul);
+                    font-size: 1rem;
+                    font-weight: 700;
+                }
+
+                /* Acciones */
+                .componente-acciones {
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    gap: 6px;
+                    white-space: nowrap;
+                }
+
+                .componente-accion {
+                    width: 38px;
+                    height: 38px;
+                    padding: 0 !important;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 9px !important;
+                    background: #fff;
+                    border: 1px solid #dce4ec !important;
+                    color: #526579;
+                    transition:
+                        background-color .15s ease,
+                        border-color .15s ease,
+                        color .15s ease,
+                        transform .15s ease;
+                }
+
+                .componente-accion:hover {
+                    background: #f4f8fc;
+                    border-color: #b9cadb !important;
+                    color: var(--hu-azul);
+                    transform: translateY(-1px);
+                }
+
+                .componente-accion-primary {
+                    background: #edf4fb;
+                    border-color: #d9e7f4 !important;
+                    color: var(--hu-azul);
+                }
+
+                .componente-accion-danger {
+                    color: #c83b45;
+                }
+
+                .componente-accion-danger:hover {
+                    background: #fff5f5;
+                    border-color: #f0c7ca !important;
+                    color: #b4232d;
+                }
+
+                .componente-accion .material-symbols-outlined {
+                    font-size: 18px;
+                }
+
+                /* Menú contextual de estados */
+                .componente-menu-estado {
+                    min-width: 210px;
+                    padding: 6px;
+                    border: 1px solid #e2e8ef;
+                    border-radius: 10px;
+                    box-shadow: 0 8px 24px rgba(0, 55, 100, .12);
+                }
+
+                .componente-menu-titulo {
+                    padding: 7px 10px 8px;
+                    color: #7b8998;
+                    font-size: .7rem;
+                    font-weight: 700;
+                    letter-spacing: .05em;
+                    text-transform: uppercase;
+                }
+
+                .componente-menu-estado .dropdown-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 9px 10px;
+                    border-radius: 7px;
+                    color: #34495e;
+                    font-size: .82rem;
+                }
+
+                .componente-menu-estado .dropdown-item:hover {
+                    background: #f3f7fb;
+                    color: var(--hu-azul);
+                }
+
+                .componente-menu-estado .dropdown-item .material-symbols-outlined {
+                    font-size: 18px;
+                    color: #68788b;
+                }
+
+                .componente-menu-texto {
+                    display: flex;
+                    flex-direction: column;
+                    min-width: 0;
+                    line-height: 1.25;
+                }
+
+                .componente-menu-texto>span {
+                    font-weight: 600;
+                }
+
+                .componente-menu-texto small {
+                    margin-top: 2px;
+                    color: #8a98a8;
+                    font-size: .7rem;
+                }
+
+                @media (max-width: 1100px) {
+                    #table_componentes {
+                        min-width: 900px;
+                    }
+
+                    .estado-metrica {
+                        min-width: 72px;
+                        padding: 0 13px;
+                    }
+                }
+            </style>
+
+            <div class="componentes-table-wrapper">
+                <table id="table_componentes" class="table w-100">
+                    <thead>
                         <tr>
-                            <th>Categoría</th>
-                            <th>Nombre</th>
-                            <th>Depósito</th>
-                            <th>Stock</th>
-                            <th>Estado</th>
-                            <th>Opciones</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Depósito</th>
+                            <th scope="col">Estados</th>
+                            <th scope="col" class="text-center">Total</th>
+                            <th scope="col" class="text-end">Acciones</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        @foreach ($componentes as $componente)
-                            <tr>
-                                <td>{{ $componente->tipo->nombre ?? 'Sin categoría' }}</td>
-                                <td>{{ $componente->nombre }}</td>
-                                <td>Depósito: {{ $componente->deposito->nombre ?? 'No asignado' }}</td>
-                                <td>Stock: {{ $componente->stock }}</td>
-                                <td>Estado: {{ $componente->estado->nombre ?? 'No asignado' }}</td>
+                        @foreach ($componentesAgrupados as $grupo)
+                            <tr data-deposito="{{ strtolower($grupo['deposito_nombre']) }}"
+                                data-categoria="{{ strtolower($grupo['tipo_nombre']) }}"
+                                data-disponible="{{ $grupo['disponible'] }}"
+                                data-estados="{{ strtolower(
+                                    implode(
+                                        '|',
+                                        array_filter([
+                                            $grupo['disponible'] > 0 ? 'disponible' : 'sin stock',
+                                            $grupo['en_uso'] > 0 ? 'en uso' : null,
+                                            $grupo['roto'] > 0 ? 'roto' : null,
+                                        ]),
+                                    ),
+                                ) }}">
+
+                                {{-- Tipo --}}
+                                <td>
+                                    <span class="componente-tipo">
+                                        {{ $grupo['tipo_nombre'] }}
+                                    </span>
+                                </td>
+
+                                {{-- Nombre --}}
+                                <td>
+                                    <span class="componente-nombre">
+                                        {{ $grupo['nombre'] }}
+                                    </span>
+                                </td>
+
+                                {{-- Depósito --}}
+                                <td>
+                                    <span class="componente-deposito-label">Ubicación</span>
+                                    <span class="componente-deposito">
+                                        {{ $grupo['deposito_nombre'] }}
+                                    </span>
+                                </td>
+
+                                {{-- Estados --}}
+                                <td>
+                                    <div class="estados-resumen">
+
+                                        @if ($grupo['disponible'] > 0)
+                                            <div class="estado-metrica">
+                                                <span class="estado-numero disponible">
+                                                    {{ $grupo['disponible'] }}
+                                                </span>
+                                                <span class="estado-label">
+                                                    Disponibles
+                                                </span>
+                                            </div>
+                                        @else
+                                            <div class="estado-metrica">
+                                                <span class="estado-numero sin-stock">
+                                                    0
+                                                </span>
+                                                <span class="estado-label">
+                                                    Sin stock
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                        @if ($grupo['en_uso'] > 0)
+                                            <div class="estado-metrica">
+                                                <span class="estado-numero en-uso">
+                                                    {{ $grupo['en_uso'] }}
+                                                </span>
+                                                <span class="estado-label">
+                                                    En uso
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                        @if ($grupo['roto'] > 0)
+                                            <div class="estado-metrica">
+                                                <span class="estado-numero roto">
+                                                    {{ $grupo['roto'] }}
+                                                </span>
+                                                <span class="estado-label">
+                                                    Rotos
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                    </div>
+                                </td>
+
+                                {{-- Total --}}
+                                <td>
+                                    <div class="componente-total">
+                                        <span class="componente-total-numero">
+                                            {{ $grupo['total'] }}
+                                        </span>
+                                    </div>
+                                </td>
+
+                                {{-- Acciones --}}
                                 <td>
                                     @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
-                                        <div class="d-flex justify-content-end gap-1">
-                                            <button type="button" class="btn btn-hu btn-sm select-button"
-                                                data-id="{{ $componente->id }}"
-                                                data-nombre="{{ $componente->nombre }}" title="Seleccionar">
-                                                <span class="material-symbols-outlined"
-                                                    style="font-size:15px;">check</span>
+                                        <div class="componente-acciones">
+
+                                            {{-- Operar sobre un estado específico --}}
+                                            @if ($grupo['acciones']['disponible'] || $grupo['acciones']['roto'])
+                                                <div class="dropdown">
+                                                    <button type="button" class="btn componente-accion"
+                                                        data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                                                        aria-expanded="false" title="Operar sobre">
+                                                        <span class="material-symbols-outlined">more_vert</span>
+                                                    </button>
+
+                                                    <div
+                                                        class="dropdown-menu dropdown-menu-end componente-menu-estado">
+
+                                                        <div class="componente-menu-titulo">
+                                                            Operar sobre
+                                                        </div>
+
+                                                        @if ($grupo['acciones']['disponible'])
+                                                            <button type="button" class="dropdown-item select-button"
+                                                                data-id="{{ $grupo['acciones']['disponible'] }}"
+                                                                data-nombre="{{ $grupo['nombre'] }} — Disponible">
+                                                                <span
+                                                                    class="material-symbols-outlined">inventory_2</span>
+                                                                <span class="componente-menu-texto">
+                                                                    <span>Disponible</span>
+                                                                    <small>{{ $grupo['disponible'] }}
+                                                                        {{ $grupo['disponible'] == 1 ? 'unidad' : 'unidades' }}</small>
+                                                                </span>
+                                                            </button>
+                                                        @endif
+
+                                                        @if ($grupo['acciones']['roto'])
+                                                            <button type="button" class="dropdown-item select-button"
+                                                                data-id="{{ $grupo['acciones']['roto'] }}"
+                                                                data-nombre="{{ $grupo['nombre'] }} — Roto">
+                                                                <span
+                                                                    class="material-symbols-outlined">broken_image</span>
+                                                                <span class="componente-menu-texto">
+                                                                    <span>Roto</span>
+                                                                    <small>{{ $grupo['roto'] }}
+                                                                        {{ $grupo['roto'] == 1 ? 'unidad' : 'unidades' }}</small>
+                                                                </span>
+                                                            </button>
+                                                        @endif
+
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @php
+                                                $idEdicion = $grupo['filas']->first()->id;
+                                            @endphp
+
+                                            <button type="button"
+                                                class="btn componente-accion componente-accion-primary"
+                                                data-bs-toggle="modal" data-bs-target="#editModal"
+                                                data-id="{{ $idEdicion }}" data-nombre="{{ $grupo['nombre'] }}"
+                                                data-tipo="{{ $grupo['tipo_id'] }}" title="Editar">
+                                                <span class="material-symbols-outlined">edit</span>
                                             </button>
-                                            <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#editModal" data-id="{{ $componente->id }}"
-                                                data-nombre="{{ $componente->nombre }}"
-                                                data-tipo="{{ $componente->tipo_id }}" title="Editar">
-                                                <span class="material-symbols-outlined"
-                                                    style="font-size:15px;">edit</span>
-                                            </button>
+
                                             @if ($rolActual === 'Super administrador')
-                                                <button type="button" class="btn btn-danger btn-sm"
-                                                    data-id="{{ $componente->id }}"
-                                                    data-nombre="{{ $componente->nombre }}" data-bs-toggle="modal"
+                                                <button type="button"
+                                                    class="btn componente-accion componente-accion-danger"
+                                                    data-id="{{ $idEdicion }}"
+                                                    data-nombre="{{ $grupo['nombre'] }}" data-bs-toggle="modal"
                                                     data-bs-target="#deleteModal" title="Eliminar">
-                                                    <span class="material-symbols-outlined"
-                                                        style="font-size:15px;">delete</span>
+                                                    <span class="material-symbols-outlined">delete</span>
                                                 </button>
                                             @endif
+
                                         </div>
                                     @endif
                                 </td>
@@ -738,21 +1160,20 @@
                     const stockFilter = $('#filtro-stock').val();
 
                     $('#table_componentes tbody tr').each(function() {
-                        const $cells = $(this).children('td');
-                        const rowDeposito = $cells.eq(2).text().replace(/^depósito:\s*/i, '').trim()
-                            .toLowerCase();
-                        const rowEstado = $cells.eq(4).text().replace(/^estado:\s*/i, '').trim()
-                            .toLowerCase();
-                        const rowCategoria = $cells.eq(0).text().trim().toLowerCase();
-                        const rowStock = Number($cells.eq(3).text().replace(/[^0-9-]/g, ''));
+                        const $row = $(this);
+                        const rowDeposito = String($row.data('deposito') || '').toLowerCase();
+                        const rowEstado = String($row.data('estados') || '').toLowerCase();
+                        const rowCategoria = String($row.data('categoria') || '').toLowerCase();
+                        const rowStock = Number($row.data('disponible') || 0);
 
+                        const matchesEstado = !estado || rowEstado.split('|').includes(estado);
                         const matchesStock = !stockFilter ||
                             (stockFilter === 'poco-stock' && rowStock > 0 && rowStock < 10) ||
                             (stockFilter === 'sin-stock' && rowStock === 0);
 
-                        $(this).toggle(
+                        $row.toggle(
                             (!deposito || rowDeposito === deposito) &&
-                            (!estado || rowEstado === estado) &&
+                            matchesEstado &&
                             (!categoria || rowCategoria === categoria) &&
                             matchesStock
                         );
@@ -809,7 +1230,36 @@
                 $('#transferStateNombre').on('change', function() {
                     const input = document.getElementById('transferStateStock');
                     const btn = document.querySelector('.all-state-button');
-                    const stock = this.options[this.selectedIndex].getAttribute('data-statestock');
+
+                    const estadoHidden = document.getElementById('transferStateEstado');
+                    const estadoOrigen = document.getElementById('transferStateOrigen');
+                    const estadoDestino = document.getElementById('transferStateDestino');
+                    const flecha = document.getElementById('transferStateFlecha');
+
+                    const selectedOption = this.options[this.selectedIndex];
+                    const stock = selectedOption?.getAttribute('data-statestock');
+                    const estadoActual = Number(selectedOption?.getAttribute('data-estado'));
+
+                    // Reiniciar la información de la transición.
+                    estadoHidden.value = '';
+                    estadoOrigen.textContent = 'Seleccionar';
+                    estadoDestino.textContent = '';
+                    flecha.classList.add('d-none');
+
+                    if (estadoActual === 4) {
+                        // Disponible → Roto
+                        estadoHidden.value = '2';
+                        estadoOrigen.textContent = 'Disponible';
+                        estadoDestino.textContent = 'Roto';
+                        flecha.classList.remove('d-none');
+                    } else if (estadoActual === 2) {
+                        // Roto → Disponible
+                        estadoHidden.value = '4';
+                        estadoOrigen.textContent = 'Roto';
+                        estadoDestino.textContent = 'Disponible';
+                        flecha.classList.remove('d-none');
+                    }
+
                     if (this.value) {
                         input.removeAttribute('readonly');
                         btn.removeAttribute('disabled');
