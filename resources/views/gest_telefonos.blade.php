@@ -504,7 +504,7 @@
                     @php $enUso = $telefono->area_id !== null; @endphp
                     <div class="telefono-card" data-nombre="{{ strtolower($telefono->nombre) }}"
                         data-id="{{ strtolower($telefono->identificador) }}"
-                        style="width:200px;background:#fff;border:1px solid rgba(0,55,100,.12);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.4rem;transition:box-shadow .2s,transform .2s;cursor:pointer;"
+                        style="width:250px;background:#fff;border:1px solid rgba(0,55,100,.12);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.4rem;transition:box-shadow .2s,transform .2s;cursor:pointer;"
                         onmouseenter="this.style.boxShadow='0 8px 24px rgba(0,55,100,.12)';this.style.transform='translateY(-2px)'"
                         onmouseleave="this.style.boxShadow='none';this.style.transform='none'">
 

@@ -162,7 +162,7 @@ class PcController extends Controller
                 }
 
                 $componente = ComponenteModel::with('deposito')
-                    ->whereKey($componenteId)
+                    ->whereKey(abs($componenteId))
                     ->lockForUpdate()
                     ->first();
 
@@ -178,16 +178,37 @@ class PcController extends Controller
                     ]);
                 }
 
-                // Se acepta Sin Stock (caso normal) o Disponible (por si otra fila del
-                // mismo formulario, u otro usuario, ya repuso el mismo registro).
-                if (! in_array((int) $componente->estado_id, [
-                    ComponenteController::ESTADO_SIN_STOCK,
-                    ComponenteController::ESTADO_DISPONIBLE,
-                ], true)) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        $campo => 'Solo se puede ingresar stock a un componente Sin Stock o Disponible.',
-                    ]);
+                if ((int) $componente->estado_id === ComponenteController::ESTADO_EN_USO) {
+                    $depositoReal = $componente->deposito_origen_id;
+
+                    $filaReal = ComponenteModel::where('nombre', $componente->nombre)
+                        ->where('tipo_id', $componente->tipo_id)
+                        ->whereIn('estado_id', [
+                            ComponenteController::ESTADO_DISPONIBLE,
+                            ComponenteController::ESTADO_SIN_STOCK,
+                        ])
+                        ->where(function ($q) use ($depositoReal) {
+                            $depositoReal
+                                ? $q->where('deposito_id', $depositoReal)
+                                : $q->whereNull('deposito_id');
+                        })
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($filaReal) {
+                        $componente = $filaReal;
+                    } else {
+                        $nueva              = new ComponenteModel();
+                        $nueva->nombre      = $componente->nombre;
+                        $nueva->tipo_id     = $componente->tipo_id;
+                        $nueva->deposito_id = $depositoReal;
+                        $nueva->estado_id   = ComponenteController::ESTADO_SIN_STOCK;
+                        $nueva->stock       = 0;
+                        $nueva->save();
+                        $componente = $nueva;
+                    }
                 }
+
 
                 if (! $componente->deposito_id) {
                     throw \Illuminate\Validation\ValidationException::withMessages([

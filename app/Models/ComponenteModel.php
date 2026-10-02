@@ -115,7 +115,7 @@ class ComponenteModel extends Model
                     && (int) $f->deposito_id            === (int) $eu->deposito_origen_id;
             });
 
-            if (!$yaExiste) {
+            if (!$yaExiste && $eu->deposito_origen_id !== null && stripos($eu->nombre, 'no identificad') === false) {
                 // Clonar la fila En uso como un objeto Sin stock virtual
                 // (no se guarda en BD, solo viaja al blade/JS)
                 $virtual = $eu->replicate();

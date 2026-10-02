@@ -1143,7 +1143,7 @@
                 @foreach ($pcs as $pc)
                     <div class="pc-card" data-nombre="{{ strtolower($pc->nombre) }}"
                         data-id="{{ strtolower($pc->identificador) }}"
-                        style="width:200px;background:#fff;border:1px solid rgba(0,55,100,.12);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.4rem;transition:box-shadow .2s,transform .2s;cursor:pointer;"
+                        style="width:250px; background:#fff; border:1px solid rgba(0,55,100,.12); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:.4rem; transition:box-shadow .2s,transform .2s; cursor:pointer;"
                         onmouseenter="this.style.boxShadow='0 8px 24px rgba(0,55,100,.12)';this.style.transform='translateY(-2px)'"
                         onmouseleave="this.style.boxShadow='none';this.style.transform='none'">
 
@@ -1671,7 +1671,7 @@
                         if (search && !haystack.includes(search)) return;
                         var available = item.stock - (counts[item.id] || 0);
                         var isSelected = String(item.id) === String(selectedId);
-                        var isSinStock = item.estado_id === 7 || item.estado_id === 5 || available <= 0;
+                        var isSinStock = item.estado_id === 7 || available <= 0;
 
                         if (!isSinStock && !isSelected && available <= 0) return;
                         visible++;
@@ -2025,13 +2025,13 @@
                     var catalogKey = targetCatalogKey(activeComponentTarget);
                     var counts = countSelectedStock(catalogKey, activeComponentTarget);
                     var available = item ? (item.stock - (counts[item.id] || 0)) : 1;
-                    var isSinStock = item && (Number(item.estado_id) === 7 || Number(item.estado_id) === 5 ||
-                        available <= 0);
+                    var isSinStock = item && (Number(item.estado_id) === 7 || available <= 0);
 
                     $('#component-detail-stock-body .hu-stock-row').removeClass('is-selected');
                     $(this).closest('.hu-stock-row').addClass('is-selected');
-
                     $('#component-detail-stock-replenishment').toggle(!!isSinStock);
+                    $('#component-detail-confirm').text(isSinStock ? 'Confirmar selección' :
+                        'Seleccionar componente');
 
                     if (!isSinStock) {
                         $('#component-detail-stock-quantity').val('1');
@@ -2064,8 +2064,7 @@
 
                         var counts2 = countSelectedStock(catalogKey, target);
                         var available2 = item ? (item.stock - (counts2[item.id] || 0)) : 1;
-                        var isSinStockItem = item && (Number(item.estado_id) === 7 || Number(item.estado_id) ===
-                            5 || available2 <= 0);
+                        var isSinStockItem = item && (Number(item.estado_id) === 7 || available2 <= 0);
                         var cantidad, motivo;
 
                         if (isSinStockItem) {
