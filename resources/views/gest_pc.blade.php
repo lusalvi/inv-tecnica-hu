@@ -753,8 +753,7 @@
                         <p class="text-muted mb-4" style="font-size:.8rem;">La PC se registró correctamente junto con
                             los componentes seleccionados.</p>
                         <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
-                            <button type="button" class="btn btn-hu-outline" data-bs-dismiss="modal">Agregar otra
-                                PC</button>
+                            <button type="button" class="btn btn-hu-outline" id="btnAddAnotherPc">Agregar otra PC</button>
                             <button type="button" class="btn btn-hu-confirm" data-bs-dismiss="modal">Ir al listado
                                 de PCs</button>
                         </div>
@@ -766,223 +765,237 @@
 
     {{-- Modal: Editar PC --}}
     <div class="modal fade" id="editPcModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content"
-                style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Modificar PC</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content hu-maintenance-modal">
+                <div class="modal-header border-0 maintenance-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="maintenance-icon"><span class="material-symbols-outlined">computer</span></div>
+                        <div>
+                            <h5 class="modal-title maintenance-title">Mantenimiento de PC</h5>
+                            <div class="maintenance-subtitle">Modificá los datos del equipo o registrá un mantenimiento.</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <div class="modal-body">
-                    <form action="{{ route('edit_pc') }}" method="POST" id="editPcForm"
-                        style="display:flex;flex-direction:column;gap:20px;">
+                <div class="modal-body maintenance-body p-0">
+                    <form action="{{ route('edit_pc') }}" method="POST" id="editPcForm">
                         @method('PATCH')
                         @csrf
-
-                        <div class="form-check">
-                            <input type="hidden" name="editId" id="editId">
-                            <input class="form-check-input" type="checkbox" id="editEn-uso" name="en-uso">
-                            <label class="form-check-label" style="font-size:.85rem;" for="editEn-uso">En uso</label>
+                        <input type="hidden" name="editId" id="editId">
+                        <div class="maintenance-layout">
+                            <aside class="maintenance-sidebar">
+                                <div class="maintenance-nav-title">Secciones</div>
+                                <button type="button" class="maintenance-nav-link active" data-bs-target="#editPcDatos" aria-selected="true">
+                                    <span class="material-symbols-outlined">description</span><span><strong>Datos generales</strong><small>Información básica</small></span>
+                                </button>
+                                <button type="button" class="maintenance-nav-link" data-bs-target="#editPcUbicacion">
+                                    <span class="material-symbols-outlined">location_on</span><span><strong>Ubicación</strong><small>Área y depósito</small></span>
+                                </button>
+                                <button type="button" class="maintenance-nav-link" data-bs-target="#editPcComponentes">
+                                    <span class="material-symbols-outlined">memory</span><span><strong>Componentes</strong><small>Hardware de la PC</small></span>
+                                </button>
+                                <button type="button" class="maintenance-nav-link" data-bs-target="#editPcMantenimiento">
+                                    <span class="material-symbols-outlined">build</span><span><strong>Mantenimiento</strong><small>Registro y cambios</small></span>
+                                </button>
+                            </aside>
+                            <main class="maintenance-content">
+                                <div class="tab-content maintenance-tab-content">
+                                    <div class="tab-pane fade show active" id="editPcDatos">                        {{-- Sección: Datos generales --}}
+                        <div class="maintenance-section">
+                            <div class="fw-bold mb-3" style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
+                                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">info</span>Datos generales
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="editIdentificador" class="form-label fw-semibold" style="font-size:.78rem;">Nº inventario</label>
+                                    <input type="text" class="form-control @error('editIdentificador') is-invalid @enderror"
+                                        id="editIdentificador" name="editIdentificador" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="editNombre" class="form-label fw-semibold" style="font-size:.78rem;">Nombre</label>
+                                    <input type="text" class="form-control @error('editNombre') is-invalid @enderror"
+                                        id="editNombre" name="editNombre" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="editIp" class="form-label fw-semibold" style="font-size:.78rem;">IPv4</label>
+                                    <input type="text" class="form-control @error('editIp') is-invalid @enderror"
+                                        id="editIp" name="editIp" placeholder="192.168.x.x" required>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="row g-3">
-                            <div class="col-auto">
-                                <label for="editIdentificador" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Nº Inventario</label>
-                                <input type="text"
-                                    class="form-control @error('editIdentificador') is-invalid @enderror"
-                                    id="editIdentificador" name="editIdentificador" style="max-width:165px;"
-                                    required>
-                            </div>
-                            <div class="col-auto">
-                                <label for="editNombre" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Nombre</label>
-                                <input type="text" class="form-control @error('editNombre') is-invalid @enderror"
-                                    id="editNombre" name="editNombre" style="max-width:165px;" required>
-                            </div>
-                            <div class="col-auto">
-                                <label for="editIp" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">IPv4</label>
-                                <input type="text" class="form-control @error('editIp') is-invalid @enderror"
-                                    id="editIp" name="editIp" style="max-width:165px;" required>
-                            </div>
-                        </div>
 
-                        <div class="row g-3">
-                            <div class="col-auto" id="edit-content-container">
-                                <div id="edit-area-select">
-                                    <label for="editArea" class="form-label fw-semibold"
-                                        style="font-size:.85rem;">Área</label>
-                                    <select class="form-control @error('editArea') is-invalid @enderror"
-                                        id="editArea" name="editArea" style="min-width:165px;max-width:165px;"
-                                        required>
-                                        <option value="" disabled selected>Selecciona un área</option>
-                                        @foreach ($areas as $area)
-                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                    </div>
+                                    <div class="tab-pane fade" id="editPcUbicacion">
+                                <div class="maintenance-status">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="maintenance-status-icon"><span class="material-symbols-outlined">computer</span></div>
+                                        <div><div class="maintenance-status-title" id="editPcStatusTitle">Estado del equipo</div><div class="maintenance-status-text">La disponibilidad y asignación se administran desde este formulario.</div></div>
+                                    </div>
+                                    <label class="maintenance-status-action">
+                                        <input class="form-check-input m-0" type="checkbox" id="editEn-uso" name="en-uso">
+                                        <span>En uso — asignada a un área</span>
+                                    </label>
+                                </div>                        {{-- Sección: Ubicación --}}
+                        <div class="maintenance-section">
+                            <div class="fw-bold mb-3" style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
+                                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">location_on</span>Ubicación
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6" id="edit-content-container">
+                                    <div id="edit-area-select">
+                                        <label for="editArea" class="form-label fw-semibold" style="font-size:.78rem;">Área</label>
+                                        <select class="form-control @error('editArea') is-invalid @enderror"
+                                            id="editArea" name="editArea" required>
+                                            <option value="" disabled selected>Seleccioná un área</option>
+                                            @foreach ($areas as $area)
+                                                <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="mt-2" id="editNroConsul_div" style="display:none;">
+                                            <label for="editNroConsul" class="form-label fw-semibold" style="font-size:.78rem;">Nº consultorio</label>
+                                            <input type="text" class="form-control @error('editNroConsul') is-invalid @enderror"
+                                                id="editNroConsul" name="editNroConsul">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editDeposito" class="form-label fw-semibold" style="font-size:.78rem;">Depósito</label>
+                                    <select class="form-control @error('editDeposito') is-invalid @enderror"
+                                        id="editDeposito" name="editDeposito" required>
+                                        <option value="" disabled selected>Seleccioná un depósito</option>
+                                        @foreach ($depositos as $deposito)
+                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
                                         @endforeach
                                     </select>
-                                    <div class="mt-2" id="editNroConsul_div" style="display:none;">
-                                        <label for="editNroConsul" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Nº consultorio</label>
-                                        <input type="text"
-                                            class="form-control @error('editNroConsul') is-invalid @enderror"
-                                            id="editNroConsul" name="editNroConsul" style="max-width:165px;">
-                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-auto">
-                                <label for="editDeposito" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Depósito</label>
-                                <select class="form-control @error('editDeposito') is-invalid @enderror"
-                                    id="editDeposito" name="editDeposito" style="min-width:165px;max-width:165px;"
-                                    required>
-                                    <option value="" disabled selected>Selecciona un depósito</option>
-                                    @foreach ($depositos as $deposito)
-                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
 
-                        <div style="display:flex;flex-direction:row;gap:20px;flex-wrap:wrap;">
-                            <div style="display:flex;flex-direction:column;gap:20px;">
-                                <div class="row g-3">
-                                    <div class="col-auto">
-                                        <label for="editMotherboard" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Placa madre</label>
-                                        <select class="form-control @error('editMotherboard') is-invalid @enderror"
-                                            id="editMotherboard" name="editMotherboard" style="max-width:165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona una placa madre
-                                            </option>
-                                            @foreach ($motherboards as $motherboard)
-                                                <option value="{{ $motherboard->id }}">
-                                                    {{ $motherboard->nombre . ' - ' . ($motherboard->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+
                                     </div>
-                                    <div class="col-auto">
-                                        <label for="editProcesador" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Procesador</label>
-                                        <select class="form-control @error('editProcesador') is-invalid @enderror"
-                                            id="editProcesador" name="editProcesador" style="max-width:165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona un procesador</option>
-                                            @foreach ($procesadores as $procesador)
-                                                <option value="{{ $procesador->id }}">
-                                                    {{ $procesador->nombre . ' - ' . ($procesador->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row g-3">
-                                    <div class="col-auto">
-                                        <label for="editPlacavid" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Placa de video</label>
-                                        <select class="form-control @error('editPlacavid') is-invalid @enderror"
-                                            id="editPlacavid" name="editPlacavid" style="max-width:165px;">
-                                            <option value="" disabled selected>Selecciona una placa de video
-                                            </option>
-                                            @foreach ($placasvid as $placavid)
-                                                <option value="{{ $placavid->id }}">
-                                                    {{ $placavid->nombre . ' - ' . ($placavid->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-auto">
-                                        <label for="editFuente" class="form-label fw-semibold"
-                                            style="font-size:.85rem;">Fuente</label>
-                                        <select class="form-control @error('editFuente') is-invalid @enderror"
-                                            id="editFuente" name="editFuente" style="max-width:165px;" required>
-                                            <option value="" disabled selected>Selecciona una fuente</option>
-                                            @foreach ($fuentes as $fuente)
-                                                <option value="{{ $fuente->id }}">
-                                                    {{ $fuente->nombre . ' - ' . ($fuente->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+                                    <div class="tab-pane fade" id="editPcComponentes">                        {{-- Sección: Componentes --}}
+                        <div class="maintenance-section">
+                            <div class="fw-bold mb-3" style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
+                                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">memory</span>Componentes
                             </div>
-                            <div class="form-group">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Discos</label>
-                                <div id="input-container-2">
-                                    <div class="form-group input-group mb-3 select">
-                                        <select id="discos2-1" name="discos2[]" class="form-control"
-                                            style="border-top-left-radius:5px;border-bottom-left-radius:5px;max-width:165px;">
-                                            <option value="" disabled selected>Selecciona un disco</option>
-                                            @foreach ($discos as $disco)
-                                                <option value="{{ $disco->id }}"
-                                                    data-stock="{{ $disco->stock }}">
-                                                    @if ($disco->tipo->nombre == 'SDD')
-                                                        {{ $disco->nombre . ' - SDD - ' . ($disco->deposito->nombre ?? 'no asignado') }}
-                                                    @endif
-                                                    @if ($disco->tipo->nombre == 'HDD')
-                                                        {{ $disco->nombre . ' - HDD - ' . ($disco->deposito->nombre ?? 'no asignado') }}
-                                                    @endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-hu-outline add-input-disc"
-                                                type="button">+</button>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="editMotherboard" class="form-label fw-semibold" style="font-size:.78rem;">Placa madre <span style="color:#b02a37;">*</span></label>
+                                    <select class="form-control @error('editMotherboard') is-invalid @enderror"
+                                        id="editMotherboard" name="editMotherboard" required>
+                                        <option value="" disabled selected>Seleccioná una placa madre</option>
+                                        @foreach ($motherboards as $motherboard)
+                                            <option value="{{ $motherboard->id }}">{{ $motherboard->nombre . ' — ' . ($motherboard->deposito->nombre ?? 'sin depósito') }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editProcesador" class="form-label fw-semibold" style="font-size:.78rem;">Procesador <span style="color:#b02a37;">*</span></label>
+                                    <select class="form-control @error('editProcesador') is-invalid @enderror"
+                                        id="editProcesador" name="editProcesador" required>
+                                        <option value="" disabled selected>Seleccioná un procesador</option>
+                                        @foreach ($procesadores as $procesador)
+                                            <option value="{{ $procesador->id }}">{{ $procesador->nombre . ' — ' . ($procesador->deposito->nombre ?? 'sin depósito') }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editPlacavid" class="form-label fw-semibold" style="font-size:.78rem;">Placa de video</label>
+                                    <select class="form-control @error('editPlacavid') is-invalid @enderror"
+                                        id="editPlacavid" name="editPlacavid">
+                                        <option value="" disabled selected>Seleccioná una placa de video</option>
+                                        @foreach ($placasvid as $placavid)
+                                            <option value="{{ $placavid->id }}">{{ $placavid->nombre . ' — ' . ($placavid->deposito->nombre ?? 'sin depósito') }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editFuente" class="form-label fw-semibold" style="font-size:.78rem;">Fuente <span style="color:#b02a37;">*</span></label>
+                                    <select class="form-control @error('editFuente') is-invalid @enderror"
+                                        id="editFuente" name="editFuente" required>
+                                        <option value="" disabled selected>Seleccioná una fuente</option>
+                                        @foreach ($fuentes as $fuente)
+                                            <option value="{{ $fuente->id }}">{{ $fuente->nombre . ' — ' . ($fuente->deposito->nombre ?? 'sin depósito') }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Discos</label>
+                                    <div id="input-container-2">
+                                        <div class="form-group input-group select">
+                                            <select id="discos2-1" name="discos2[]" class="form-control" style="border-top-left-radius:6px;border-bottom-left-radius:6px;">
+                                                <option value="" disabled selected>Seleccioná un disco</option>
+                                                @foreach ($discos as $disco)
+                                                    <option value="{{ $disco->id }}" data-stock="{{ $disco->stock }}">
+                                                        @if ($disco->tipo->nombre == 'SDD') {{ $disco->nombre . ' - SDD - ' . ($disco->deposito->nombre ?? 'sin depósito') }} @endif
+                                                        @if ($disco->tipo->nombre == 'HDD') {{ $disco->nombre . ' - HDD - ' . ($disco->deposito->nombre ?? 'sin depósito') }} @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-hu-outline add-input-disc maintenance-add-btn" type="button" aria-label="Agregar otro disco"><span class="material-symbols-outlined">add</span></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">RAMs</label>
-                                <div id="material-container-2">
-                                    <div class="form-group input-group mb-3 select">
-                                        <select id="rams2-1" name="rams2[]" class="form-control"
-                                            style="border-top-left-radius:5px;border-bottom-left-radius:5px;max-width:165px;">
-                                            <option value="" disabled selected>Selecciona una RAM</option>
-                                            @foreach ($rams as $ram)
-                                                <option value="{{ $ram->id }}"
-                                                    data-stock="{{ $ram->stock }}">
-                                                    {{ $ram->nombre . ' - ' . ($ram->deposito->nombre ?? 'no asignado') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-hu-outline add-input-ram" type="button">+</button>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">RAMs</label>
+                                    <div id="material-container-2">
+                                        <div class="form-group input-group select">
+                                            <select id="rams2-1" name="rams2[]" class="form-control" style="border-top-left-radius:6px;border-bottom-left-radius:6px;">
+                                                <option value="" disabled selected>Seleccioná una RAM</option>
+                                                @foreach ($rams as $ram)
+                                                    <option value="{{ $ram->id }}" data-stock="{{ $ram->stock }}">{{ $ram->nombre . ' — ' . ($ram->deposito->nombre ?? 'sin depósito') }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-hu-outline add-input-ram maintenance-add-btn" type="button" aria-label="Agregar otra RAM"><span class="material-symbols-outlined">add</span></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="en-uso-mantenimineto">
-                            <label class="form-check-label" style="font-size:.85rem;" for="en-uso-mantenimineto">Se
-                                realizó mantenimiento</label>
+
+                                    </div>
+                                    <div class="tab-pane fade" id="editPcMantenimiento">
+                        {{-- Pill: Mantenimiento --}}
+                        <div class="d-flex align-items-center gap-2 p-3 mb-2 maintenance-toggle"
+                           >
+                            <input class="form-check-input m-0 flex-shrink-0" type="checkbox" id="en-uso-mantenimineto" style="cursor:pointer;accent-color:#92400E;">
+                            <label class="fw-semibold mb-0" for="en-uso-mantenimineto" style="font-size:.85rem;color:#92400E;cursor:pointer;">Se realizó mantenimiento</label>
                         </div>
                         <div id="div-detalle-mant">
                             <div class="mb-3" style="display:none;">
-                                <label for="editDetalle" class="form-label fw-semibold"
-                                    style="font-size:.85rem;">Detalle</label>
+                                <label for="editDetalle" class="form-label fw-semibold" style="font-size:.78rem;">Detalle del mantenimiento</label>
                                 <input type="text" class="form-control @error('editDetalle') is-invalid @enderror"
-                                    id="editDetalle" name="editDetalle">
+                                    id="editDetalle" name="editDetalle" placeholder="Ej: limpieza de ventiladores, reemplazo de pasta térmica">
                             </div>
                         </div>
+
+                        {{-- Motivo --}}
                         <div class="mb-3">
-                            <label for="editMotivo" class="form-label fw-semibold"
-                                style="font-size:.85rem;">Motivo</label>
+                            <label for="editMotivo" class="form-label fw-semibold" style="font-size:.78rem;">Motivo del cambio <span style="color:#b02a37;">*</span></label>
                             <input type="text" class="form-control @error('editMotivo') is-invalid @enderror"
-                                id="editMotivo" name="editMotivo" required>
+                                id="editMotivo" name="editMotivo" placeholder="Ej: traslado de área, actualización de datos" required>
                         </div>
 
-                        <div class="modal-footer border-0 px-0 pb-0 d-flex justify-content-between gap-2">
-                            <button type="button" class="btn btn-outline-danger" id="abrirRetirarRotoBtn" disabled>
-                                <span class="material-symbols-outlined"
-                                    style="font-size:15px;vertical-align:middle;">build_circle</span>
+
+                                    </div>
+                                </div>
+                            </main>
+                        </div>
+                        {{-- Footer --}}
+                        <div class="d-flex justify-content-between gap-2 pt-1 pb-2 maintenance-footer">
+                            <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" id="abrirRetirarRotoBtn" disabled>
+                                <span class="material-symbols-outlined" style="font-size:15px;">build_circle</span>
                                 Retirar componente como roto
                             </button>
                             <button type="submit" class="btn btn-hu">Guardar cambios</button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -1143,7 +1156,7 @@
                 @foreach ($pcs as $pc)
                     <div class="pc-card" data-nombre="{{ strtolower($pc->nombre) }}"
                         data-id="{{ strtolower($pc->identificador) }}"
-                        style="width:250px; background:#fff; border:1px solid rgba(0,55,100,.12); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:.4rem; transition:box-shadow .2s,transform .2s; cursor:pointer;"
+                        style="width:250px;background:#fff;border:1px solid rgba(0,55,100,.12);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.4rem;transition:box-shadow .2s,transform .2s;cursor:pointer;"
                         onmouseenter="this.style.boxShadow='0 8px 24px rgba(0,55,100,.12)';this.style.transform='translateY(-2px)'"
                         onmouseleave="this.style.boxShadow='none';this.style.transform='none'">
 
@@ -1259,16 +1272,40 @@
 
                 function addInputDisc(button) {
                     const $group = $(button).closest('.input-group');
-                    const $clone = $group.clone();
-                    $clone.find('select').val('');
-                    $group.parent().append($clone);
+                    if (!$group.length) return;
+
+                    const $clone = $group.clone(false);
+                    $clone.find('select').val('').removeAttr('id');
+                    $clone.find('option.deleteable-option').remove();
+
+                    // La primera fila conserva el botón "+" para seguir agregando discos.
+                    // Las filas adicionales tienen un botón para quitarlas.
+                    $clone.find('.add-input-disc').replaceWith(
+                        '<button class="btn btn-hu-outline remove-input-disc-modal2 maintenance-remove-btn" type="button" aria-label="Quitar disco" title="Quitar disco">' +
+                        '<span class="material-symbols-outlined">delete</span></button>'
+                    );
+
+                    $group.closest('#input-container-2').append($clone);
+                    updateOptionsDiscModal2();
                 }
 
                 function addInputRam(button) {
                     const $group = $(button).closest('.input-group');
-                    const $clone = $group.clone();
-                    $clone.find('select').val('');
-                    $group.parent().append($clone);
+                    if (!$group.length) return;
+
+                    const $clone = $group.clone(false);
+                    $clone.find('select').val('').removeAttr('id');
+                    $clone.find('option.deleteable-option2').remove();
+
+                    // La primera fila conserva el botón "+" para seguir agregando RAMs.
+                    // Las filas adicionales tienen un botón para quitarlas.
+                    $clone.find('.add-input-ram').replaceWith(
+                        '<button class="btn btn-hu-outline remove-input-ram-modal2 maintenance-remove-btn" type="button" aria-label="Quitar RAM" title="Quitar RAM">' +
+                        '<span class="material-symbols-outlined">delete</span></button>'
+                    );
+
+                    $group.closest('#material-container-2').append($clone);
+                    updateOptionsRamModal2();
                 }
 
                 // ── Modal editar: cargar datos ──────────────────────────────────────
@@ -1385,10 +1422,10 @@
                     }
 
                     for (var i = 0; i < cant_discos - 1; i++) {
-                        addInputDisc(modal.find('.add-input-disc'));
+                        addInputDisc(modal.find('.add-input-disc').first());
                     }
                     for (var i = 0; i < cant_rams - 1; i++) {
-                        addInputRam(modal.find('.add-input-ram'));
+                        addInputRam(modal.find('.add-input-ram').first());
                     }
 
                     container.find('.input-group').each(function(index) {
@@ -2174,21 +2211,37 @@
                 $(document).on('click', '[data-summary-back]', function() {
                     goToStep(parseInt($(this).data('summary-back'), 10));
                 });
+                var pcSubmitting = false;
+
                 $('#addPcForm').on('submit', function(e) {
                     if (currentStep !== 4) {
                         e.preventDefault();
                         if (validateStep(currentStep)) goToStep(currentStep + 1);
                         return;
                     }
+
                     if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
                         e.preventDefault();
                         if (!validateStep(1)) goToStep(1);
                         else if (!validateStep(2)) goToStep(2);
                         else goToStep(3);
+                        return;
                     }
+
+                    if (pcSubmitting) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    pcSubmitting = true;
+                    var $submit = $('#btn-step-submit');
+                    $submit.prop('disabled', true).addClass('disabled');
+                    $submit.html('<span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">hourglass_top</span> Armando PC...');
                 });
 
                 $('#addModal').on('show.bs.modal', function() {
+                    pcSubmitting = false;
+                    $('#btn-step-submit').prop('disabled', false).removeClass('disabled').html('<span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">check</span> Guardar PC');
                     setLocationMode('uso');
                     goToStep(1);
                 });
@@ -2351,8 +2404,10 @@
                         $(this).closest('.input-group').remove();
                         updateOptionsDisc();
                     });
-                $(document).on('click', '.add-input-disc', function() {
-                    setTimeout(updateOptionsDisc, 0);
+                $(document).on('click', '#editPcModal .add-input-disc', function(e) {
+                    e.preventDefault();
+                    addInputDisc(this);
+                    updateDiscos();
                 });
                 updateOptionsDisc();
 
@@ -2398,8 +2453,10 @@
                         $(this).closest('.input-group').remove();
                         updateOptionsRam();
                     });
-                $(document).on('click', '.add-input-ram', function() {
-                    setTimeout(updateOptionsRam, 0);
+                $(document).on('click', '#editPcModal .add-input-ram', function(e) {
+                    e.preventDefault();
+                    addInputRam(this);
+                    updateRams();
                 });
                 updateOptionsRam();
 
@@ -2572,21 +2629,13 @@
                 });
 
                 // ── Mantenimiento: mostrar detalle ──────────────────────────────────
-                const checkboxMant = document.getElementById('en-uso-mantenimineto');
-                const detalleInput = document.getElementById('div-detalle-mant');
-                if (checkboxMant) {
-                    checkboxMant.addEventListener('change', function() {
-                        const div = detalleInput.querySelector('div');
-                        const input = div.querySelector('input');
-                        if (checkboxMant.checked) {
-                            div.style.display = 'block';
-                            input.setAttribute('required', 'required');
-                        } else {
-                            div.style.display = 'none';
-                            input.removeAttribute('required');
-                        }
+                $('#editPcModal').off('change.maintenance', '#en-uso-mantenimineto')
+                    .on('change.maintenance', '#en-uso-mantenimineto', function() {
+                        const div = $('#editPcModal #div-detalle-mant > div');
+                        const input = div.find('input');
+                        div.toggle(this.checked);
+                        input.prop('required', this.checked);
                     });
-                }
 
                 // ── DataTable historia PC ───────────────────────────────────────────
                 $('#table_historias_pc').DataTable({
@@ -2626,7 +2675,21 @@
             @if (session('success') === 'PC guardada correctamente.')
                 $(function() {
                     var successModal = document.getElementById('pcSuccessModal');
-                    if (successModal) bootstrap.Modal.getOrCreateInstance(successModal).show();
+                    if (!successModal) return;
+
+                    bootstrap.Modal.getOrCreateInstance(successModal).show();
+
+                    $('#btnAddAnotherPc').on('click', function() {
+                        var addModal = document.getElementById('addModal');
+                        if (!addModal) return;
+
+                        var successInstance = bootstrap.Modal.getOrCreateInstance(successModal);
+                        successModal.addEventListener('hidden.bs.modal', function openWizard() {
+                            successModal.removeEventListener('hidden.bs.modal', openWizard);
+                            bootstrap.Modal.getOrCreateInstance(addModal).show();
+                        });
+                        successInstance.hide();
+                    });
                 });
             @endif
         </script>

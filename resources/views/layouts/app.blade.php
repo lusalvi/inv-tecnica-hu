@@ -802,6 +802,473 @@
             color: #fff;
         }
 
+        .hu-wizard .btn-hu-gold:disabled,
+        .hu-wizard .btn-hu-gold.disabled {
+            opacity: .72;
+            cursor: not-allowed;
+            filter: none;
+        }
+
+        /* Modales de mantenimiento — navegación lateral */
+        .hu-maintenance-modal {
+            border: 0;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 24px 70px rgba(0, 55, 100, .20);
+            background: #fff;
+        }
+
+        .hu-maintenance-modal .maintenance-header {
+            min-height: 82px;
+            padding: 1.15rem 1.35rem;
+            background: #fff;
+            border-bottom: 1px solid #e8edf2 !important;
+        }
+
+        .hu-maintenance-modal .maintenance-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            background: #edf5fc;
+            color: var(--hu-azul);
+        }
+
+        .hu-maintenance-modal .maintenance-icon .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .hu-maintenance-modal .maintenance-title {
+            color: var(--hu-azul);
+            font-size: 1.05rem;
+            font-weight: 750;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .hu-maintenance-modal .maintenance-subtitle {
+            color: #7c8794;
+            font-size: .76rem;
+            margin-top: .22rem;
+        }
+
+        .hu-maintenance-modal .maintenance-body {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .hu-maintenance-modal .maintenance-layout {
+            display: grid;
+            grid-template-columns: 205px minmax(0, 1fr);
+            min-height: 455px;
+        }
+
+        .hu-maintenance-modal .maintenance-sidebar {
+            padding: 1rem .75rem;
+            background: #f7f9fb;
+            border-right: 1px solid #e8edf2;
+        }
+
+        .hu-maintenance-modal .maintenance-nav-title {
+            padding: .25rem .75rem .65rem;
+            color: #98a1ab;
+            font-size: .66rem;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            position: relative;
+            padding: .72rem .7rem;
+            margin-bottom: .28rem;
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            color: #52606d;
+            text-align: left;
+            transition: background .16s ease, color .16s ease, transform .16s ease;
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link:hover {
+            background: #eef4f9;
+            color: var(--hu-azul);
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link.active {
+            background: #eaf3fb;
+            color: var(--hu-azul);
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 9px;
+            bottom: 9px;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background: var(--hu-azul);
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link > .material-symbols-outlined {
+            flex: 0 0 22px;
+            font-size: 20px;
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link span:last-child {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: .08rem;
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link strong {
+            font-size: .76rem;
+            font-weight: 750;
+            line-height: 1.15;
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link small {
+            color: #8b96a2;
+            font-size: .64rem;
+            line-height: 1.2;
+        }
+
+        .hu-maintenance-modal .maintenance-nav-link.active small {
+            color: #66809a;
+        }
+
+        .hu-maintenance-modal .maintenance-content {
+            min-width: 0;
+            padding: .75rem 1rem 0;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .hu-maintenance-modal .maintenance-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: .78rem .9rem;
+            margin-bottom: .95rem;
+            border: 1px solid #dceaf6;
+            border-radius: 11px;
+            background: #f1f7fc;
+        }
+
+        .hu-maintenance-modal .maintenance-status-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            background: #fff;
+            color: var(--hu-azul);
+            border: 1px solid #dceaf6;
+        }
+
+        .hu-maintenance-modal .maintenance-status-icon .material-symbols-outlined {
+            font-size: 21px;
+        }
+
+        .hu-maintenance-modal .maintenance-status-title {
+            color: var(--hu-azul);
+            font-size: .79rem;
+            font-weight: 750;
+        }
+
+        .hu-maintenance-modal .maintenance-status-text {
+            margin-top: .12rem;
+            color: #7d8995;
+            font-size: .66rem;
+        }
+
+        .hu-maintenance-modal .maintenance-status-action {
+            display: inline-flex;
+            align-items: center;
+            gap: .48rem;
+            flex: 0 0 auto;
+            padding: .48rem .68rem;
+            border: 1px solid #cbddea;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--hu-azul);
+            font-size: .7rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .hu-maintenance-modal .maintenance-status-action .form-check-input {
+            cursor: pointer;
+        }
+
+        .hu-maintenance-modal .maintenance-tab-content {
+            height: 390px;
+            max-width: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding-right: .15rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .hu-maintenance-modal .maintenance-tab-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hu-maintenance-modal .maintenance-tab-content > .tab-pane {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .hu-maintenance-modal .maintenance-section {
+            min-width: 0;
+        }
+
+        .hu-maintenance-modal .maintenance-section .row {
+            --bs-gutter-y: .65rem;
+        }
+
+        .hu-maintenance-modal .maintenance-section .form-control,
+        .hu-maintenance-modal .maintenance-section .form-select {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .hu-maintenance-modal .maintenance-section .input-group {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .hu-maintenance-modal .maintenance-section {
+            padding: .1rem .05rem .65rem;
+        }
+
+        .hu-maintenance-modal .maintenance-section > .fw-bold.mb-3 {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            margin-bottom: .65rem !important;
+            padding-bottom: .55rem;
+            border-bottom: 1px solid #eef1f4;
+            color: #263746 !important;
+            font-size: .92rem !important;
+            text-transform: none !important;
+            letter-spacing: 0 !important;
+        }
+
+        .hu-maintenance-modal .maintenance-section > .fw-bold.mb-3 .material-symbols-outlined {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: #f0f6fb;
+            color: var(--hu-azul);
+            font-size: 18px !important;
+            margin-right: 0 !important;
+        }
+
+        .hu-maintenance-modal .maintenance-section-heading {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding-bottom: .85rem;
+            margin-bottom: .95rem;
+            border-bottom: 1px solid #eef1f4;
+        }
+
+        .hu-maintenance-modal .maintenance-section-heading > .material-symbols-outlined {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: #f0f6fb;
+            color: var(--hu-azul);
+            font-size: 18px;
+        }
+
+        .hu-maintenance-modal .maintenance-section-heading h6 {
+            margin: 0;
+            color: #263746;
+            font-size: .92rem;
+            font-weight: 750;
+        }
+
+        .hu-maintenance-modal .maintenance-section-heading p {
+            margin: .12rem 0 0;
+            color: #8a949e;
+            font-size: .68rem;
+        }
+
+        .hu-maintenance-modal .maintenance-section > .row,
+        .hu-maintenance-modal .maintenance-section > .mb-3,
+        .hu-maintenance-modal .maintenance-section > .p-3,
+        .hu-maintenance-modal .maintenance-section > hr {
+            margin-bottom: .85rem !important;
+        }
+
+        .hu-maintenance-modal .maintenance-section .form-label {
+            color: #596571;
+        }
+
+        .hu-maintenance-modal .maintenance-toggle {
+            border: 1px solid #f1dfb2;
+            border-radius: 10px;
+            background: #fffaf0;
+            padding: .78rem !important;
+        }
+
+        .hu-maintenance-modal .maintenance-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: .6rem;
+            min-height: 66px;
+            padding: .75rem 1.15rem;
+            border-top: 1px solid #e8edf2;
+            background: #fff;
+        }
+
+        .hu-maintenance-modal .maintenance-footer .btn-hu {
+            min-width: 150px;
+        }
+
+        .hu-maintenance-modal .maintenance-add-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px !important;
+            flex: 0 0 40px;
+        }
+
+        .hu-maintenance-modal .maintenance-add-btn .material-symbols-outlined,
+        .hu-maintenance-modal .maintenance-remove-btn .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .hu-maintenance-modal .maintenance-remove-btn {
+            flex: 0 0 40px;
+            color: #b42318;
+            border-color: #d0d7de;
+        }
+
+        .hu-maintenance-modal .maintenance-remove-btn:hover {
+            color: #b42318;
+            background: #fef2f2;
+            border-color: #f0b7b2;
+        }
+
+        .hu-maintenance-modal .input-group > .form-control,
+        .hu-maintenance-modal .input-group > .form-select {
+            min-width: 0;
+        }
+
+        @media (max-width: 767px) {
+            .hu-maintenance-modal .maintenance-header {
+                padding: .95rem 1rem;
+            }
+
+            .hu-maintenance-modal .maintenance-layout {
+                display: block;
+                min-height: 0;
+            }
+
+            .hu-maintenance-modal .maintenance-sidebar {
+                display: flex;
+                gap: .35rem;
+                overflow-x: auto;
+                padding: .65rem;
+                border-right: 0;
+                border-bottom: 1px solid #e8edf2;
+            }
+
+            .hu-maintenance-modal .maintenance-nav-title {
+                display: none;
+            }
+
+            .hu-maintenance-modal .maintenance-nav-link {
+                width: auto;
+                flex: 0 0 auto;
+                margin: 0;
+                padding: .55rem .7rem;
+            }
+
+            .hu-maintenance-modal .maintenance-nav-link small {
+                display: none;
+            }
+
+            .hu-maintenance-modal .maintenance-nav-link span:last-child {
+                display: block;
+            }
+
+            .hu-maintenance-modal .maintenance-nav-link strong {
+                font-size: .7rem;
+            }
+
+            .hu-maintenance-modal .maintenance-content {
+                padding: .7rem .8rem 0;
+            }
+
+            .hu-maintenance-modal .maintenance-status {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .hu-maintenance-modal .maintenance-status-action {
+                width: 100%;
+            }
+
+            .hu-maintenance-modal .maintenance-tab-content {
+                height: auto;
+                max-height: 52vh;
+                overflow-x: hidden;
+                overflow-y: auto;
+                scrollbar-width: none;
+            }
+
+            .hu-maintenance-modal .maintenance-tab-content::-webkit-scrollbar {
+                display: none;
+            }
+
+            .hu-maintenance-modal .maintenance-footer {
+                padding: .7rem .9rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hu-maintenance-modal .maintenance-header {
+                padding: 1rem 1rem .8rem;
+            }
+
+            .hu-maintenance-modal .maintenance-body {
+                padding: .9rem 1rem .4rem;
+                max-height: 70vh;
+            }
+
+            .hu-maintenance-modal .maintenance-footer {
+                padding: .65rem 1rem 1rem;
+            }
+        }
+
         @media (max-width: 767px) {
             .hu-wizard .wizard-label {
                 font-size: .6rem;
@@ -816,7 +1283,44 @@
                 right: calc(-50% + 16px);
             }
         }
-    </style>
+            .maintenance-component-danger-btn {
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            border:1px solid #f1b8b5;
+            background:#fff7f6;
+            color:#b42318;
+            border-radius:8px;
+            padding:7px 10px;
+            font-size:.74rem;
+            font-weight:600;
+            transition:.15s ease;
+        }
+        .maintenance-component-danger-btn:hover {
+            background:#fef0ef;
+            border-color:#e99b96;
+        }
+        .maintenance-component-danger-btn.is-active {
+            background:#b42318;
+            border-color:#b42318;
+            color:#fff;
+        }
+        .maintenance-component-danger-btn .material-symbols-outlined { font-size:17px; }
+        .maintenance-component-warning {
+            display:flex;
+            align-items:flex-start;
+            gap:7px;
+            padding:9px 10px;
+            border:1px solid #f3d19c;
+            background:#fff9ed;
+            color:#8a5a00;
+            border-radius:8px;
+            font-size:.72rem;
+            line-height:1.35;
+        }
+        .maintenance-component-warning .material-symbols-outlined { font-size:17px; flex:0 0 auto; }
+
+</style>
 </head>
 
 <body class="font-sans antialiased">
@@ -859,6 +1363,45 @@
 
     {{-- JS opcionales: cada vista pushea solo lo que necesita --}}
     @stack('vendor-scripts')
+
+    {{-- Navegación de los modales de mantenimiento --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.hu-maintenance-modal').forEach(function (modal) {
+                const buttons = modal.querySelectorAll('.maintenance-nav-link[data-bs-target]');
+                const panes = modal.querySelectorAll('.maintenance-tab-content > .tab-pane');
+
+                buttons.forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        const targetSelector = button.getAttribute('data-bs-target');
+                        if (!targetSelector) return;
+
+                        const target = modal.querySelector(targetSelector);
+                        if (!target) return;
+
+                        buttons.forEach(function (item) {
+                            item.classList.remove('active');
+                            item.setAttribute('aria-selected', 'false');
+                        });
+
+                        panes.forEach(function (pane) {
+                            pane.classList.remove('show', 'active');
+                        });
+
+                        button.classList.add('active');
+                        button.setAttribute('aria-selected', 'true');
+                        target.classList.add('active');
+
+                        // Permite que la transición .fade de Bootstrap se ejecute
+                        // incluso cuando cambiamos de sección manualmente.
+                        requestAnimationFrame(function () {
+                            target.classList.add('show');
+                        });
+                    });
+                });
+            });
+        });
+    </script>
 
     {{-- Auto-ocultar alertas flash --}}
     <script>

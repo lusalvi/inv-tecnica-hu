@@ -303,116 +303,117 @@
 
     {{-- Modal editar --}}
     <div class="modal fade" id="editTelModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content"
-                style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Mantenimiento de teléfono</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('edit_telefonos') }}" method="POST">
-                        @method('PATCH')
-                        @csrf
-                        <input type="hidden" name="editId" id="editId">
-
-                        <div class="p-3 rounded-2 mb-4 d-flex align-items-center gap-2"
-                            style="background:#EFF4FB;border:1px solid rgba(0,55,100,.15);">
-                            <input class="form-check-input m-0" type="checkbox" id="editEn-uso" name="en-uso"
-                                style="cursor:pointer;">
-                            <label class="form-check-label fw-semibold mb-0" for="editEn-uso"
-                                style="font-size:.88rem;cursor:pointer;">En uso (asignado a un área)</label>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nº Inventario</label>
-                                <input type="text"
-                                    class="form-control @error('editIdentificador') is-invalid @enderror"
-                                    id="editIdentificador" name="editIdentificador" required>
+        <div class="modal-dialog modal-dialog-centered modal-xl"><div class="modal-content hu-maintenance-modal">
+            <div class="modal-header border-0 maintenance-header"><div class="d-flex align-items-center gap-3"><div class="maintenance-icon"><span class="material-symbols-outlined">phone</span></div><div><h5 class="modal-title maintenance-title">Mantenimiento de teléfono</h5><div class="maintenance-subtitle">Modificá los datos del equipo o registrá un mantenimiento.</div></div></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+            <div class="modal-body maintenance-body p-0"><form action="{{ route('edit_telefonos') }}" method="POST">
+                @method('PATCH') @csrf
+                <input type="hidden" name="editId" id="editId">
+                <div class="maintenance-layout"><aside class="maintenance-sidebar"><div class="maintenance-nav-title">Secciones</div>
+                    <button type="button" class="maintenance-nav-link active" data-bs-target="#editTelDatos"><span class="material-symbols-outlined">description</span><span><strong>Datos generales</strong><small>Información básica</small></span></button>
+                    <button type="button" class="maintenance-nav-link" data-bs-target="#editTelUbicacion"><span class="material-symbols-outlined">location_on</span><span><strong>Ubicación</strong><small>Área y depósito</small></span></button>
+                    <button type="button" class="maintenance-nav-link" data-bs-target="#editTelMantenimiento"><span class="material-symbols-outlined">build</span><span><strong>Mantenimiento</strong><small>Registro y cambios</small></span></button>
+                </aside><main class="maintenance-content">
+                    <div class="tab-content maintenance-tab-content">
+                        <div class="tab-pane fade show active" id="editTelDatos">                        {{-- Sección: Datos generales --}}
+                        <div class="maintenance-section">
+                            <div class="fw-bold mb-3" style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
+                                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">info</span>Datos generales
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nombre</label>
-                                <input type="text" class="form-control @error('editNombre') is-invalid @enderror"
-                                    id="editNombre" name="editNombre" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Marca y Modelo</label>
-                                <input type="text" class="form-control @error('editMarca') is-invalid @enderror"
-                                    id="editMarca" name="editMarca" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">IP</label>
-                                <input type="text" class="form-control @error('editIp') is-invalid @enderror"
-                                    id="editIp" name="editIp" placeholder="192.168.x.x" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" style="font-size:.85rem;">Número de teléfono</label>
-                            <input type="text" class="form-control @error('editNumero') is-invalid @enderror"
-                                id="editNumero" name="editNumero" required>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Área</label>
-                                <select class="form-control @error('editArea') is-invalid @enderror" id="editArea"
-                                    name="editArea" disabled>
-                                    <option value="" disabled selected>Seleccioná un área</option>
-                                    @foreach ($areas as $area)
-                                        <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                    @endforeach
-                                </select>
-                                <div id="editNroConsul_div" class="mt-2" style="display:none;">
-                                    <label class="form-label fw-semibold" style="font-size:.85rem;">Nº
-                                        consultorio</label>
-                                    <input type="text"
-                                        class="form-control @error('editNroConsul') is-invalid @enderror"
-                                        id="editNroConsul" name="editNroConsul" placeholder="Nº">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Nº inventario</label>
+                                    <input type="text" class="form-control @error('editIdentificador') is-invalid @enderror"
+                                        id="editIdentificador" name="editIdentificador" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Nombre</label>
+                                    <input type="text" class="form-control @error('editNombre') is-invalid @enderror"
+                                        id="editNombre" name="editNombre" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Marca y modelo</label>
+                                    <input type="text" class="form-control @error('editMarca') is-invalid @enderror"
+                                        id="editMarca" name="editMarca" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">IP</label>
+                                    <input type="text" class="form-control @error('editIp') is-invalid @enderror"
+                                        id="editIp" name="editIp" placeholder="192.168.x.x" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Número de teléfono</label>
+                                    <input type="text" class="form-control @error('editNumero') is-invalid @enderror"
+                                        id="editNumero" name="editNumero" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Depósito</label>
-                                <select class="form-control @error('editDeposito') is-invalid @enderror"
-                                    id="editDeposito" name="editDeposito">
-                                    <option value="" disabled selected>Seleccioná un depósito</option>
-                                    @foreach ($depositos as $deposito)
-                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                    @endforeach
-                                </select>
+                        </div>
+
+</div>
+                        <div class="tab-pane fade" id="editTelUbicacion">
+                    <div class="maintenance-status"><div class="d-flex align-items-center gap-3"><div class="maintenance-status-icon"><span class="material-symbols-outlined">phone</span></div><div><div class="maintenance-status-title">Estado del equipo</div><div class="maintenance-status-text">Indicá si el teléfono está asignado a un área.</div></div></div><label class="maintenance-status-action"><input class="form-check-input m-0" type="checkbox" id="editEn-uso" name="en-uso"><span>En uso — asignado a un área</span></label></div>                        {{-- Sección: Ubicación --}}
+                        <div class="maintenance-section">
+                            <div class="fw-bold mb-3" style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
+                                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">location_on</span>Ubicación
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Área</label>
+                                    <select class="form-control @error('editArea') is-invalid @enderror" id="editArea" name="editArea" disabled>
+                                        <option value="" disabled selected>Seleccioná un área</option>
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div id="editNroConsul_div" class="mt-2" style="display:none;">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">Nº consultorio</label>
+                                        <input type="text" class="form-control @error('editNroConsul') is-invalid @enderror"
+                                            id="editNroConsul" name="editNroConsul" placeholder="Nº">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Depósito</label>
+                                    <select class="form-control @error('editDeposito') is-invalid @enderror" id="editDeposito" name="editDeposito">
+                                        <option value="" disabled selected>Seleccioná un depósito</option>
+                                        @foreach ($depositos as $deposito)
+                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <hr class="my-3">
-
-                        <div class="p-3 rounded-2 mb-3 d-flex align-items-center gap-2"
-                            style="background:#FFFBEB;border:1px solid #FDE68A;">
-                            <input class="form-check-input m-0" type="checkbox" id="en-uso-mantenimineto"
-                                style="cursor:pointer;">
-                            <label class="form-check-label fw-semibold mb-0" for="en-uso-mantenimineto"
-                                style="font-size:.88rem;cursor:pointer;color:#92400E;">Se realizó mantenimiento</label>
+</div>
+                        <div class="tab-pane fade" id="editTelMantenimiento"><div class="maintenance-section"><div class="maintenance-section-heading"><span class="material-symbols-outlined">build</span><div><h6>Mantenimiento</h6><p>Registrá el mantenimiento y el motivo del cambio.</p></div></div>                        {{-- Pill: Mantenimiento --}}
+                        <div class="d-flex align-items-center gap-2 p-3 mb-2 maintenance-toggle"
+                           >
+                            <input class="form-check-input m-0 flex-shrink-0" type="checkbox" id="en-uso-mantenimineto" style="cursor:pointer;accent-color:#92400E;">
+                            <label class="fw-semibold mb-0" for="en-uso-mantenimineto" style="font-size:.85rem;color:#92400E;cursor:pointer;">Se realizó mantenimiento</label>
                         </div>
                         <div id="div-detalle-mant">
                             <div class="mb-3" style="display:none;">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Detalle del
-                                    mantenimiento</label>
+                                <label class="form-label fw-semibold" style="font-size:.78rem;">Detalle del mantenimiento</label>
                                 <input type="text" class="form-control @error('editDetalle') is-invalid @enderror"
-                                    id="editDetalle" name="editDetalle">
+                                    id="editDetalle" name="editDetalle" placeholder="Ej: limpieza de auricular, reemplazo de cable">
                             </div>
                         </div>
 
+                        {{-- Motivo --}}
                         <div class="mb-3">
-                            <label class="form-label fw-semibold" style="font-size:.85rem;">Motivo del cambio</label>
+                            <label class="form-label fw-semibold" style="font-size:.78rem;">Motivo del cambio <span style="color:#b02a37;">*</span></label>
                             <input type="text" class="form-control @error('editMotivo') is-invalid @enderror"
-                                id="editMotivo" name="editMotivo" required>
+                                id="editMotivo" name="editMotivo" placeholder="Ej: traslado de área, actualización de datos" required>
                         </div>
 
-                        <button type="submit" class="btn btn-hu w-100">Guardar cambios</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+</div></div>
+                    </div>
+                </main></div>
+                        {{-- Footer --}}
+                        <div class="maintenance-footer">
+                            <button type="submit" class="btn btn-hu w-100">Guardar cambios</button>
+                        </div>
+
+            </form></div>
+        </div></div>
     </div>
 
     {{-- Modal eliminar --}}
@@ -667,14 +668,13 @@
                 });
 
                 // ── Mantenimiento ──
-                $('#en-uso-mantenimineto').on('change', function() {
-                    const div = $('#div-detalle-mant > div');
-                    if ($(this).is(':checked')) {
-                        div.show().find('input').attr('required', 'required');
-                    } else {
-                        div.hide().find('input').removeAttr('required');
-                    }
-                });
+                $('#editTelModal').off('change.maintenance', '#en-uso-mantenimineto')
+                    .on('change.maintenance', '#en-uso-mantenimineto', function() {
+                        const div = $('#editTelModal #div-detalle-mant > div');
+                        const input = div.find('input');
+                        div.toggle(this.checked);
+                        input.prop('required', this.checked);
+                    });
 
                 // ── Modal eliminar ──
                 $('#deleteModal').on('show.bs.modal', function(event) {

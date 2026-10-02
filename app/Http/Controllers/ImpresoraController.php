@@ -333,25 +333,87 @@ class ImpresoraController extends Controller
             $historia->save();
         }
 
-        // Cambio de tóner
-        if ($impresora->toner_id != $request->input('editToner')) {
-            DB::transaction(function () use ($impresora, $request, $user) {
-                $historia = new HistoriaModel();
-                $historia->tecnico = $user->name;
-                $historia->detalle = 'Cambió el toner de la impresora: '
-                    . $impresora->identificador . ' - ' . $impresora->nombre
-                    . ' de ' . (ComponenteModel::find($impresora->toner_id)->nombre ?? 'toner no asignado')
-                    . ' a ' . (ComponenteModel::find($request->input('editToner'))->nombre ?? 'sin nombre') . '.';
-                $historia->motivo = $request->input('editMotivo');
-                $historia->componente_id    = $impresora->id;
-                $historia->tipo_dispositivo = 'Impresora';
-                $historia->tipo_id = 7;
-                $historia->save();
+        // Cambio de tóner / retiro del tóner actual como roto
+        $tonerActualId = $impresora->toner_id;
+        $tonerNuevoId = $request->input('editToner');
+        $marcarTonerRoto = $request->boolean('editTonerRoto');
 
+        if ($marcarTonerRoto) {
+            if (! $tonerNuevoId) {
+                return redirect()->back()->withErrors([
+                    'editToner' => 'Seleccioná un tóner nuevo para reemplazar el que se retira como roto.'
+                ])->withInput();
+            }
+
+            if ((int) $tonerNuevoId === (int) $tonerActualId) {
+                return redirect()->back()->withErrors([
+                    'editToner' => 'El tóner nuevo debe ser diferente del tóner que se retira como roto.'
+                ])->withInput();
+            }
+
+            DB::transaction(function () use ($impresora, $tonerActualId, $tonerNuevoId, $user, $request) {
+                $tonerActual = ComponenteModel::whereKey($tonerActualId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $tonerActual || (int) $tonerActual->estado_id !== ComponenteController::ESTADO_EN_USO) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'editToner' => 'El tóner actual ya no está disponible para retirarlo como roto.'
+                    ]);
+                }
+
+                $tonerNuevo = ComponenteModel::whereKey($tonerNuevoId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $tonerNuevo || (int) $tonerNuevo->estado_id !== ComponenteController::ESTADO_DISPONIBLE || (int) $tonerNuevo->stock < 1) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'editToner' => 'El tóner seleccionado para reemplazo no está disponible en stock.'
+                    ]);
+                }
+
+                $nombreTonerRoto = $tonerActual->nombre;
+                $tipoTonerRoto = $tonerActual->tipo_id;
+                $depositoRoto = $tonerActual->deposito_origen_id ?? $tonerActual->deposito_id;
+
+                // 1) Retirar una unidad En uso y crear/incrementar la fila Roto.
+                $tonerActual->stock -= 1;
+                if ($tonerActual->stock <= 0) {
+                    $tonerActual->delete();
+                } else {
+                    $tonerActual->save();
+                }
+
+                $filaRoto = ComponenteModel::where('nombre', $nombreTonerRoto)
+                    ->where('tipo_id', $tipoTonerRoto)
+                    ->where('estado_id', ComponenteController::ESTADO_ROTO)
+                    ->when(
+                        $depositoRoto === null,
+                        fn ($query) => $query->whereNull('deposito_id'),
+                        fn ($query) => $query->where('deposito_id', $depositoRoto)
+                    )
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($filaRoto) {
+                    $filaRoto->stock += 1;
+                    $filaRoto->save();
+                } else {
+                    $filaRoto = new ComponenteModel();
+                    $filaRoto->nombre = $nombreTonerRoto;
+                    $filaRoto->tipo_id = $tipoTonerRoto;
+                    $filaRoto->estado_id = ComponenteController::ESTADO_ROTO;
+                    $filaRoto->deposito_id = $depositoRoto;
+                    $filaRoto->deposito_origen_id = null;
+                    $filaRoto->stock = 1;
+                    $filaRoto->save();
+                }
+
+                // 2) El tóner nuevo pasa de Disponible a En uso usando la misma
+                // operación de stock que se utiliza en el resto del sistema.
                 $transferencia = new ComponenteController();
-                $transferencia->consumirComponenteEnUso($impresora->toner_id, 1);
-                $transferencia->transferStateByPc(
-                    $request->input('editToner'),
+                $nuevoId = $transferencia->transferStateByPc(
+                    $tonerNuevoId,
                     1,
                     ComponenteController::ESTADO_EN_USO,
                     '',
@@ -361,7 +423,54 @@ class ImpresoraController extends Controller
                     false
                 );
 
-                $impresora->toner_id = $request->input('editToner');
+                $historia = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = 'Retiró como roto el tóner ' . $nombreTonerRoto
+                    . ' de la impresora: ' . $impresora->identificador . ' - ' . $impresora->nombre
+                    . '. Lo reemplazó por ' . $tonerNuevo->nombre . '.';
+                $historia->motivo = $request->input('editMotivo') ?: 'Reemplazo de tóner roto';
+                $historia->componente_id = $impresora->id;
+                $historia->tipo_dispositivo = 'Impresora';
+                $historia->tipo_id = 7;
+                $historia->save();
+
+                $impresora->toner_id = $nuevoId;
+                $impresora->save();
+            });
+        } elseif ((int) $tonerActualId !== (int) $tonerNuevoId) {
+            if (! $tonerNuevoId) {
+                return redirect()->back()->withErrors([
+                    'editToner' => 'Seleccioná un tóner.'
+                ])->withInput();
+            }
+
+            DB::transaction(function () use ($impresora, $request, $user, $tonerNuevoId) {
+                $historia = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = 'Cambió el toner de la impresora: '
+                    . $impresora->identificador . ' - ' . $impresora->nombre
+                    . ' de ' . (ComponenteModel::find($impresora->toner_id)->nombre ?? 'toner no asignado')
+                    . ' a ' . (ComponenteModel::find($tonerNuevoId)->nombre ?? 'sin nombre') . '.';
+                $historia->motivo = $request->input('editMotivo');
+                $historia->componente_id = $impresora->id;
+                $historia->tipo_dispositivo = 'Impresora';
+                $historia->tipo_id = 7;
+                $historia->save();
+
+                $transferencia = new ComponenteController();
+                $transferencia->consumirComponenteEnUso($impresora->toner_id, 1);
+                $transferencia->transferStateByPc(
+                    $tonerNuevoId,
+                    1,
+                    ComponenteController::ESTADO_EN_USO,
+                    '',
+                    null,
+                    null,
+                    false,
+                    false
+                );
+
+                $impresora->toner_id = $tonerNuevoId;
                 $impresora->save();
             });
         }

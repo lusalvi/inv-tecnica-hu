@@ -305,29 +305,29 @@
 
     {{-- Modal mantenimiento --}}
     <div class="modal fade" id="editRouterModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content"
-                style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Mantenimiento de router</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content hu-maintenance-modal">
+                <div class="modal-header border-0 maintenance-header">
+                    <div class="d-flex align-items-center gap-3"><div class="maintenance-icon"><span class="material-symbols-outlined">router</span></div><div><h5 class="modal-title maintenance-title">Mantenimiento de router</h5><div class="maintenance-subtitle">Modificá los datos del equipo o registrá un mantenimiento.</div></div></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body maintenance-body p-0">
                     <form action="{{ route('edit_routers') }}" method="POST">
                         @method('PATCH')
                         @csrf
                         <input type="hidden" name="editId" id="editId">
-
-                        <div class="p-3 rounded-2 mb-4 d-flex align-items-center gap-2"
-                            style="background:#EFF4FB;border:1px solid rgba(0,55,100,.15);">
-                            <input class="form-check-input m-0" type="checkbox" id="editEn-uso" name="en-uso"
-                                style="cursor:pointer;">
-                            <label class="form-check-label fw-semibold mb-0" for="editEn-uso"
-                                style="font-size:.88rem;cursor:pointer;">
-                                En uso (asignado a un área)
-                            </label>
-                        </div>
-
+                        <div class="maintenance-layout">
+                            <aside class="maintenance-sidebar">
+                                <div class="maintenance-nav-title">Secciones</div>
+                                <button type="button" class="maintenance-nav-link active" data-bs-target="#editRouterDatos"><span class="material-symbols-outlined">description</span><span><strong>Datos generales</strong><small>Información básica</small></span></button>
+                                <button type="button" class="maintenance-nav-link" data-bs-target="#editRouterUbicacion"><span class="material-symbols-outlined">location_on</span><span><strong>Ubicación</strong><small>Área y depósito</small></span></button>
+                                <button type="button" class="maintenance-nav-link" data-bs-target="#editRouterMantenimiento"><span class="material-symbols-outlined">build</span><span><strong>Mantenimiento</strong><small>Registro y cambios</small></span></button>
+                            </aside>
+                            <main class="maintenance-content">
+                                <div class="tab-content maintenance-tab-content">
+                                    <div class="tab-pane fade show active" id="editRouterDatos">
+                                        <div class="maintenance-section">
+                                            <div class="maintenance-section-heading"><span class="material-symbols-outlined">description</span><div><h6>Datos generales</h6><p>Información básica del router.</p></div></div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold" style="font-size:.85rem;">Nº Inventario</label>
@@ -352,6 +352,12 @@
                             </div>
                         </div>
 
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="editRouterUbicacion">
+                                <div class="maintenance-status"><div class="d-flex align-items-center gap-3"><div class="maintenance-status-icon"><span class="material-symbols-outlined">router</span></div><div><div class="maintenance-status-title">Estado del equipo</div><div class="maintenance-status-text">Indicá si el router está asignado a un área.</div></div></div><label class="maintenance-status-action"><input class="form-check-input m-0" type="checkbox" id="editEn-uso" name="en-uso"><span>En uso — asignado a un área</span></label></div>
+                                        <div class="maintenance-section">
+                                            <div class="maintenance-section-heading"><span class="material-symbols-outlined">location_on</span><div><h6>Ubicación</h6><p>Área, consultorio y depósito.</p></div></div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold" style="font-size:.85rem;">Área</label>
@@ -389,10 +395,12 @@
                                 id="editAreaDetalle" name="editAreaDetalle" placeholder="Ej: Pasillo norte, piso 2">
                         </div>
 
-                        <hr class="my-3">
-
-                        <div class="p-3 rounded-2 mb-3 d-flex align-items-center gap-2"
-                            style="background:#FFFBEB;border:1px solid #FDE68A;">
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="editRouterMantenimiento">
+                                        <div class="maintenance-section">
+                                            <div class="maintenance-section-heading"><span class="material-symbols-outlined">build</span><div><h6>Mantenimiento</h6><p>Registrá el mantenimiento y el motivo del cambio.</p></div></div>
+                        <div class="p-3 mb-3 d-flex align-items-center gap-2 maintenance-toggle">
                             <input class="form-check-input m-0" type="checkbox" id="en-uso-mantenimineto"
                                 style="cursor:pointer;">
                             <label class="form-check-label fw-semibold mb-0" for="en-uso-mantenimineto"
@@ -415,7 +423,14 @@
                                 id="editMotivo" name="editMotivo" required>
                         </div>
 
-                        <button type="submit" class="btn btn-hu w-100">Guardar cambios</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </main>
+                        </div>
+                        <div class="maintenance-footer mt-3">
+                            <button type="submit" class="btn btn-hu w-100">Guardar cambios</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -703,14 +718,13 @@
                 });
 
                 // ── Mantenimiento checkbox ──
-                $('#en-uso-mantenimineto').on('change', function() {
-                    const div = $('#div-detalle-mant > div');
-                    if ($(this).is(':checked')) {
-                        div.show().find('input').attr('required', 'required');
-                    } else {
-                        div.hide().find('input').removeAttr('required');
-                    }
-                });
+                $('#editRouterModal').off('change.maintenance', '#en-uso-mantenimineto')
+                    .on('change.maintenance', '#en-uso-mantenimineto', function() {
+                        const div = $('#editRouterModal #div-detalle-mant > div');
+                        const input = div.find('input');
+                        div.toggle(this.checked);
+                        input.prop('required', this.checked);
+                    });
 
                 // ── Abrir modal eliminar ──
                 $('#deleteModal').on('show.bs.modal', function(event) {
