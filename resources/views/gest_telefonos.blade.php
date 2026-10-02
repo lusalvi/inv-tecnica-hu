@@ -55,86 +55,246 @@
         </div>
     </div>
 
-    {{-- Modal cargar --}}
+    {{-- Modal cargar teléfono — Wizard --}}
     <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Cargar teléfono</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-content hu-wizard"
+                style="border-radius:12px;border:none;box-shadow:0 12px 40px rgba(0,55,100,.16);">
+                <div class="modal-header border-0 pb-0">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="modal-title fw-semibold mb-1" style="color:var(--hu-azul);">Cargar teléfono
+                                </h5>
+                                <div class="text-muted" style="font-size:.72rem;">Completá los datos para registrar el
+                                    teléfono.</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="wizard-stepper" aria-label="Progreso">
+                            <div class="wizard-step is-active" data-tel-step="1">
+                                <div class="wizard-dot">1</div>
+                                <span class="wizard-label">Datos generales</span>
+                            </div>
+                            <div class="wizard-step" data-tel-step="2">
+                                <div class="wizard-dot">2</div>
+                                <span class="wizard-label">Ubicación</span>
+                            </div>
+                            <div class="wizard-step" data-tel-step="3">
+                                <div class="wizard-dot">3</div>
+                                <span class="wizard-label">Resumen</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="modal-body">
-                    <form action="{{ route('store_telefonos') }}" method="POST">
+                    <form action="{{ route('store_telefonos') }}" method="POST" id="addTelWizardForm">
                         @csrf
+                        <input type="hidden" name="addEnUso" id="tel-addEnUso" value="0">
 
-                        <div class="p-3 rounded-2 mb-4 d-flex align-items-center gap-2"
-                            style="background:#EFF4FB;border:1px solid rgba(0,55,100,.15);">
-                            <input class="form-check-input m-0" type="checkbox" id="add-en-uso" style="cursor:pointer;">
-                            <label class="form-check-label fw-semibold mb-0" for="add-en-uso"
-                                style="font-size:.88rem;cursor:pointer;">En uso (asignado a un área)</label>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nº Inventario</label>
-                                <input type="text"
-                                    class="form-control @error('addIdentificador') is-invalid @enderror"
-                                    id="addIdentificador" name="addIdentificador" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nombre</label>
-                                <input type="text" class="form-control @error('addNombre') is-invalid @enderror"
-                                    id="addNombre" name="addNombre" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Marca y Modelo</label>
-                                <input type="text" class="form-control @error('addMarca') is-invalid @enderror"
-                                    id="addMarca" name="addMarca" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">IP</label>
-                                <input type="text" class="form-control @error('addIp') is-invalid @enderror"
-                                    id="addIp" name="addIp" placeholder="192.168.x.x" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" style="font-size:.85rem;">Número de teléfono</label>
-                            <input type="text" class="form-control @error('addNumero') is-invalid @enderror"
-                                id="addNumero" name="addNumero" placeholder="Ej: 261 555 1234" required>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Área</label>
-                                <select class="form-control @error('addArea') is-invalid @enderror" id="addArea"
-                                    name="addArea" disabled>
-                                    <option value="" disabled selected>Seleccioná un área</option>
-                                    @foreach ($areas as $area)
-                                        <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                    @endforeach
-                                </select>
-                                <div id="addNroConsul_div" class="mt-2" style="display:none;">
-                                    <label class="form-label fw-semibold" style="font-size:.85rem;">Nº
-                                        consultorio</label>
-                                    <input type="text"
-                                        class="form-control @error('addNroConsul') is-invalid @enderror"
-                                        id="addNroConsul" name="addNroConsul" placeholder="Nº">
+                        {{-- Paso 1: Datos generales --}}
+                        <div id="tel-step-1">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Datos generales</div>
+                                <div class="wizard-panel-help">Completá la información básica del teléfono.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Nº de inventario <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addIdentificador') is-invalid @enderror"
+                                            id="tel-addIdentificador" name="addIdentificador"
+                                            placeholder="TEL-2025-001" required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Nombre <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addNombre') is-invalid @enderror"
+                                            id="tel-addNombre" name="addNombre" placeholder="Teléfono Recepción"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Marca y modelo <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addMarca') is-invalid @enderror"
+                                            id="tel-addMarca" name="addMarca" placeholder="Grandstream GXP1610"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Número de teléfono <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addNumero') is-invalid @enderror"
+                                            id="tel-addNumero" name="addNumero" placeholder="Ej: 261 555 1234"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            IP <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addIp') is-invalid @enderror" id="tel-addIp"
+                                            name="addIp" placeholder="192.168.x.x" required>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Depósito</label>
-                                <select class="form-control @error('addDeposito') is-invalid @enderror"
-                                    id="addDeposito" name="addDeposito">
-                                    <option value="" disabled selected>Seleccioná un depósito</option>
-                                    @foreach ($depositos as $deposito)
-                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                    @endforeach
-                                </select>
+                        </div>
+
+                        {{-- Paso 2: Ubicación --}}
+                        <div id="tel-step-2" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Ubicación</div>
+                                <div class="wizard-panel-help">Indicá si el teléfono está instalado en un área o
+                                    guardado en un depósito.</div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block is-selected" id="tel-location-use-card">
+                                            <input type="radio" name="tel_ubicacion" value="uso"
+                                                id="tel-location-use" class="visually-hidden" checked>
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">domain</span>
+                                                <div>
+                                                    <div class="location-choice-title">Está en uso</div>
+                                                    <div class="location-choice-help">Asignalo a un área de la
+                                                        institución.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block" id="tel-location-storage-card">
+                                            <input type="radio" name="tel_ubicacion" value="deposito"
+                                                id="tel-location-storage" class="visually-hidden">
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">inventory_2</span>
+                                                <div>
+                                                    <div class="location-choice-title">No está en uso</div>
+                                                    <div class="location-choice-help">Asignalo a un depósito.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="tel-location-area-panel">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                        Área <span style="color:#b02a37;">*</span>
+                                    </label>
+                                    <select class="form-control @error('addArea') is-invalid @enderror"
+                                        id="tel-addArea" name="addArea">
+                                        <option value="" selected>Seleccioná un área</option>
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="mt-2" id="tel-addNroConsul_div" style="display:none;">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">Nº de
+                                            consultorio</label>
+                                        <input type="text"
+                                            class="form-control @error('addNroConsul') is-invalid @enderror"
+                                            id="tel-addNroConsul" name="addNroConsul" placeholder="Nº">
+                                    </div>
+                                </div>
+
+                                <div id="tel-location-storage-panel" style="display:none;">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                        Depósito <span style="color:#b02a37;">*</span>
+                                    </label>
+                                    <select class="form-control @error('addDeposito') is-invalid @enderror"
+                                        id="tel-addDeposito" name="addDeposito">
+                                        <option value="" selected>Seleccioná un depósito</option>
+                                        @foreach ($depositos as $deposito)
+                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-hu w-100 mt-2">Cargar teléfono</button>
+                        {{-- Paso 3: Resumen --}}
+                        <div id="tel-step-3" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Resumen</div>
+                                <div class="wizard-panel-help">Revisá la información antes de guardar.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Datos generales</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-tel-summary-back="1"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nº inventario</div>
+                                                <div class="hu-summary-value" id="tel-summary-identificador">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nombre</div>
+                                                <div class="hu-summary-value" id="tel-summary-nombre">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Marca y modelo</div>
+                                                <div class="hu-summary-value" id="tel-summary-marca">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Número de teléfono</div>
+                                                <div class="hu-summary-value" id="tel-summary-numero">—</div>
+                                            </div>
+                                            <div>
+                                                <div class="hu-summary-label">IP</div>
+                                                <div class="hu-summary-value" id="tel-summary-ip">—</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Ubicación</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-tel-summary-back="2"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Estado</div>
+                                                <div class="hu-summary-value" id="tel-summary-estado">—</div>
+                                            </div>
+                                            <div>
+                                                <div class="hu-summary-label">Ubicación asignada</div>
+                                                <div class="hu-summary-value" id="tel-summary-ubicacion">—</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="modal-footer border-0 px-0 pb-0 d-flex justify-content-between mt-3">
+                            <button type="button" id="tel-btn-back" class="btn btn-hu-outline"
+                                style="display:none;">
+                                <span class="material-symbols-outlined"
+                                    style="font-size:16px;vertical-align:middle;">arrow_back</span> Atrás
+                            </button>
+                            <div class="ms-auto d-flex gap-2">
+                                <button type="button" id="tel-btn-next" class="btn btn-hu-confirm">
+                                    Siguiente <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">arrow_forward</span>
+                                </button>
+                                <button type="submit" id="tel-btn-submit" class="btn btn-hu-gold"
+                                    style="display:none;">
+                                    <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">check</span> Guardar teléfono
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -617,6 +777,140 @@
                         }
                     }
                 });
+                // ── Wizard: Cargar teléfono ──────────────────────────────────────────
+                (function() {
+                    var telStep = 1;
+
+                    function telUpdateStepper(step) {
+                        $('[data-tel-step]').each(function() {
+                            var n = parseInt($(this).data('tel-step'), 10);
+                            $(this).removeClass('is-active is-complete');
+                            if (n < step) {
+                                $(this).addClass('is-complete');
+                                $(this).find('.wizard-dot').text('✓');
+                            }
+                            if (n === step) {
+                                $(this).addClass('is-active');
+                                $(this).find('.wizard-dot').text(n);
+                            }
+                            if (n > step) $(this).find('.wizard-dot').text(n);
+                        });
+                    }
+
+                    function telSetLocationMode(mode) {
+                        var enUso = mode === 'uso';
+                        $('#tel-location-use-card').toggleClass('is-selected', enUso);
+                        $('#tel-location-storage-card').toggleClass('is-selected', !enUso);
+                        $('#tel-location-area-panel').toggle(enUso);
+                        $('#tel-location-storage-panel').toggle(!enUso);
+                        $('#tel-addEnUso').val(enUso ? '1' : '0');
+                        if (enUso) {
+                            $('#tel-addDeposito').val('');
+                        } else {
+                            $('#tel-addArea').val('');
+                            $('#tel-addNroConsul').val('');
+                            $('#tel-addNroConsul_div').hide();
+                        }
+                    }
+
+                    function telValidateStep(step) {
+                        if (step === 1) {
+                            var valid = true;
+                            ['#tel-addIdentificador', '#tel-addNombre', '#tel-addMarca', '#tel-addNumero', '#tel-addIp'].forEach(
+                                function(sel) {
+                                    var $f = $(sel),
+                                        ok = $f.val().trim() !== '';
+                                    $f.toggleClass('is-invalid', !ok);
+                                    if (!ok && valid) $f.focus();
+                                    valid = valid && ok;
+                                });
+                            return valid;
+                        }
+                        if (step === 2) {
+                            var enUso = $('#tel-location-use').is(':checked');
+                            if (enUso) {
+                                var ok = !!$('#tel-addArea').val();
+                                $('#tel-addArea').toggleClass('is-invalid', !ok);
+                                if (!ok) $('#tel-addArea').focus();
+                                return ok;
+                            }
+                            var ok = !!$('#tel-addDeposito').val();
+                            $('#tel-addDeposito').toggleClass('is-invalid', !ok);
+                            if (!ok) $('#tel-addDeposito').focus();
+                            return ok;
+                        }
+                        return true;
+                    }
+
+                    function telUpdateSummary() {
+                        $('#tel-summary-identificador').text($('#tel-addIdentificador').val().trim() || '—');
+                        $('#tel-summary-nombre').text($('#tel-addNombre').val().trim() || '—');
+                        $('#tel-summary-marca').text($('#tel-addMarca').val().trim() || '—');
+                        $('#tel-summary-numero').text($('#tel-addNumero').val().trim() || '—');
+                        $('#tel-summary-ip').text($('#tel-addIp').val().trim() || 'Sin asignar');
+
+                        var enUso = $('#tel-location-use').is(':checked');
+                        $('#tel-summary-estado').text(enUso ? 'Está en uso' : 'No está en uso');
+                        if (enUso) {
+                            $('#tel-summary-ubicacion').text($('#tel-addArea option:selected').text().trim() ||
+                            '—');
+                        } else {
+                            $('#tel-summary-ubicacion').text($('#tel-addDeposito option:selected').text().trim() ||
+                                '—');
+                        }
+                    }
+
+                    function telGoToStep(step) {
+                        telStep = step;
+                        $('#tel-step-1, #tel-step-2, #tel-step-3').hide();
+                        $('#tel-step-' + step).show();
+                        $('#tel-btn-back').toggle(step > 1);
+                        $('#tel-btn-next').toggle(step < 3);
+                        $('#tel-btn-submit').toggle(step === 3);
+                        telUpdateStepper(step);
+                        if (step === 3) telUpdateSummary();
+                    }
+
+                    $('#tel-btn-next').on('click', function() {
+                        if (telValidateStep(telStep)) telGoToStep(telStep + 1);
+                    });
+                    $('#tel-btn-back').on('click', function() {
+                        telGoToStep(telStep - 1);
+                    });
+                    $(document).on('click', '[data-tel-summary-back]', function() {
+                        telGoToStep(parseInt($(this).data('tel-summary-back'), 10));
+                    });
+
+                    $('#tel-location-use, #tel-location-storage').on('change', function() {
+                        telSetLocationMode($(this).val());
+                    });
+
+                    $('#tel-addArea').on('change', function() {
+                        if ($(this).val() == 27) {
+                            $('#tel-addNroConsul_div').show();
+                        } else {
+                            $('#tel-addNroConsul_div').hide();
+                            $('#tel-addNroConsul').val('');
+                        }
+                    });
+
+                    $('#addModal').on('show.bs.modal', function() {
+                        $('#addTelWizardForm')[0].reset();
+                        $('#tel-addEnUso').val('0');
+                        telSetLocationMode('uso');
+                        telGoToStep(1);
+                        $('#tel-addIdentificador, #tel-addNombre, #tel-addMarca, #tel-addNumero, #tel-addIp')
+                            .removeClass('is-invalid');
+                    });
+
+                    $('#addTelWizardForm').on('submit', function(e) {
+                        if (!telValidateStep(1) || !telValidateStep(2)) {
+                            e.preventDefault();
+                            if (!telValidateStep(1)) telGoToStep(1);
+                            else telGoToStep(2);
+                        }
+                    });
+                })();
             });
         </script>
     @endpush

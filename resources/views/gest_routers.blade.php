@@ -57,90 +57,246 @@
         </div>
     </div>
 
-    {{-- Modal cargar router --}}
+    {{-- Modal cargar router — Wizard --}}
     <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Cargar router</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-content hu-wizard"
+                style="border-radius:12px;border:none;box-shadow:0 12px 40px rgba(0,55,100,.16);">
+                <div class="modal-header border-0 pb-0">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="modal-title fw-semibold mb-1" style="color:var(--hu-azul);">Cargar router
+                                </h5>
+                                <div class="text-muted" style="font-size:.72rem;">Completá los datos para registrar el
+                                    router.</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="wizard-stepper" aria-label="Progreso">
+                            <div class="wizard-step is-active" data-rou-step="1">
+                                <div class="wizard-dot">1</div>
+                                <span class="wizard-label">Datos generales</span>
+                            </div>
+                            <div class="wizard-step" data-rou-step="2">
+                                <div class="wizard-dot">2</div>
+                                <span class="wizard-label">Ubicación</span>
+                            </div>
+                            <div class="wizard-step" data-rou-step="3">
+                                <div class="wizard-dot">3</div>
+                                <span class="wizard-label">Resumen</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="modal-body">
-                    <form action="{{ route('store_routers') }}" method="POST" id="addRouterForm">
+                    <form action="{{ route('store_routers') }}" method="POST" id="addRouterWizardForm">
                         @csrf
+                        <input type="hidden" name="addEnUso" id="rou-addEnUso" value="0">
 
-                        {{-- En uso --}}
-                        <div class="p-3 rounded-2 mb-4 d-flex align-items-center gap-2"
-                            style="background:#EFF4FB;border:1px solid rgba(0,55,100,.15);">
-                            <input class="form-check-input m-0" type="checkbox" id="add-en-uso" style="cursor:pointer;">
-                            <label class="form-check-label fw-semibold mb-0" for="add-en-uso"
-                                style="font-size:.88rem;cursor:pointer;">
-                                En uso (asignado a un área)
-                            </label>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nº Inventario</label>
-                                <input type="text"
-                                    class="form-control @error('addIdentificador') is-invalid @enderror"
-                                    id="addIdentificador" name="addIdentificador" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nombre</label>
-                                <input type="text" class="form-control @error('addNombre') is-invalid @enderror"
-                                    id="addNombre" name="addNombre" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Marca y Modelo</label>
-                                <input type="text" class="form-control @error('addMarca') is-invalid @enderror"
-                                    id="addMarca" name="addMarca" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">IP</label>
-                                <input type="text" class="form-control @error('addIp') is-invalid @enderror"
-                                    id="addIp" name="addIp" placeholder="192.168.x.x">
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6" id="add-area-col">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Área</label>
-                                <select class="form-control @error('addArea') is-invalid @enderror" id="addArea"
-                                    name="addArea" disabled>
-                                    <option value="" disabled selected>Seleccioná un área</option>
-                                    @foreach ($areas as $area)
-                                        <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                    @endforeach
-                                </select>
-                                <div id="addNroConsul_div" class="mt-2" style="display:none;">
-                                    <label class="form-label fw-semibold" style="font-size:.85rem;">Nº
-                                        consultorio</label>
-                                    <input type="text"
-                                        class="form-control @error('addNroConsul') is-invalid @enderror"
-                                        id="addNroConsul" name="addNroConsul" placeholder="Nº">
+                        {{-- Paso 1: Datos generales --}}
+                        <div id="rou-step-1">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Datos generales</div>
+                                <div class="wizard-panel-help">Completá la información básica del router.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Nº de inventario <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addIdentificador') is-invalid @enderror"
+                                            id="rou-addIdentificador" name="addIdentificador"
+                                            placeholder="RT-2025-001" required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Nombre <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addNombre') is-invalid @enderror"
+                                            id="rou-addNombre" name="addNombre" placeholder="Router Pasillo Norte"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Marca y modelo <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addMarca') is-invalid @enderror"
+                                            id="rou-addMarca" name="addMarca" placeholder="TP-Link TL-WR840N"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            IP <span class="text-muted fw-normal">(opcional)</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addIp') is-invalid @enderror" id="rou-addIp"
+                                            name="addIp" placeholder="192.168.x.x">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6" id="add-deposito-col">
-                                <label class="form-label fw-semibold" style="font-size:.85rem;">Depósito</label>
-                                <select class="form-control @error('addDeposito') is-invalid @enderror"
-                                    id="addDeposito" name="addDeposito">
-                                    <option value="" disabled selected>Seleccioná un depósito</option>
-                                    @foreach ($depositos as $deposito)
-                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                    @endforeach
-                                </select>
+                        </div>
+
+                        {{-- Paso 2: Ubicación --}}
+                        <div id="rou-step-2" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Ubicación</div>
+                                <div class="wizard-panel-help">Indicá si el router está instalado en un área o guardado
+                                    en un depósito.</div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block is-selected" id="rou-location-use-card">
+                                            <input type="radio" name="rou_ubicacion" value="uso"
+                                                id="rou-location-use" class="visually-hidden" checked>
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">domain</span>
+                                                <div>
+                                                    <div class="location-choice-title">Está en uso</div>
+                                                    <div class="location-choice-help">Asignalo a un área de la
+                                                        institución.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block" id="rou-location-storage-card">
+                                            <input type="radio" name="rou_ubicacion" value="deposito"
+                                                id="rou-location-storage" class="visually-hidden">
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">inventory_2</span>
+                                                <div>
+                                                    <div class="location-choice-title">No está en uso</div>
+                                                    <div class="location-choice-help">Asignalo a un depósito.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="rou-location-area-panel">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                        Área <span style="color:#b02a37;">*</span>
+                                    </label>
+                                    <select class="form-control @error('addArea') is-invalid @enderror"
+                                        id="rou-addArea" name="addArea">
+                                        <option value="" selected>Seleccioná un área</option>
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="mt-2" id="rou-addNroConsul_div" style="display:none;">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">Nº de
+                                            consultorio</label>
+                                        <input type="text"
+                                            class="form-control @error('addNroConsul') is-invalid @enderror"
+                                            id="rou-addNroConsul" name="addNroConsul" placeholder="Nº">
+                                    </div>
+                                    <div class="mt-2">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Detalle de ubicación <span class="text-muted fw-normal">(opcional)</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addAreaDetalle') is-invalid @enderror"
+                                            id="rou-addAreaDetalle" name="addAreaDetalle"
+                                            placeholder="Ej: Pasillo norte, piso 2">
+                                    </div>
+                                </div>
+
+                                <div id="rou-location-storage-panel" style="display:none;">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                        Depósito <span style="color:#b02a37;">*</span>
+                                    </label>
+                                    <select class="form-control @error('addDeposito') is-invalid @enderror"
+                                        id="rou-addDeposito" name="addDeposito">
+                                        <option value="" selected>Seleccioná un depósito</option>
+                                        @foreach ($depositos as $deposito)
+                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <div id="add-detalle-area-div" style="display:none;" class="mb-3">
-                            <label class="form-label fw-semibold" style="font-size:.85rem;">Detalle de la
-                                ubicación</label>
-                            <input type="text" class="form-control @error('addAreaDetalle') is-invalid @enderror"
-                                id="addAreaDetalle" name="addAreaDetalle" placeholder="Ej: Pasillo norte, piso 2">
+                        {{-- Paso 3: Resumen --}}
+                        <div id="rou-step-3" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Resumen</div>
+                                <div class="wizard-panel-help">Revisá la información antes de guardar.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Datos generales</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-rou-summary-back="1"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nº inventario</div>
+                                                <div class="hu-summary-value" id="rou-summary-identificador">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nombre</div>
+                                                <div class="hu-summary-value" id="rou-summary-nombre">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Marca y modelo</div>
+                                                <div class="hu-summary-value" id="rou-summary-marca">—</div>
+                                            </div>
+                                            <div>
+                                                <div class="hu-summary-label">IP</div>
+                                                <div class="hu-summary-value" id="rou-summary-ip">—</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Ubicación</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-rou-summary-back="2"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Estado</div>
+                                                <div class="hu-summary-value" id="rou-summary-estado">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Ubicación asignada</div>
+                                                <div class="hu-summary-value" id="rou-summary-ubicacion">—</div>
+                                            </div>
+                                            <div id="rou-summary-detalle-wrap" style="display:none;">
+                                                <div class="hu-summary-label">Detalle</div>
+                                                <div class="hu-summary-value" id="rou-summary-detalle">—</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-hu w-100 mt-2">Cargar router</button>
+                        {{-- Footer --}}
+                        <div class="modal-footer border-0 px-0 pb-0 d-flex justify-content-between mt-3">
+                            <button type="button" id="rou-btn-back" class="btn btn-hu-outline"
+                                style="display:none;">
+                                <span class="material-symbols-outlined"
+                                    style="font-size:16px;vertical-align:middle;">arrow_back</span> Atrás
+                            </button>
+                            <div class="ms-auto d-flex gap-2">
+                                <button type="button" id="rou-btn-next" class="btn btn-hu-confirm">
+                                    Siguiente <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">arrow_forward</span>
+                                </button>
+                                <button type="submit" id="rou-btn-submit" class="btn btn-hu-gold"
+                                    style="display:none;">
+                                    <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">check</span> Guardar router
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -670,6 +826,148 @@
                         }
                     }
                 });
+                // ── Wizard: Cargar router ────────────────────────────────────────────
+                (function() {
+                    var rouStep = 1;
+
+                    function rouUpdateStepper(step) {
+                        $('[data-rou-step]').each(function() {
+                            var n = parseInt($(this).data('rou-step'), 10);
+                            $(this).removeClass('is-active is-complete');
+                            if (n < step) {
+                                $(this).addClass('is-complete');
+                                $(this).find('.wizard-dot').text('✓');
+                            }
+                            if (n === step) {
+                                $(this).addClass('is-active');
+                                $(this).find('.wizard-dot').text(n);
+                            }
+                            if (n > step) $(this).find('.wizard-dot').text(n);
+                        });
+                    }
+
+                    function rouSetLocationMode(mode) {
+                        var enUso = mode === 'uso';
+                        $('#rou-location-use-card').toggleClass('is-selected', enUso);
+                        $('#rou-location-storage-card').toggleClass('is-selected', !enUso);
+                        $('#rou-location-area-panel').toggle(enUso);
+                        $('#rou-location-storage-panel').toggle(!enUso);
+                        $('#rou-addEnUso').val(enUso ? '1' : '0');
+                        if (enUso) {
+                            $('#rou-addDeposito').val('');
+                        } else {
+                            $('#rou-addArea').val('');
+                            $('#rou-addNroConsul').val('');
+                            $('#rou-addNroConsul_div').hide();
+                            $('#rou-addAreaDetalle').val('');
+                        }
+                    }
+
+                    function rouValidateStep(step) {
+                        if (step === 1) {
+                            var valid = true;
+                            ['#rou-addIdentificador', '#rou-addNombre', '#rou-addMarca'].forEach(function(sel) {
+                                var $f = $(sel),
+                                    ok = $f.val().trim() !== '';
+                                $f.toggleClass('is-invalid', !ok);
+                                if (!ok && valid) $f.focus();
+                                valid = valid && ok;
+                            });
+                            return valid;
+                        }
+                        if (step === 2) {
+                            var enUso = $('#rou-location-use').is(':checked');
+                            if (enUso) {
+                                var ok = !!$('#rou-addArea').val();
+                                $('#rou-addArea').toggleClass('is-invalid', !ok);
+                                if (!ok) $('#rou-addArea').focus();
+                                return ok;
+                            }
+                            var ok = !!$('#rou-addDeposito').val();
+                            $('#rou-addDeposito').toggleClass('is-invalid', !ok);
+                            if (!ok) $('#rou-addDeposito').focus();
+                            return ok;
+                        }
+                        return true;
+                    }
+
+                    function rouUpdateSummary() {
+                        $('#rou-summary-identificador').text($('#rou-addIdentificador').val().trim() || '—');
+                        $('#rou-summary-nombre').text($('#rou-addNombre').val().trim() || '—');
+                        $('#rou-summary-marca').text($('#rou-addMarca').val().trim() || '—');
+                        $('#rou-summary-ip').text($('#rou-addIp').val().trim() || 'Sin asignar');
+
+                        var enUso = $('#rou-location-use').is(':checked');
+                        $('#rou-summary-estado').text(enUso ? 'Está en uso' : 'No está en uso');
+
+                        if (enUso) {
+                            $('#rou-summary-ubicacion').text($('#rou-addArea option:selected').text().trim() ||
+                            '—');
+                            var detalle = $('#rou-addAreaDetalle').val().trim();
+                            $('#rou-summary-detalle-wrap').toggle(!!detalle);
+                            $('#rou-summary-detalle').text(detalle || '—');
+                        } else {
+                            $('#rou-summary-ubicacion').text($('#rou-addDeposito option:selected').text().trim() ||
+                                '—');
+                            $('#rou-summary-detalle-wrap').hide();
+                        }
+                    }
+
+                    function rouGoToStep(step) {
+                        rouStep = step;
+                        $('#rou-step-1, #rou-step-2, #rou-step-3').hide();
+                        $('#rou-step-' + step).show();
+                        $('#rou-btn-back').toggle(step > 1);
+                        $('#rou-btn-next').toggle(step < 3);
+                        $('#rou-btn-submit').toggle(step === 3);
+                        rouUpdateStepper(step);
+                        if (step === 3) rouUpdateSummary();
+                    }
+
+                    // Navegación
+                    $('#rou-btn-next').on('click', function() {
+                        if (rouValidateStep(rouStep)) rouGoToStep(rouStep + 1);
+                    });
+                    $('#rou-btn-back').on('click', function() {
+                        rouGoToStep(rouStep - 1);
+                    });
+                    $(document).on('click', '[data-rou-summary-back]', function() {
+                        rouGoToStep(parseInt($(this).data('rou-summary-back'), 10));
+                    });
+
+                    // Tarjetas de ubicación
+                    $('#rou-location-use, #rou-location-storage').on('change', function() {
+                        rouSetLocationMode($(this).val());
+                    });
+
+                    // Nº consultorio
+                    $('#rou-addArea').on('change', function() {
+                        if ($(this).val() == 27) {
+                            $('#rou-addNroConsul_div').show();
+                        } else {
+                            $('#rou-addNroConsul_div').hide();
+                            $('#rou-addNroConsul').val('');
+                        }
+                    });
+
+                    // Reset al abrir
+                    $('#addModal').on('show.bs.modal', function() {
+                        $('#addRouterWizardForm')[0].reset();
+                        $('#rou-addEnUso').val('0');
+                        rouSetLocationMode('uso');
+                        rouGoToStep(1);
+                        $('#rou-addIdentificador, #rou-addNombre, #rou-addMarca').removeClass('is-invalid');
+                    });
+
+                    // Submit con validación completa
+                    $('#addRouterWizardForm').on('submit', function(e) {
+                        if (!rouValidateStep(1) || !rouValidateStep(2)) {
+                            e.preventDefault();
+                            if (!rouValidateStep(1)) rouGoToStep(1);
+                            else rouGoToStep(2);
+                        }
+                    });
+                })();
             });
         </script>
     @endpush
