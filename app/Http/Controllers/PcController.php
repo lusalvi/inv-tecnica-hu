@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Traits\ToStringFormat;
 use Illuminate\Http\Request;
 use App\Models\ComponenteModel;
 use App\Models\AreaModel;
@@ -13,748 +12,1148 @@ use App\Models\PcModel;
 use App\Models\ComponentePcModel;
 use App\Models\EstadoComponenteModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PcController extends Controller
 {
-
-
     public function index()
     {
         $componentesModel = new ComponenteModel();
 
-        // Obtener todos los componentes con tipo y depósito
         $componentes = ComponenteModel::with(['tipo', 'deposito', 'estado'])->get();
 
-        // Obtener componentes por tipo con conexiones de tipo y depósito
-        $motherboards = $componentesModel->getComponenteByTipo('Placa madre', '');
-        $procesadores = $componentesModel->getComponenteByTipo('Procesador', '');
-        $fuentes = $componentesModel->getComponenteByTipo('Fuente', '');
-        $placasvid = $componentesModel->getComponenteByTipo('Placa de video', '');
-        $rams = $componentesModel->getComponenteByTipo('RAM', '');
-        $discos = $componentesModel->getComponenteByTipo('HDD', 'SDD');
+        $motherboards = $componentesModel->getComponenteByTipoForPc('Placa madre', '');
+        $procesadores = $componentesModel->getComponenteByTipoForPc('Procesador', '');
+        $fuentes      = $componentesModel->getComponenteByTipoForPc('Fuente', '');
+        $placasvid    = $componentesModel->getComponenteByTipoForPc('Placa de video', '');
+        $rams         = $componentesModel->getComponenteByTipoForPc('RAM', '');
+        $discos       = $componentesModel->getComponenteByTipoForPc('HDD', 'SDD');
 
         $motherboardsEnUso = $componentesModel->getComponenteByTipoBystate('Placa madre', '');
         $procesadoresEnUso = $componentesModel->getComponenteByTipoBystate('Procesador', '');
-        $fuentesEnUso = $componentesModel->getComponenteByTipoBystate('Fuente', '');
-        $placasvidEnUso = $componentesModel->getComponenteByTipoBystate('Placa de video', '');
-        $ramsEnUso = $componentesModel->getComponenteByTipoBystate('RAM', '');
-        $discosEnUso = $componentesModel->getComponenteByTipoBystate('HDD', 'SDD');
+        $fuentesEnUso      = $componentesModel->getComponenteByTipoBystate('Fuente', '');
+        $placasvidEnUso    = $componentesModel->getComponenteByTipoBystate('Placa de video', '');
+        $ramsEnUso         = $componentesModel->getComponenteByTipoBystate('RAM', '');
+        $discosEnUso       = $componentesModel->getComponenteByTipoBystate('HDD', 'SDD');
 
         $motherboardsWithoutStock = $componentesModel->getComponenteByTipoWithoutStock('Placa madre', '');
         $procesadoresWithoutStock = $componentesModel->getComponenteByTipoWithoutStock('Procesador', '');
-        $fuentesWithoutStock = $componentesModel->getComponenteByTipoWithoutStock('Fuente', '');
-        $ramsWithoutStock = $componentesModel->getComponenteByTipoWithoutStock('RAM', '');
-        $discosWithoutStock = $componentesModel->getComponenteByTipoWithoutStock('HDD', 'SDD');
-        $pcs = PcModel::with(['area', 'deposito', 'componentes.tipo'])->get();
+        $fuentesWithoutStock      = $componentesModel->getComponenteByTipoWithoutStock('Fuente', '');
+        $ramsWithoutStock         = $componentesModel->getComponenteByTipoWithoutStock('RAM', '');
+        $discosWithoutStock       = $componentesModel->getComponenteByTipoWithoutStock('HDD', 'SDD');
 
-        // Obtener otras entidades
+        $pcs      = PcModel::with(['area', 'deposito', 'componentes.tipo'])->get();
         $historias = HistoriaModel::where('tipo_id', 5)
             ->orderBy('created_at', 'desc')
             ->get();
-        $tipos = TipoComponenteModel::all();
+        $tipos    = TipoComponenteModel::all();
         $depositos = DepositoModel::all();
-        $areas = AreaModel::orderBy('nombre', 'asc')
-            ->get();
+        $areas    = AreaModel::orderBy('nombre', 'asc')->get();
 
-
-        // Pasar los datos a la vista
         return view('gest_pc', [
-            'componentes' => $componentes,
-            'historias' => $historias,
-            'tipos' => $tipos,
-            'depositos' => $depositos,
-            'areas' => $areas,
-            'motherboards' => $motherboards,
-            'procesadores' => $procesadores,
-            'fuentes' => $fuentes,
-            'rams' => $rams,
-            'discos' => $discos,
-            'motherboardsEnUso' => $motherboardsEnUso,
-            'procesadoresEnUso' => $procesadoresEnUso,
-            'fuentesEnUso' => $fuentesEnUso,
-            'ramsEnUso' => $ramsEnUso,
-            'discosEnUso' => $discosEnUso,
+            'componentes'              => $componentes,
+            'historias'                => $historias,
+            'tipos'                    => $tipos,
+            'depositos'                => $depositos,
+            'areas'                    => $areas,
+            'motherboards'             => $motherboards,
+            'procesadores'             => $procesadores,
+            'fuentes'                  => $fuentes,
+            'rams'                     => $rams,
+            'discos'                   => $discos,
+            'motherboardsEnUso'        => $motherboardsEnUso,
+            'procesadoresEnUso'        => $procesadoresEnUso,
+            'fuentesEnUso'             => $fuentesEnUso,
+            'ramsEnUso'                => $ramsEnUso,
+            'discosEnUso'              => $discosEnUso,
             'motherboardsWithoutStock' => $motherboardsWithoutStock,
             'procesadoresWithoutStock' => $procesadoresWithoutStock,
-            'fuentesWithoutStock' => $fuentesWithoutStock,
-            'ramsWithoutStock' => $ramsWithoutStock,
-            'discosWithoutStock' => $discosWithoutStock,
-            'pcs' => $pcs,
-            'placasvidEnUso' => $placasvidEnUso,
-            'placasvid' => $placasvid
+            'fuentesWithoutStock'      => $fuentesWithoutStock,
+            'ramsWithoutStock'         => $ramsWithoutStock,
+            'discosWithoutStock'       => $discosWithoutStock,
+            'pcs'                      => $pcs,
+            'placasvidEnUso'           => $placasvidEnUso,
+            'placasvid'                => $placasvid,
         ]);
     }
 
 
     public function store(Request $request)
     {
-        $user = Auth::user();
+        $user      = Auth::user();
         $areaModel = new AreaModel();
 
-        // Validación
         $request->validate([
-            'addNombre' => 'required|string|max:255|unique:pc,nombre',
+            'addNombre'        => 'required|string|max:255|unique:pc,nombre',
             'addIdentificador' => 'required|string|max:255|unique:pc,identificador',
-            'discos1' => 'nullable|array',
-            'discos1.*' => 'nullable|string|max:255',
-            'rams1' => 'nullable|array',
-            'rams1.*' => 'nullable|string|max:255',
+            'addEnUso'        => 'required|boolean',
+            'addArea'         => 'nullable|required_if:addEnUso,1|exists:area,id',
+            'addDeposito'     => 'nullable|required_if:addEnUso,0|exists:deposito,id',
+            'discos1'          => 'nullable|array',
+            'discos1.*'        => 'nullable|string|max:255',
+            'discos1_nombre'   => 'nullable|array',
+            'discos1_nombre.*' => 'nullable|string|max:255',
+            'rams1'            => 'nullable|array',
+            'rams1.*'          => 'nullable|string|max:255',
+            'rams1_nombre'     => 'nullable|array',
+            'rams1_nombre.*'   => 'nullable|string|max:255',
         ]);
 
-        // Crear un nuevo registro
-        $pc = new PcModel();
-        $pc->nombre = $request->input('addNombre');
-        $pc->identificador = $request->input('addIdentificador');
-        $pc->ip = $request->input('addIp');
-        $pc->deposito_id = $request->input('addDeposito');
-        if (!$request->input('addDeposito')) {
-            if ($request->input('addNroConsul')) {
-                $area = AreaModel::find($request->input('addArea'))->nombre . " " . $request->input('addNroConsul');
-            } else {
-                $area = AreaModel::find($request->input('addArea'))->nombre;
-            }
-            if ($areaModel->findByName($area)) {
-                $pc->area_id = $areaModel->findByName($area)->id;
-            } else {
-                $areaNueva = new AreaModel();
-                $areaNueva->nombre = $area;
-                $areaNueva->visible = false;
-                $areaNueva->save();
+        \DB::transaction(function () use ($request, $user, $areaModel) {
 
-                $pc->area_id = $areaNueva->id;
-            }
-        }
-        $pc->save();
+            $pc               = new PcModel();
+            $pc->nombre       = $request->input('addNombre');
+            $pc->identificador = $request->input('addIdentificador');
+            $pc->ip           = $request->input('addIp');
+            $pc->deposito_id  = $request->input('addDeposito');
 
-        // Guardar componentes
-        $componentes = [
-            $request->input('addMotherboard'),
-            $request->input('addProcesador'),
-            $request->input('addFuente'),
-            $request->input('addPlacavid')
-        ];
-
-        // Insertar los componentes
-        foreach ($componentes as $componente_id) {
-            if ($componente_id) { // Verificar que el ID no sea nulo
-                $componenteController = new ComponenteController();
-                $componente_pc = new ComponentePcModel();
-                $componente_pc->pc_id = $pc->id;
-                $componente_pc->componente_id = $componenteController->transferStateByPc($componente_id, 1, 5, "creacion de PC", $pc->identificador, $pc->nombre, true, false);
-                $componente_pc->save();
-            }
-        }
-
-        // Insertar discos del primer modal
-        $discos1 = $request->input('discos1', []);
-        $stockToTransfer = 0;
-        $discosAgrupados = [];
-
-        foreach ($discos1 as $componente_id) {
-            if ($componente_id) {
-                $componente = ComponenteModel::find($componente_id);
-
-                // Agrupar los discos por nombre
-                if (isset($discosAgrupados[$componente->nombre])) {
-                    $discosAgrupados[$componente->nombre]['cantidad'] += 1;
+            if (! $request->input('addDeposito')) {
+                $nombreArea = AreaModel::find($request->input('addArea'))->nombre;
+                if ($request->input('addNroConsul')) {
+                    $nombreArea .= ' ' . $request->input('addNroConsul');
+                }
+                $area = $areaModel->findByName($nombreArea);
+                if ($area) {
+                    $pc->area_id = $area->id;
                 } else {
-                    $discosAgrupados[$componente->nombre] = [
-                        'componente_id' => $componente_id,
-                        'cantidad' => 1
-                    ];
+                    $areaNueva          = new AreaModel();
+                    $areaNueva->nombre  = $nombreArea;
+                    $areaNueva->visible = false;
+                    $areaNueva->save();
+                    $pc->area_id = $areaNueva->id;
+                }
+            }
+            $pc->save();
+
+            $componenteController = new ComponenteController();
+
+            /*
+             * Modo "sin-stock": el usuario eligió un componente que existe pero
+             * no tenía unidades disponibles, e indicó cuántas unidades ingresa.
+             *
+             *   1) Ingresa N unidades al registro existente (Sin Stock → Disponible).
+             *   2) Toma 1 unidad para la PC a través de transferStateByPc,
+             *      que es el mismo camino que usa el modo "stock":
+             *        Disponible N → N-1 (o Sin Stock si queda en 0) y En uso +1.
+             *
+             * Devuelve el id del registro En uso que se vincula a la PC.
+             */
+            $reactivarSinStock = function (
+                int $componenteId,
+                int $cantidad,
+                ?string $motivo,
+                array $tiposPermitidos,
+                string $campo
+            ) use ($pc, $user, $componenteController) {
+
+                $motivo = trim((string) $motivo);
+
+                if ($cantidad < 1) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        $campo . '_cantidad' => 'La cantidad a ingresar debe ser un entero mayor o igual a 1.',
+                    ]);
                 }
 
-                // Realizar la transferencia del estado
-                $componenteController = new ComponenteController();
-                $componente_pc = new ComponentePcModel();
-                $componente_pc->pc_id = $pc->id;
-                $componente_pc->componente_id = $componenteController->transferStateByPc($componente_id, 1, 5, "creacion de PC", $pc->identificador, $pc->nombre, false, false);
-                $componente_pc->save();
-            }
-        }
-
-        // Guardar la historia por cada grupo de discos
-        foreach ($discosAgrupados as $nombre => $datos) {
-            $stockToTransfer = $datos['cantidad'];
-
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "uso " . $stockToTransfer . " " . $nombre . "/s para el armado de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = "creacion de PC";
-            $historia->tipo_id = 4; // Tipo de transferencia
-            $historia->save();
-        }
-
-
-        // Insertar RAMs del primer modal
-        $rams1 = $request->input('rams1', []);
-        $stockToTransfer = 0;
-        $ramsAgrupados = [];
-
-        foreach ($rams1 as $componente_id) {
-            if ($componente_id) {
-                $componente = ComponenteModel::find($componente_id);
-
-                // Agrupar las RAMs por nombre
-                if (isset($ramsAgrupados[$componente->nombre])) {
-                    $ramsAgrupados[$componente->nombre]['cantidad'] += 1;
-                } else {
-                    $ramsAgrupados[$componente->nombre] = [
-                        'componente_id' => $componente_id,
-                        'cantidad' => 1
-                    ];
+                if ($motivo === '') {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        $campo . '_motivo' => 'El motivo del ingreso de stock es obligatorio.',
+                    ]);
                 }
 
-                // Realizar la transferencia del estado
-                $componenteController = new ComponenteController();
-                $componente_pc = new ComponentePcModel();
-                $componente_pc->pc_id = $pc->id;
-                $componente_pc->componente_id = $componenteController->transferStateByPc($componente_id, 1, 5, "creacion de PC", $pc->identificador, $pc->nombre, false, false);
+                $componente = ComponenteModel::with('deposito')
+                    ->whereKey(abs($componenteId))
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $componente) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        $campo => 'El componente seleccionado no existe.',
+                    ]);
+                }
+
+                if (! in_array((int) $componente->tipo_id, $tiposPermitidos, true)) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        $campo => 'El componente seleccionado no corresponde a este tipo de componente.',
+                    ]);
+                }
+
+                if ((int) $componente->estado_id === ComponenteController::ESTADO_EN_USO) {
+                    $depositoReal = $componente->deposito_origen_id;
+
+                    $filaReal = ComponenteModel::where('nombre', $componente->nombre)
+                        ->where('tipo_id', $componente->tipo_id)
+                        ->whereIn('estado_id', [
+                            ComponenteController::ESTADO_DISPONIBLE,
+                            ComponenteController::ESTADO_SIN_STOCK,
+                        ])
+                        ->where(function ($q) use ($depositoReal) {
+                            $depositoReal
+                                ? $q->where('deposito_id', $depositoReal)
+                                : $q->whereNull('deposito_id');
+                        })
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($filaReal) {
+                        $componente = $filaReal;
+                    } else {
+                        $nueva              = new ComponenteModel();
+                        $nueva->nombre      = $componente->nombre;
+                        $nueva->tipo_id     = $componente->tipo_id;
+                        $nueva->deposito_id = $depositoReal;
+                        $nueva->estado_id   = ComponenteController::ESTADO_SIN_STOCK;
+                        $nueva->stock       = 0;
+                        $nueva->save();
+                        $componente = $nueva;
+                    }
+                }
+
+
+                if (! $componente->deposito_id) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        $campo => 'El componente seleccionado no tiene un depósito asociado.',
+                    ]);
+                }
+
+                // 1) Ingreso de stock.
+                $componente->stock     = (int) $componente->stock + $cantidad;
+                $componente->estado_id = ComponenteController::ESTADO_DISPONIBLE;
+                $componente->save();
+
+                $historia          = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = 'Ingresó ' . $cantidad . ' unidad(es) al stock de: '
+                    . $componente->nombre
+                    . ' (' . ($componente->deposito->nombre ?? 'sin depósito') . ')'
+                    . ' para utilizar una en la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo  = $motivo;
+                $historia->tipo_id = 4;
+                $historia->save();
+
+                // 2) Una unidad pasa a En uso para la PC (deja el resto Disponible,
+                //    o el registro en Sin Stock si N = 1).
+                return $componenteController->transferStateByPc(
+                    $componente->id,
+                    1,
+                    ComponenteController::ESTADO_EN_USO,
+                    'Creación de PC',
+                    $pc->identificador,
+                    $pc->nombre,
+                    true,
+                    false
+                );
+            };
+
+            $crearRegistrado = function (
+                string $nombre,
+                int $tipo_id,
+                ?int $depositoOrigen = null,
+                bool $noIdentificado = false,
+                ?string $observaciones = null,
+                int $cantidad = 1,
+                ?string $motivo = null
+            ) use ($pc, $user) {
+
+                if ($cantidad < 1) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'cantidad' => 'La cantidad debe ser mayor o igual a 1.',
+                    ]);
+                }
+
+                // Registrar nuevo exige depósito de origen: sin él, las unidades
+                // sobrantes (cantidad - 1) no tendrían dónde ingresar y se perderían.
+                if (! $noIdentificado && $depositoOrigen === null) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'deposito_origen' => 'El depósito de origen es obligatorio al registrar un componente nuevo.',
+                    ]);
+                }
+
+                /*
+     * Una unidad se asigna directamente a la PC.
+     * Las unidades restantes quedan disponibles en el depósito de origen.
+     */
+                $nuevo = new ComponenteModel();
+                $nuevo->nombre             = $nombre;
+                $nuevo->tipo_id            = $tipo_id;
+                $nuevo->estado_id          = ComponenteController::ESTADO_EN_USO;
+                $nuevo->deposito_id        = null;
+                $nuevo->deposito_origen_id = $depositoOrigen;
+                $nuevo->stock              = 1;
+                $nuevo->save();
+
+                $componente_pc                = new ComponentePcModel();
+                $componente_pc->pc_id         = $pc->id;
+                $componente_pc->componente_id = $nuevo->id;
                 $componente_pc->save();
+
+                /*
+     * Si se registraron más unidades de las que se asignaron a la PC,
+     * las restantes ingresan como stock disponible en el depósito de origen.
+     */
+                $cantidadDisponible = $cantidad - 1;
+
+                if ($depositoOrigen !== null) {
+
+                    $stockDisponible = ComponenteModel::where('tipo_id', $tipo_id)
+                        ->whereRaw('LOWER(TRIM(nombre)) = ?', [mb_strtolower(trim($nombre))])
+                        ->where('deposito_id', $depositoOrigen)
+                        ->whereIn('estado_id', [
+                            ComponenteController::ESTADO_DISPONIBLE,
+                            ComponenteController::ESTADO_SIN_STOCK,
+                        ])
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($stockDisponible) {
+
+                        if ($cantidadDisponible > 0) {
+                            $stockDisponible->stock = (int) $stockDisponible->stock + $cantidadDisponible;
+                            $stockDisponible->estado_id = ComponenteController::ESTADO_DISPONIBLE;
+                            $stockDisponible->save();
+                        }
+                    } else {
+
+                        $stockDisponible = new ComponenteModel();
+                        $stockDisponible->nombre      = $nombre;
+                        $stockDisponible->tipo_id     = $tipo_id;
+                        $stockDisponible->deposito_id = $depositoOrigen;
+                        $stockDisponible->deposito_origen_id = null;
+
+                        if ($cantidadDisponible > 0) {
+                            $stockDisponible->estado_id = ComponenteController::ESTADO_DISPONIBLE;
+                            $stockDisponible->stock     = $cantidadDisponible;
+                        } else {
+                            $stockDisponible->estado_id = ComponenteController::ESTADO_SIN_STOCK;
+                            $stockDisponible->stock     = 0;
+                        }
+
+                        $stockDisponible->save();
+                    }
+                }
+
+                $historia = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = ($noIdentificado
+                    ? 'Registró un componente no identificado ('
+                    : 'Registró el componente "')
+                    . $nombre
+                    . ($noIdentificado ? ')' : '"')
+                    . ' directamente en la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.'
+                    . ' Cantidad registrada: ' . $cantidad . '.'
+                    . ($observaciones ? ' Observaciones: ' . $observaciones : '');
+                $motivo = trim((string) $motivo);
+                $historia->motivo  = $motivo !== '' ? $motivo : 'Creación de PC';
+                $historia->tipo_id = 4;
+                $historia->save();
+
+                return $nuevo->id;
+            };
+
+            $singulares = [
+                ['campo' => 'addMotherboard', 'tipo_id' => 5, 'label' => 'Placa madre'],
+                ['campo' => 'addProcesador',  'tipo_id' => 4, 'label' => 'Procesador'],
+                ['campo' => 'addFuente',      'tipo_id' => 2, 'label' => 'Fuente'],
+                ['campo' => 'addPlacavid',    'tipo_id' => 7, 'label' => 'Placa de video'],
+            ];
+
+            foreach ($singulares as $s) {
+                $id_stock   = $request->input($s['campo']);
+                $nombre_reg = trim($request->input($s['campo'] . '_nombre', ''));
+
+                $modo = $request->input($s['campo'] . '_modo', $id_stock ? 'stock' : ($nombre_reg !== '' ? 'registrar' : null));
+
+                if ($modo === 'stock' && $id_stock) {
+                    $componente_pc               = new ComponentePcModel();
+                    $componente_pc->pc_id        = $pc->id;
+                    $componente_pc->componente_id = $componenteController->transferStateByPc(
+                        $id_stock,
+                        1,
+                        ComponenteController::ESTADO_EN_USO,
+                        'Creación de PC',
+                        $pc->identificador,
+                        $pc->nombre,
+                        true,
+                        false
+                    );
+                    $componente_pc->save();
+                } elseif ($modo === 'registrar' && $nombre_reg !== '') {
+                    $depositoOrigen = $request->input($s['campo'] . '_deposito_origen');
+                    if ($depositoOrigen !== null && $depositoOrigen !== '') {
+                        $depositoOrigen = (int) $depositoOrigen;
+                        if (! DepositoModel::whereKey($depositoOrigen)->exists()) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                $s['campo'] . '_deposito_origen' => 'El depósito de origen seleccionado no existe.',
+                            ]);
+                        }
+                    } else {
+                        $depositoOrigen = null;
+                    }
+                    $crearRegistrado(
+                        $nombre_reg,
+                        $s['tipo_id'],
+                        $depositoOrigen,
+                        false,
+                        $request->input($s['campo'] . '_observaciones'),
+                        (int) $request->input($s['campo'] . '_cantidad', 1),
+                        $request->input($s['campo'] . '_motivo')
+                    );
+                } elseif ($modo === 'sin-stock') {
+                    if (! $id_stock) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            $s['campo'] => 'Seleccioná el componente al que se le ingresará stock.',
+                        ]);
+                    }
+                    $componente_pc                = new ComponentePcModel();
+                    $componente_pc->pc_id         = $pc->id;
+                    $componente_pc->componente_id = $reactivarSinStock(
+                        (int) $id_stock,
+                        (int) $request->input($s['campo'] . '_cantidad', 0),
+                        $request->input($s['campo'] . '_motivo'),
+                        [$s['tipo_id']],
+                        $s['campo']
+                    );
+                    $componente_pc->save();
+                } elseif ($modo === 'no-identificada') {
+                    $crearRegistrado(
+                        $s['label'] . ' no identificada',
+                        $s['tipo_id'],
+                        null,
+                        true,
+                        $request->input($s['campo'] . '_observaciones')
+                    );
+                }
             }
-        }
 
-        foreach ($ramsAgrupados as $nombre => $datos) {
-            $stockToTransfer = $datos['cantidad'];
+            /*
+             * Discos y RAM: cada fila del wizard trae su propio modo
+             * (stock | sin-stock | registrar | no-identificada). Los arrays
+             * <prefix>[], <prefix>_modo[], <prefix>_cantidad[], etc. están
+             * alineados por índice. Antes se recorría <prefix>[] asumiendo que
+             * toda fila con id era "stock", lo que ignoraba el modo sin-stock.
+             */
+            $procesarMulti = function (
+                string $prefix,
+                array $tiposPermitidos,
+                int $tipoRegistrar,
+                string $nombreNoIdentificado
+            ) use ($request, $pc, $user, $componenteController, $crearRegistrado, $reactivarSinStock) {
 
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "uso " . $stockToTransfer . " " . $nombre . "/s para el armado de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = "creacion de PC";
-            $historia->tipo_id = 4; // Tipo de transferencia
+                $ids           = (array) $request->input($prefix, []);
+                $nombres       = (array) $request->input($prefix . '_nombre', []);
+                $modos         = (array) $request->input($prefix . '_modo', []);
+                $depositos     = (array) $request->input($prefix . '_deposito_origen', []);
+                $observaciones = (array) $request->input($prefix . '_observaciones', []);
+                $cantidades    = (array) $request->input($prefix . '_cantidad', []);
+                $motivos       = (array) $request->input($prefix . '_motivo', []);
+
+                $total     = max(count($ids), count($nombres), count($modos));
+                $agrupados = [];
+
+                for ($i = 0; $i < $total; $i++) {
+                    $id     = $ids[$i] ?? null;
+                    $nombre = trim((string) ($nombres[$i] ?? ''));
+                    $modo   = $modos[$i] ?? ($id ? 'stock' : ($nombre !== '' ? 'registrar' : null));
+                    $campo  = $prefix . '.' . $i;
+
+                    if ($modo === 'stock' && $id) {
+                        $componente = ComponenteModel::find($id);
+                        if (! $componente) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                $campo => 'El componente seleccionado no existe.',
+                            ]);
+                        }
+
+                        if (isset($agrupados[$componente->nombre])) {
+                            $agrupados[$componente->nombre]['cantidad'] += 1;
+                        } else {
+                            $agrupados[$componente->nombre] = ['componente_id' => $id, 'cantidad' => 1];
+                        }
+
+                        $componente_pc                = new ComponentePcModel();
+                        $componente_pc->pc_id         = $pc->id;
+                        $componente_pc->componente_id = $componenteController->transferStateByPc(
+                            $id,
+                            1,
+                            ComponenteController::ESTADO_EN_USO,
+                            'Creación de PC',
+                            $pc->identificador,
+                            $pc->nombre,
+                            false,
+                            false
+                        );
+                        $componente_pc->save();
+                    } elseif ($modo === 'sin-stock') {
+                        if (! $id) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                $campo => 'Seleccioná el componente al que se le ingresará stock.',
+                            ]);
+                        }
+
+                        // Ya registra su propia historia (ingreso + uso en la PC).
+                        $componente_pc                = new ComponentePcModel();
+                        $componente_pc->pc_id         = $pc->id;
+                        $componente_pc->componente_id = $reactivarSinStock(
+                            (int) $id,
+                            (int) ($cantidades[$i] ?? 0),
+                            $motivos[$i] ?? null,
+                            $tiposPermitidos,
+                            $campo
+                        );
+                        $componente_pc->save();
+                    } elseif ($modo === 'registrar' && $nombre !== '') {
+                        $depositoOrigen = $depositos[$i] ?? null;
+                        $depositoOrigen = ($depositoOrigen !== null && $depositoOrigen !== '') ? (int) $depositoOrigen : null;
+                        if ($depositoOrigen !== null && ! DepositoModel::whereKey($depositoOrigen)->exists()) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                $prefix . '_deposito_origen.' . $i => 'El depósito de origen seleccionado no existe.',
+                            ]);
+                        }
+                        $crearRegistrado(
+                            $nombre,
+                            $tipoRegistrar,
+                            $depositoOrigen,
+                            false,
+                            $observaciones[$i] ?? null,
+                            (int) ($cantidades[$i] ?? 1),
+                            $motivos[$i] ?? null
+                        );
+                    } elseif ($modo === 'no-identificada') {
+                        $crearRegistrado(
+                            $nombreNoIdentificado,
+                            $tipoRegistrar,
+                            null,
+                            true,
+                            $observaciones[$i] ?? null
+                        );
+                    }
+                }
+
+                foreach ($agrupados as $nombre => $datos) {
+                    $historia          = new HistoriaModel();
+                    $historia->tecnico = $user->name;
+                    $historia->detalle = 'Usó ' . $datos['cantidad'] . ' ' . $nombre
+                        . '/s para el armado de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                    $historia->motivo  = 'Creación de PC';
+                    $historia->tipo_id = 4;
+                    $historia->save();
+                }
+            };
+
+            $procesarMulti('discos1', [3, 6], 3, 'Disco no identificado');
+            $procesarMulti('rams1',   [1],    1, 'RAM no identificada');
+
+            $historia                   = new HistoriaModel();
+            $historia->tecnico          = $user->name;
+            $historia->detalle          = 'Creó la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+            $historia->motivo           = 'Creación de PC';
+            $historia->componente_id    = $pc->id;
+            $historia->tipo_dispositivo = 'PC';
+            $historia->tipo_id          = 5;
             $historia->save();
-        }
-
-
-
-        // Guardar historia
-        $historia = new HistoriaModel();
-        $historia->tecnico = $user->name;
-        $historia->detalle = "creó la PC: " . $request->input('addIdentificador') . " - " . $request->input('addNombre') . ".";
-        $historia->motivo = "creacion de PC";
-        $historia->componente_id = $pc->id;
-        $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-        $historia->tipo_id = 5;
-        $historia->save();
+        });
 
         return redirect()->back()->with('success', 'PC guardada correctamente.');
     }
 
 
+    // ─────────────────────────────────────────────────────────────────────
+    // edit — envuelto en DB::transaction
+    //
+    // Cambios respecto al original:
+    //   1. Todo el cuerpo está dentro de DB::transaction. Si cualquier
+    //      operación falla, el inventario vuelve al estado anterior.
+    //   2. Para los componentes singulares (placa madre, procesador,
+    //      fuente, placa de video) se verifica explícitamente que el
+    //      nuevo valor no sea null/"" antes de intentar el reemplazo.
+    //      El original hacía ComponenteModel::find(null)->nombre en
+    //      el mensaje de historia cuando el campo venía vacío, lo que
+    //      producía un error fatal.
+    //   3. Los IDs de estado se referencian a través de las constantes
+    //      de ComponenteController en lugar de literales.
+    // ─────────────────────────────────────────────────────────────────────
     public function edit(Request $request)
     {
-        $user = Auth::user();
+        $user      = Auth::user();
         $areaModel = new AreaModel();
 
-        // Validación de entrada
         $request->validate([
-            'discos2' => 'nullable|array',
+            'discos2'   => 'nullable|array',
             'discos2.*' => 'nullable|string|max:255',
-            'rams2' => 'nullable|array',
-            'rams2.*' => 'nullable|string|max:255',
+            'rams2'     => 'nullable|array',
+            'rams2.*'   => 'nullable|string|max:255',
         ]);
 
         $id = $request->input('editId');
         $pc = PcModel::find($id);
 
-        $motherActual = ComponentePcModel::getMotherboardIdByPc($id);
-        $proceActual = ComponentePcModel::getProcesadorIdByPc($id);
-        $fuenteActual = ComponentePcModel::getFuenteIdByPc($id);
+        $motherActual   = ComponentePcModel::getMotherboardIdByPc($id);
+        $proceActual    = ComponentePcModel::getProcesadorIdByPc($id);
+        $fuenteActual   = ComponentePcModel::getFuenteIdByPc($id);
         $placavidActual = ComponentePcModel::getPlacavidIdByPc($id);
 
+        DB::transaction(function () use (
+            $request,
+            $user,
+            $areaModel,
+            $id,
+            $pc,
+            $motherActual,
+            $proceActual,
+            $fuenteActual,
+            $placavidActual
+        ) {
+            $transferecia = new ComponenteController();
 
+            // Retira una unidad de una PC respetando el origen. Si el componente
+            // estaba En uso pero nunca tuvo deposito_origen_id, no lo convierte
+            // en Disponible sin depósito: se elimina cuando deja de tener vínculos.
+            $retirarComponenteDePc = function (int $componenteId) use ($id, $pc, $transferecia) {
+                $componente = ComponenteModel::whereKey($componenteId)
+                    ->lockForUpdate()
+                    ->first();
 
-        if ($request->input("editDetalle") != null || $request->input("editDetalle") != "") {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = $request->input("editDetalle");
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-        }
-
-        // Actualizar información básica de la PC
-        if ($pc->deposito_id != $request->input('editDeposito') && $request->input('editDeposito') != null) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el deposito de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . (DepositoModel::find($pc->deposito_id)->nombre ?? "deposito no asignado") . " a " . DepositoModel::find($request->input('editDeposito'))->nombre . (($area = AreaModel::find($pc->area_id)) ? ', se quitó del area ' . ($area->nombre ?? '') : '') . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-            $pc->deposito_id = $request->input('editDeposito');
-            $pc->area_id = null;
-        }
-        if ($pc->area_id != $request->input('editArea') && $request->input('editArea') != null) {
-            if ($request->input('editArea') == 27) {
-                $area = AreaModel::find($request->input('editArea'))->nombre . " " . ($request->input('editNroConsul') ?? '');
-            } else {
-                $area = AreaModel::find($request->input('editArea'))->nombre;
-            }
-            if ($areaModel->findByName($area)) {
-                $historia = new HistoriaModel();
-                $historia->tecnico = $user->name;
-                $historia->detalle = "cambio el area de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . (AreaModel::find($pc->area_id)->nombre ?? "area no asignada") . " a " . $area . (($deposito = DepositoModel::find($pc->deposito_id)) ? ', se quitó del depósito ' . ($deposito->nombre ?? '') : '') . ".";
-                $historia->motivo = $request->input('editMotivo');
-                $historia->componente_id = $pc->id;
-                $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-                $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-                $historia->save();
-
-                $pc->area_id = $areaModel->findByName($area)->id;
-            } else {
-                $areaNueva = new AreaModel();
-                $areaNueva->nombre = $area;
-                $areaNueva->visible = false;
-                $areaNueva->save();
-
-                $historia = new HistoriaModel();
-                $historia->tecnico = $user->name;
-                $historia->detalle = "cambio el area de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . (AreaModel::find($pc->area_id)->nombre ?? "area no asignada") . " a " . $area . (($deposito = DepositoModel::find($pc->deposito_id)) ? ', se quitó del depósito ' . ($deposito->nombre ?? '') : '') . ".";
-                $historia->motivo = $request->input('editMotivo');
-                $historia->componente_id = $pc->id;
-                $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-                $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-                $historia->save();
-
-                $pc->area_id = $areaNueva->id;
-            }
-            $pc->deposito_id = null;
-        }
-
-        if ($pc->ip != $request->input('editIp')) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio la IP de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . $pc->ip . " a " . $request->input('editIp') . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-        }
-        $pc->ip = $request->input('editIp');
-        if ($pc->nombre != $request->input('editNombre')) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el nombre de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . $pc->nombre . " a " . $request->input('editNombre') . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-        }
-        $pc->nombre = $request->input('editNombre');
-
-
-        if ($pc->identificador != $request->input('editIdentificador')) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el Nº Inventario de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . $pc->identificador . " a " . $request->input('editIdentificador') . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-        }
-        $pc->identificador = $request->input('editIdentificador');
-
-        $pc->update();
-
-        $transferecia = new ComponenteController();
-
-        // Insertar nuevos componentes
-
-        if ($motherActual != $request->input('editMotherboard')) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio la placa madre de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . ComponenteModel::find($motherActual)->nombre . " a " . ComponenteModel::find($request->input('editMotherboard'))->nombre . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-            //Elimino mother vieja
-            $transferecia->transferStateByPc($motherActual, 1, 4, "", $pc->id, $pc->nombre, false, false);
-
-            //Elimino relacion vieja
-            ComponentePcModel::where('pc_id', $id)
-                ->Where('componente_id', $motherActual)
-                ->delete();
-
-            //Agrego relacion nueva //Agrego mother nueva
-            $componente_pc = new ComponentePcModel();
-            $componente_pc->pc_id = $pc->id;
-            $componente_pc->componente_id = $transferecia->transferStateByPc($request->input('editMotherboard'), 1, 5, "", $pc->id, $pc->nombre, true, true);
-            $componente_pc->save();
-        }
-
-        if ($proceActual != $request->input('editProcesador')) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el procesador de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . ComponenteModel::find($proceActual)->nombre . " a " . ComponenteModel::find($request->input('editProcesador'))->nombre . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-            //Elimino mother vieja
-            $transferecia->transferStateByPc($proceActual, 1, 4, "", $pc->id, $pc->nombre, false, false);
-
-            //Elimino relacion vieja
-            ComponentePcModel::where('pc_id', $id)
-                ->Where('componente_id', $proceActual)
-                ->delete();
-
-            //Agrego relacion nueva //Agrego mother nueva
-            $componente_pc = new ComponentePcModel();
-            $componente_pc->pc_id = $pc->id;
-            $componente_pc->componente_id = $transferecia->transferStateByPc($request->input('editProcesador'), 1, 5, "", $pc->id, $pc->nombre, true, true);
-            $componente_pc->save();
-        }
-
-        if ($fuenteActual != $request->input('editFuente')) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio la fuente de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . ComponenteModel::find($fuenteActual)->nombre . " a " . ComponenteModel::find($request->input('editFuente'))->nombre . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-            //Elimino mother vieja
-            $transferecia->transferStateByPc($fuenteActual, 1, 4, "", $pc->id, $pc->nombre, false, false);
-
-            //Elimino relacion vieja
-            ComponentePcModel::where('pc_id', $id)
-                ->Where('componente_id', $fuenteActual)
-                ->delete();
-
-            //Agrego relacion nueva //Agrego mother nueva
-            $componente_pc = new ComponentePcModel();
-            $componente_pc->pc_id = $pc->id;
-            $componente_pc->componente_id = $transferecia->transferStateByPc($request->input('editFuente'), 1, 5, "", $pc->id, $pc->nombre, true, true);
-            $componente_pc->save();
-        }
-
-        if ($placavidActual != $request->input('editPlacavid')) {
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "cambio la placa de video de la PC: " . $pc->identificador . " - " . $pc->nombre . " de " . (ComponenteModel::find($placavidActual)->nombre ?? 'Placa de video no asignada') . " a " . ComponenteModel::find($request->input('editPlacavid'))->nombre . ".";
-            $historia->motivo = $request->input('editMotivo');
-            $historia->componente_id = $pc->id;
-            $historia->tipo_dispositivo = 'PC'; // Tipo de transferencia
-            $historia->tipo_id = 5; // Ajusta el tipo_id según sea necesario
-            $historia->save();
-            //Elimino mother vieja
-            $transferecia->transferStateByPc($placavidActual, 1, 4, "", $pc->id, $pc->nombre, false, false);
-
-            //Elimino relacion vieja
-            ComponentePcModel::where('pc_id', $id)
-                ->Where('componente_id', $placavidActual)
-                ->delete();
-
-            //Agrego relacion nueva //Agrego mother nueva
-            $componente_pc = new ComponentePcModel();
-            $componente_pc->pc_id = $pc->id;
-            $componente_pc->componente_id = $transferecia->transferStateByPc($request->input('editPlacavid'), 1, 5, "", $pc->id, $pc->nombre, true, true);
-            $componente_pc->save();
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Obtener discos actuales
-        $discosActuales = ComponentePcModel::getDiscosByPc($id);
-        $discosSeleccionados = $request->input('discos2', []);
-
-        // Contar las ocurrencias de cada disco en los arrays
-        $conteoDiscosActuales = array_count_values($discosActuales);
-        $conteoDiscosSeleccionados = array_count_values($discosSeleccionados);
-
-        $discosNuevos = [];
-        $discosEliminados = [];
-        $discosAgrupados = [];
-        $discosAgrupadosEliminados = [];
-
-        // Identificar discos eliminados y nuevos basados en las diferencias de conteo
-        foreach ($conteoDiscosActuales as $disco => $count) {
-            if (isset($conteoDiscosSeleccionados[$disco])) {
-                if ($count > $conteoDiscosSeleccionados[$disco]) {
-                    for ($i = 0; $i < $count - $conteoDiscosSeleccionados[$disco]; $i++) {
-                        $discosEliminados[] = $disco;
-                    }
+                if (! $componente) {
+                    return;
                 }
-            } else {
-                for ($i = 0; $i < $count; $i++) {
+
+                $esOrigenDesconocido = (
+                    (int) $componente->estado_id === ComponenteController::ESTADO_EN_USO
+                    && $componente->deposito_origen_id === null
+                );
+
+                $vinculo = ComponentePcModel::where('pc_id', $id)
+                    ->where('componente_id', $componenteId)
+                    ->first();
+
+                if ($esOrigenDesconocido) {
+                    $otrosVinculos = ComponentePcModel::where('componente_id', $componente->id)
+                        ->where('pc_id', '!=', $id)
+                        ->count();
+
+                    if ((int) $componente->stock > 0) {
+                        $componente->stock -= 1;
+                    }
+
+                    if ($componente->stock === 0 && $otrosVinculos === 0) {
+                        $componente->delete();
+                    } else {
+                        $componente->save();
+                    }
+                } else {
+                    // Retiramos primero el vínculo para que transferStateByPc
+                    // pueda eliminar una fila En uso que quede sin unidades.
+                    $vinculo?->delete();
+                    $transferecia->transferStateByPc(
+                        $componente->id,
+                        1,
+                        ComponenteController::ESTADO_DISPONIBLE,
+                        '',
+                        $pc->id,
+                        $pc->nombre,
+                        false,
+                        false
+                    );
+                }
+
+                if ($esOrigenDesconocido) {
+                    $vinculo?->delete();
+                }
+            };
+
+            // ── Historial libre ───────────────────────────────────────────
+            if ($request->input('editDetalle') != null && $request->input('editDetalle') != '') {
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = $request->input('editDetalle');
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $pc->id;
+                $historia->tipo_dispositivo = 'PC';
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
+
+            // ── Depósito ──────────────────────────────────────────────────
+            if ($pc->deposito_id != $request->input('editDeposito') && $request->input('editDeposito') != null) {
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Cambió el depósito de la PC: ' . $pc->identificador
+                    . ' - ' . $pc->nombre
+                    . ' de ' . (DepositoModel::find($pc->deposito_id)->nombre ?? 'depósito no asignado')
+                    . ' a ' . DepositoModel::find($request->input('editDeposito'))->nombre
+                    . (($area = AreaModel::find($pc->area_id)) ? ', se quitó del área ' . ($area->nombre ?? '') : '') . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $pc->id;
+                $historia->tipo_dispositivo = 'PC';
+                $historia->tipo_id          = 5;
+                $historia->save();
+                $pc->deposito_id = $request->input('editDeposito');
+                $pc->area_id     = null;
+            }
+
+            // ── Área ──────────────────────────────────────────────────────
+            if ($pc->area_id != $request->input('editArea') && $request->input('editArea') != null) {
+                $area = $request->input('editArea') == 27
+                    ? AreaModel::find($request->input('editArea'))->nombre . ' ' . ($request->input('editNroConsul') ?? '')
+                    : AreaModel::find($request->input('editArea'))->nombre;
+
+                $areaObj = $areaModel->findByName($area);
+                if (! $areaObj) {
+                    $areaNueva          = new AreaModel();
+                    $areaNueva->nombre  = $area;
+                    $areaNueva->visible = false;
+                    $areaNueva->save();
+                    $areaObj = $areaNueva;
+                }
+
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Cambió el área de la PC: ' . $pc->identificador
+                    . ' - ' . $pc->nombre
+                    . ' de ' . (AreaModel::find($pc->area_id)->nombre ?? 'área no asignada')
+                    . ' a ' . $area
+                    . (($deposito = DepositoModel::find($pc->deposito_id)) ? ', se quitó del depósito ' . ($deposito->nombre ?? '') : '') . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $pc->id;
+                $historia->tipo_dispositivo = 'PC';
+                $historia->tipo_id          = 5;
+                $historia->save();
+
+                $pc->area_id     = $areaObj->id;
+                $pc->deposito_id = null;
+            }
+
+            // ── IP ────────────────────────────────────────────────────────
+            if ($pc->ip != $request->input('editIp')) {
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Cambió la IP de la PC: ' . $pc->identificador
+                    . ' - ' . $pc->nombre . ' de ' . $pc->ip . ' a ' . $request->input('editIp') . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $pc->id;
+                $historia->tipo_dispositivo = 'PC';
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
+            $pc->ip = $request->input('editIp');
+
+            // ── Nombre ────────────────────────────────────────────────────
+            if ($pc->nombre != $request->input('editNombre')) {
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Cambió el nombre de la PC: ' . $pc->identificador
+                    . ' de ' . $pc->nombre . ' a ' . $request->input('editNombre') . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $pc->id;
+                $historia->tipo_dispositivo = 'PC';
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
+            $pc->nombre = $request->input('editNombre');
+
+            // ── Identificador ─────────────────────────────────────────────
+            if ($pc->identificador != $request->input('editIdentificador')) {
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Cambió el N.º de inventario de la PC de '
+                    . $pc->identificador . ' a ' . $request->input('editIdentificador') . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $pc->id;
+                $historia->tipo_dispositivo = 'PC';
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
+            $pc->identificador = $request->input('editIdentificador');
+            $pc->update();
+
+            // ── Componentes singulares (placa madre, procesador, fuente, placa de video) ──
+            // Se compara el ID actual con el ID nuevo. Si son distintos Y el nuevo
+            // no es null/vacío, se hace el reemplazo. Un campo vacío significa
+            // "no cambiar", no "quitar".
+            $singulares = [
+                [
+                    'campo'   => 'editMotherboard',
+                    'actual'  => $motherActual,
+                    'label'   => 'placa madre',
+                ],
+                [
+                    'campo'   => 'editProcesador',
+                    'actual'  => $proceActual,
+                    'label'   => 'procesador',
+                ],
+                [
+                    'campo'   => 'editFuente',
+                    'actual'  => $fuenteActual,
+                    'label'   => 'fuente',
+                ],
+                [
+                    'campo'   => 'editPlacavid',
+                    'actual'  => $placavidActual,
+                    'label'   => 'placa de video',
+                ],
+            ];
+
+            foreach ($singulares as $s) {
+                $nuevoId = $request->input($s['campo']);
+
+                // Si no hay nuevo valor, no hay nada que cambiar.
+                if (! $nuevoId) {
+                    continue;
+                }
+
+                // Si el actual es null o es distinto del nuevo, realizar el reemplazo.
+                if ($s['actual'] != $nuevoId) {
+                    $nombreActual = $s['actual']
+                        ? (ComponenteModel::find($s['actual'])->nombre ?? 'no asignado')
+                        : 'no asignado';
+                    $nombreNuevo = ComponenteModel::find($nuevoId)->nombre;
+
+                    $historia                   = new HistoriaModel();
+                    $historia->tecnico          = $user->name;
+                    $historia->detalle          = 'Cambió la ' . $s['label'] . ' de la PC: '
+                        . $pc->identificador . ' - ' . $pc->nombre
+                        . ' de "' . $nombreActual . '" a "' . $nombreNuevo . '".';
+                    $historia->motivo           = $request->input('editMotivo');
+                    $historia->componente_id    = $pc->id;
+                    $historia->tipo_dispositivo = 'PC';
+                    $historia->tipo_id          = 5;
+                    $historia->save();
+
+                    // Retirar el componente anterior respetando su origen.
+                    if ($s['actual']) {
+                        $retirarComponenteDePc((int) $s['actual']);
+                    }
+
+                    // Asignar el nuevo.
+                    $componente_pc               = new ComponentePcModel();
+                    $componente_pc->pc_id        = $pc->id;
+                    $componente_pc->componente_id = $transferecia->transferStateByPc(
+                        $nuevoId,
+                        1,
+                        ComponenteController::ESTADO_EN_USO,
+                        '',
+                        $pc->id,
+                        $pc->nombre,
+                        true,
+                        true
+                    );
+                    $componente_pc->save();
+                }
+            }
+
+            // ── Discos ────────────────────────────────────────────────────
+            $discosActuales      = ComponentePcModel::getDiscosByPc($id);
+            $discosSeleccionados = $request->input('discos2', []);
+
+            $conteoDiscosActuales      = array_count_values($discosActuales);
+            $conteoDiscosSeleccionados = array_count_values($discosSeleccionados);
+
+            $discosNuevos              = [];
+            $discosEliminados          = [];
+            $discosAgrupados           = [];
+            $discosAgrupadosEliminados = [];
+
+            foreach ($conteoDiscosActuales as $disco => $count) {
+                $diff = $count - ($conteoDiscosSeleccionados[$disco] ?? 0);
+                for ($i = 0; $i < $diff; $i++) {
                     $discosEliminados[] = $disco;
                 }
             }
-        }
-
-        foreach ($conteoDiscosSeleccionados as $disco => $count) {
-            if (isset($conteoDiscosActuales[$disco])) {
-                if ($count > $conteoDiscosActuales[$disco]) {
-                    for ($i = 0; $i < $count - $conteoDiscosActuales[$disco]; $i++) {
-                        $discosNuevos[] = $disco;
-                    }
-                }
-            } else {
-                for ($i = 0; $i < $count; $i++) {
+            foreach ($conteoDiscosSeleccionados as $disco => $count) {
+                $diff = $count - ($conteoDiscosActuales[$disco] ?? 0);
+                for ($i = 0; $i < $diff; $i++) {
                     $discosNuevos[] = $disco;
                 }
             }
-        }
 
-        // Agrupar discos nuevos por nombre para registrar en la historia
-        foreach ($discosNuevos as $disco) {
-            $componente = ComponenteModel::find($disco);
-            if (isset($discosAgrupados[$componente->nombre])) {
-                $discosAgrupados[$componente->nombre]['cantidad'] += 1;
-            } else {
-                $discosAgrupados[$componente->nombre] = [
-                    'componente_id' => $disco,
-                    'cantidad' => 1
-                ];
-            }
-
-            // Realizar la transferencia y guardar la relación
-            $componente_pc = new ComponentePcModel();
-            $componente_pc->pc_id = $pc->id;
-            $componente_pc->componente_id = $transferecia->transferStateByPc($disco, 1, 5, "", $pc->id, $pc->nombre, false, false);
-            $componente_pc->save();
-        }
-
-        // Si hay discos eliminados, realizar la transferencia inversa y eliminar la relación
-        if (!empty($discosEliminados)) {
-            foreach ($discosEliminados as $disco) {
-
+            foreach ($discosNuevos as $disco) {
                 $componente = ComponenteModel::find($disco);
-                if (isset($discosAgrupadosEliminados[$componente->nombre])) {
-                    $discosAgrupadosEliminados[$componente->nombre]['cantidad'] += 1;
-                } else {
-                    $discosAgrupadosEliminados[$componente->nombre] = [
-                        'componente_id' => $disco,
-                        'cantidad' => 1
-                    ];
-                }
+                $discosAgrupados[$componente->nombre]['cantidad'] = ($discosAgrupados[$componente->nombre]['cantidad'] ?? 0) + 1;
+                $discosAgrupados[$componente->nombre]['componente_id'] = $disco;
 
-                $transferecia->transferStateByPc($disco, 1, 4, "", $pc->id, $pc->nombre, false, false);
-                ComponentePcModel::where('pc_id', $id)
-                    ->Where('componente_id', $disco)
-                    ->first()->delete();
+                $componente_pc               = new ComponentePcModel();
+                $componente_pc->pc_id        = $pc->id;
+                $componente_pc->componente_id = $transferecia->transferStateByPc(
+                    $disco,
+                    1,
+                    ComponenteController::ESTADO_EN_USO,
+                    '',
+                    $pc->id,
+                    $pc->nombre,
+                    false,
+                    false
+                );
+                $componente_pc->save();
             }
-        }
 
-        // Crear las entradas en la historia para los discos nuevos
-        foreach ($discosAgrupados as $nombre => $datos) {
-            $stockToTransfer = $datos['cantidad'];
+            foreach ($discosEliminados as $disco) {
+                $componente = ComponenteModel::find($disco);
+                $discosAgrupadosEliminados[$componente->nombre]['cantidad'] = ($discosAgrupadosEliminados[$componente->nombre]['cantidad'] ?? 0) + 1;
+                $discosAgrupadosEliminados[$componente->nombre]['componente_id'] = $disco;
 
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "uso " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = "creacion de PC";
-            $historia->tipo_id = 4; // Tipo de transferencia
-            $historia->save();
+                $retirarComponenteDePc((int) $disco);
+            }
 
+            foreach ($discosAgrupados as $nombre => $datos) {
+                $historia          = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = 'Usó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo  = 'Mantenimiento de PC';
+                $historia->tipo_id = 4;
+                $historia->save();
 
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "agrego " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = $request->input("editMotivo");
-            $historia->componente_id = $request->input('editId');
-            $historia->tipo_id = 5; // Tipo de transferencia
-            $historia->save();
-        }
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Agregó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $request->input('editId');
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
 
-        foreach ($discosAgrupadosEliminados as $nombre => $datos) {
-            $stockToTransfer = $datos['cantidad'];
+            foreach ($discosAgrupadosEliminados as $nombre => $datos) {
+                $historia          = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = 'Desocupó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo  = 'Mantenimiento de PC';
+                $historia->tipo_id = 4;
+                $historia->save();
 
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "desocupo " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = "mantenimiento de PC";
-            $historia->tipo_id = 4; // Tipo de transferencia
-            $historia->save();
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Eliminó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $request->input('editId');
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
 
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "elimino " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = $request->input("editMotivo");
-            $historia->componente_id = $request->input('editId');
-            $historia->tipo_id = 5; // Tipo de transferencia
-            $historia->save();
-        }
+            // ── RAMs ──────────────────────────────────────────────────────
+            $ramsActuales      = ComponentePcModel::getRamsByPc($id);
+            $ramsSeleccionados = $request->input('rams2', []);
 
+            $conteoRamsActuales      = array_count_values($ramsActuales);
+            $conteoRamsSeleccionados = array_count_values($ramsSeleccionados);
 
-        // Obtener las RAMs actuales
-        $ramsActuales = ComponentePcModel::getRamsByPc($id);
-        $ramsSeleccionados = $request->input('rams2', []);
+            $ramsNuevos              = [];
+            $ramsEliminados          = [];
+            $ramsAgrupados           = [];
+            $ramsAgrupadosEliminados = [];
 
-        // Contar las ocurrencias de cada RAM en los arrays
-        $conteoRamsActuales = array_count_values($ramsActuales);
-        $conteoRamsSeleccionados = array_count_values($ramsSeleccionados);
-
-        $ramsNuevos = [];
-        $ramsEliminados = [];
-        $ramsAgrupados = [];
-        $ramsAgrupadosEliminados = [];
-
-        // Identificar RAMs eliminadas y nuevas basadas en las diferencias de conteo
-        foreach ($conteoRamsActuales as $ram => $count) {
-            if (isset($conteoRamsSeleccionados[$ram])) {
-                if ($count > $conteoRamsSeleccionados[$ram]) {
-                    for ($i = 0; $i < $count - $conteoRamsSeleccionados[$ram]; $i++) {
-                        $ramsEliminados[] = $ram;
-                    }
-                }
-            } else {
-                for ($i = 0; $i < $count; $i++) {
+            foreach ($conteoRamsActuales as $ram => $count) {
+                $diff = $count - ($conteoRamsSeleccionados[$ram] ?? 0);
+                for ($i = 0; $i < $diff; $i++) {
                     $ramsEliminados[] = $ram;
                 }
             }
-        }
-
-        foreach ($conteoRamsSeleccionados as $ram => $count) {
-            if (isset($conteoRamsActuales[$ram])) {
-                if ($count > $conteoRamsActuales[$ram]) {
-                    for ($i = 0; $i < $count - $conteoRamsActuales[$ram]; $i++) {
-                        $ramsNuevos[] = $ram;
-                    }
-                }
-            } else {
-                for ($i = 0; $i < $count; $i++) {
+            foreach ($conteoRamsSeleccionados as $ram => $count) {
+                $diff = $count - ($conteoRamsActuales[$ram] ?? 0);
+                for ($i = 0; $i < $diff; $i++) {
                     $ramsNuevos[] = $ram;
                 }
             }
-        }
 
-        // Agrupar RAMs nuevas por nombre para registrar en la historia
-        foreach ($ramsNuevos as $ram) {
-            $componente = ComponenteModel::find($ram);
-            if (isset($ramsAgrupados[$componente->nombre])) {
-                $ramsAgrupados[$componente->nombre]['cantidad'] += 1;
-            } else {
-                $ramsAgrupados[$componente->nombre] = [
-                    'componente_id' => $ram,
-                    'cantidad' => 1
-                ];
+            foreach ($ramsNuevos as $ram) {
+                $componente = ComponenteModel::find($ram);
+                $ramsAgrupados[$componente->nombre]['cantidad'] = ($ramsAgrupados[$componente->nombre]['cantidad'] ?? 0) + 1;
+                $ramsAgrupados[$componente->nombre]['componente_id'] = $ram;
+
+                $componente_pc               = new ComponentePcModel();
+                $componente_pc->pc_id        = $pc->id;
+                $componente_pc->componente_id = $transferecia->transferStateByPc(
+                    $ram,
+                    1,
+                    ComponenteController::ESTADO_EN_USO,
+                    '',
+                    $pc->id,
+                    $pc->nombre,
+                    false,
+                    false
+                );
+                $componente_pc->save();
             }
 
-            // Realizar la transferencia y guardar la relación
-            $componente_pc = new ComponentePcModel();
-            $componente_pc->pc_id = $pc->id;
-            $componente_pc->componente_id = $transferecia->transferStateByPc($ram, 1, 5, "", $pc->id, $pc->nombre, false, false);
-            $componente_pc->save();
-        }
-
-        // Si hay RAMs eliminadas, realizar la transferencia inversa y eliminar la relación
-        if (!empty($ramsEliminados)) {
             foreach ($ramsEliminados as $ram) {
                 $componente = ComponenteModel::find($ram);
-                if (isset($ramsAgrupadosEliminados[$componente->nombre])) {
-                    $ramsAgrupadosEliminados[$componente->nombre]['cantidad'] += 1;
-                } else {
-                    $ramsAgrupadosEliminados[$componente->nombre] = [
-                        'componente_id' => $ram,
-                        'cantidad' => 1
-                    ];
-                }
-                $transferecia->transferStateByPc($ram, 1, 4, "", $pc->id, $pc->nombre, false, false);
-                ComponentePcModel::where('pc_id', $id)
-                    ->Where('componente_id', $ram)
-                    ->first()->delete();
+                $ramsAgrupadosEliminados[$componente->nombre]['cantidad'] = ($ramsAgrupadosEliminados[$componente->nombre]['cantidad'] ?? 0) + 1;
+                $ramsAgrupadosEliminados[$componente->nombre]['componente_id'] = $ram;
+
+                $retirarComponenteDePc((int) $ram);
             }
-        }
 
-        // Crear las entradas en la historia para las RAMs nuevas
-        foreach ($ramsAgrupados as $nombre => $datos) {
-            $stockToTransfer = $datos['cantidad'];
+            foreach ($ramsAgrupados as $nombre => $datos) {
+                $historia          = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = 'Usó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo  = 'Mantenimiento de PC';
+                $historia->tipo_id = 4;
+                $historia->save();
 
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "uso " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = "creacion de PC";
-            $historia->tipo_id = 4; // Tipo de transferencia
-            $historia->save();
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Agregó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $request->input('editId');
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
 
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "agrego " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = $request->input("editMotivo");
-            $historia->componente_id = $request->input('editId');
-            $historia->tipo_id = 5; // Tipo de transferencia
-            $historia->save();
-        }
+            foreach ($ramsAgrupadosEliminados as $nombre => $datos) {
+                $historia          = new HistoriaModel();
+                $historia->tecnico = $user->name;
+                $historia->detalle = 'Desocupó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo  = 'Mantenimiento de PC';
+                $historia->tipo_id = 4;
+                $historia->save();
 
-        foreach ($ramsAgrupadosEliminados as $nombre => $datos) {
-            $stockToTransfer = $datos['cantidad'];
-
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "desocupo " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = "mantenimiento de PC";
-            $historia->tipo_id = 4; // Tipo de transferencia
-            $historia->save();
-
-            // Crear una nueva entrada en la historia
-            $historia = new HistoriaModel();
-            $historia->tecnico = $user->name;
-            $historia->detalle = "elimino " . $stockToTransfer . " " . $nombre . "/s en el mantenimiento de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = $request->input("editMotivo");
-            $historia->componente_id = $request->input('editId');
-            $historia->tipo_id = 5; // Tipo de transferencia
-            $historia->save();
-        }
-
+                $historia                   = new HistoriaModel();
+                $historia->tecnico          = $user->name;
+                $historia->detalle          = 'Eliminó ' . $datos['cantidad'] . ' ' . $nombre
+                    . '/s en el mantenimiento de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                $historia->motivo           = $request->input('editMotivo');
+                $historia->componente_id    = $request->input('editId');
+                $historia->tipo_id          = 5;
+                $historia->save();
+            }
+        }); // fin DB::transaction
 
         return redirect()->back()->with('success', 'PC editada correctamente.');
     }
 
+
+    // ─────────────────────────────────────────────────────────────────────
+    // delete
+    //
+    // Cambios respecto al original:
+    //
+    // Un componente puede llegar a esta operación en dos situaciones:
+    //
+    //   A) Vino del stock: estado_id = 5, stock >= 1, deposito_origen_id
+    //      apunta a algún depósito real. transferStateByPc(..., DISPONIBLE)
+    //      lo devuelve correctamente al depósito de origen.
+    //
+    //   B) Fue registrado directamente sobre la PC: estado_id = 5,
+    //      deposito_origen_id = NULL. Nunca pasó por el inventario normal.
+    //      Estas filas representan una unidad instalada (stock = 1 en su
+    //      creación) pero no tienen una ubicación de origen conocida.
+    //
+    // Para el caso B no se inventa un depósito: se descuenta la unidad y,
+    // si ya no quedan vínculos, se elimina la fila. Si comparte fila con
+    // otra PC, se conserva con el stock restante.
+    //
+    // Toda la operación ocurre dentro de DB::transaction.
+    // ─────────────────────────────────────────────────────────────────────
     public function delete(Request $request)
     {
         $user = Auth::user();
-        // Crear un nuevo registro
-        $id = $request->input('deleteId');
-        $pc = PcModel::find($id);
 
-        $actualComps = ComponentePcModel::where('pc_id', $id)->get();
+        $request->validate([
+            'deleteId' => 'required|integer|exists:pc,id',
+            'removeMotivo' => 'required|string|max:1000',
+        ]);
 
+        $id = (int) $request->input('deleteId');
 
-        foreach ($actualComps as $actualComp) {
-            $transferencia = new ComponenteController;
-            $transferencia->transferStateByPc($actualComp->componente_id, 1, 4, "", $pc->identificador, $pc->nombre, false, false);
+        DB::transaction(function () use ($id, $user, $request) {
+            $pc = PcModel::whereKey($id)->lockForUpdate()->first();
+
+            if (! $pc) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'deleteId' => 'La PC seleccionada no existe.',
+                ]);
+            }
+
+            $actualComps = ComponentePcModel::where('pc_id', $id)->get();
+
+            foreach ($actualComps as $actualComp) {
+                $componente = ComponenteModel::whereKey($actualComp->componente_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $componente) {
+                    continue;
+                }
+
+                $esRegistradoDirectamente = (
+                    (int) $componente->estado_id === ComponenteController::ESTADO_EN_USO
+                    && $componente->deposito_origen_id === null
+                );
+
+                if ($esRegistradoDirectamente) {
+                    // Un componente registrado directamente no tiene un depósito
+                    // de origen conocido. Al eliminar la PC no se transforma en
+                    // Disponible con deposito_id = NULL: se retira del inventario.
+                    $otrosVinculos = ComponentePcModel::where('componente_id', $componente->id)
+                        ->where('pc_id', '!=', $id)
+                        ->count();
+
+                    if ((int) $componente->stock > 0) {
+                        $componente->stock -= 1;
+                    }
+
+                    if ($componente->stock === 0 && $otrosVinculos === 0) {
+                        $componente->delete();
+                    } else {
+                        $componente->save();
+                    }
+
+                    $historia = new HistoriaModel();
+                    $historia->tecnico = $user->name;
+                    $historia->detalle = 'Retiró el componente registrado directamente "'
+                        . $componente->nombre . '" al eliminar la PC: '
+                        . $pc->identificador . ' - ' . $pc->nombre . '.';
+                    $historia->motivo  = 'Eliminación de PC';
+                    $historia->tipo_id = 4;
+                    $historia->save();
+                } else {
+                    // Si provino del stock, se devuelve exactamente al depósito
+                    // guardado en deposito_origen_id. Quitamos primero el vínculo
+                    // para permitir limpiar la fila En uso si queda sin unidades.
+                    ComponentePcModel::where('pc_id', $id)
+                        ->where('componente_id', $componente->id)
+                        ->first()?->delete();
+
+                    (new ComponenteController())->transferStateByPc(
+                        $componente->id,
+                        1,
+                        ComponenteController::ESTADO_DISPONIBLE,
+                        '',
+                        $pc->identificador,
+                        $pc->nombre,
+                        false,
+                        false
+                    );
+
+                    $historia = new HistoriaModel();
+                    $historia->tecnico = $user->name;
+                    $historia->detalle = 'Desocupó 1 ' . $componente->nombre
+                        . ' de la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+                    $historia->motivo  = 'Eliminación de PC';
+                    $historia->tipo_id = 4;
+                    $historia->save();
+                }
+            }
+
+            ComponentePcModel::where('pc_id', $id)->delete();
 
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "desocupo 1" . " " . (ComponenteModel::find($actualComp->componente_id)->nombre) . "/s de la PC: " . $pc->identificador . " - " . $pc->nombre . ".";
-            $historia->motivo = "eliminacion de PC";
-            $historia->tipo_id = 4; // Tipo de transferencia
+            $historia->detalle = 'Eliminó la PC: ' . $pc->identificador . ' - ' . $pc->nombre . '.';
+            $historia->motivo = $request->input('removeMotivo');
+            $historia->tipo_id = 5;
             $historia->save();
-        }
 
-        $actualComps = ComponentePcModel::where('pc_id', $id)->delete();
+            $pc->delete();
+        });
 
-        $historia = new HistoriaModel();
-        $historia->tecnico = $user->name;
-        $historia->detalle = "elimino la PC: " . $pc->identificador . " - " . $pc->nombre;
-        $historia->motivo = $request->input('removeMotivo');
-        $historia->tipo_id = 5;
-        $historia->save();
-
-        $pc->delete();
-
-        return redirect()->back()->with('success', 'Pc eliminado correctamente.');
+        return redirect()->back()->with('success', 'PC eliminado correctamente.');
     }
 
     public function getHistoria($tipo, $id)
@@ -762,7 +1161,7 @@ class PcController extends Controller
         $historias = HistoriaModel::where('componente_id', $id)
             ->where('tipo_dispositivo', $tipo)
             ->get();
-        log::info($historias);
+        Log::info($historias);
         return response()->json(['historia' => $historias]);
     }
 }

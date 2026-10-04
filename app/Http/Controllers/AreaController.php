@@ -36,12 +36,12 @@ class AreaController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "creo el area: ".$request->input('addNombre').".";
-        $historia->motivo = "creacion de area.";
+        $historia->detalle = "Creó el área: ".$request->input('addNombre').".";
+        $historia->motivo = "Creación de área.";
         $historia->tipo_id = 3;
         $historia->save();
 
-        return redirect()->back()->with('success', 'Area guardada correctamente.');
+        return redirect()->back()->with('success', 'Área guardada correctamente.');
     }
     public function edit(Request $request)
     {
@@ -55,7 +55,7 @@ class AreaController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "edito el nombre del area: ".$area->nombre." a ".$request->input('editNombre').".";
+        $historia->detalle = "Editó el nombre del área: ".$area->nombre." a ".$request->input('editNombre').".";
         $historia->motivo = $request->input('editMotivo');
         $historia->tipo_id = 3;
         $historia->save();
@@ -65,7 +65,7 @@ class AreaController extends Controller
 
         
 
-        return redirect()->back()->with('success', 'Area editada correctamente.');
+        return redirect()->back()->with('success', 'Área editada correctamente.');
     }
     public function delete(Request $request)
     {
@@ -76,13 +76,13 @@ class AreaController extends Controller
         
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino el area: ".$area->nombre.".";
+        $historia->detalle = "Eliminó el área: ".$area->nombre.".";
         $historia->motivo = $request->input('removeMotivo');
         $historia->tipo_id = 3;
         $historia->save();
 
         $area->delete();
 
-        return redirect()->back()->with('success', 'Area eliminada correctamente.');
+        return redirect()->back()->with('success', 'Área eliminada correctamente.');
     }
 }

@@ -85,8 +85,8 @@ class RouterController extends Controller
         // Guardar historia
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "cargo el router: " . $request->input('addIdentificador') . " - " . $request->input('addNombre') . " - " . $request->input('addMarca') . ".";
-        $historia->motivo = "carga de router";
+        $historia->detalle = "Cargó el router: " . $request->input('addIdentificador') . " - " . $request->input('addNombre') . " - " . $request->input('addMarca') . ".";
+        $historia->motivo = "Carga de router";
         $historia->componente_id = $router->id;
         $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
         $historia->tipo_id = 9;
@@ -122,7 +122,7 @@ class RouterController extends Controller
         if ($router->area_detalle != $request->input('editAreaDetalle') && $request->input("editAreaDetalle") != null && $request->input("editAreaDetalle") != "") {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "cambio el detalle de la ubicacion del router: " . $router->identificador . " - " . $router->nombre . " de " . (($router->area_detalle) ?? 'detalle de area no especificado') . " a " . $request->input('editAreaDetalle') . ".";
+            $historia->detalle = "Cambió el detalle de la ubicación del router: " . $router->identificador . " - " . $router->nombre . " de " . (($router->area_detalle) ?? 'detalle de área no especificado') . " a " . $request->input('editAreaDetalle') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $router->id;
             $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -137,7 +137,7 @@ class RouterController extends Controller
         if ($router->deposito_id != $request->input('editDeposito') && $request->input('editDeposito') != null) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó el deposito del  router: " . $router->identificador . " - " . $router->nombre . " de " . (DepositoModel::find($router->deposito_id)->nombre ?? "deposito no asignado") . " a " . DepositoModel::find($request->input('editDeposito'))->nombre ?? "deposito no asignado" . ", se quito del area: " . AreaModel::find($router->area_id)->nombre ?? "area no asignada" . ".";
+            $historia->detalle = "Editó el depósito del router: " . $router->identificador . " - " . $router->nombre . " de " . (DepositoModel::find($router->deposito_id)->nombre ?? "depósito no asignado") . " a " . DepositoModel::find($request->input('editDeposito'))->nombre ?? "depósito no asignado" . ", se quitó del área: " . AreaModel::find($router->area_id)->nombre ?? "área no asignada" . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $router->id;
             $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -156,7 +156,7 @@ class RouterController extends Controller
             if ($areaModel->findByName($area)) {
                 $historia = new HistoriaModel();
                 $historia->tecnico = $user->name;
-                $historia->detalle = "editó el area del router: " . $router->identificador . " - " . $router->nombre . " de " . (AreaModel::find($router->area_id)->nombre ?? " area no asignada") . " a " . $area ?? " area no asignada" . ", se quito del deposito: " . DepositoModel::find($router->deposito_id)->nombre ?? "deposito no asignado" . ".";
+                $historia->detalle = "Editó el área del router: " . $router->identificador . " - " . $router->nombre . " de " . (AreaModel::find($router->area_id)->nombre ?? "área no asignada") . " a " . $area ?? " área no asignada" . ", se quitó del depósito: " . DepositoModel::find($router->deposito_id)->nombre ?? "depósito no asignado" . ".";
                 $historia->motivo = $request->input('editMotivo');
                 $historia->componente_id = $router->id;
                 $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -171,7 +171,7 @@ class RouterController extends Controller
 
                 $historia = new HistoriaModel();
                 $historia->tecnico = $user->name;
-                $historia->detalle = "editó el area del router: " . $router->identificador . " - " . $router->nombre . " de " . (AreaModel::find($router->area_id)->nombre ?? " area no asignada") . " a " . $area ?? " area no asignada" . ", se quito del deposito: " . DepositoModel::find($router->deposito_id)->nombre ?? "deposito no asignado" . ".";
+                $historia->detalle = "Editó el área del router: " . $router->identificador . " - " . $router->nombre . " de " . (AreaModel::find($router->area_id)->nombre ?? "área no asignada") . " a " . $area ?? " área no asignada" . ", se quitó del depósito: " . DepositoModel::find($router->deposito_id)->nombre ?? "depósito no asignado" . ".";
                 $historia->motivo = $request->input('editMotivo');
                 $historia->componente_id = $router->id;
                 $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -186,7 +186,7 @@ class RouterController extends Controller
         if ($router->ip != $request->input('editIp')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó la IP del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->ip . " a " . $request->input('editIp') . ".";
+            $historia->detalle = "Editó la IP del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->ip . " a " . $request->input('editIp') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $router->id;
             $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -198,7 +198,7 @@ class RouterController extends Controller
         if ($router->marca_modelo != $request->input('editMarca')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó la marca y el modelo del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->marca_modelo . " a " . $request->input('editMarca') . ".";
+            $historia->detalle = "Editó la marca y el modelo del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->marca_modelo . " a " . $request->input('editMarca') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $router->id;
             $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -210,7 +210,7 @@ class RouterController extends Controller
         if ($router->nombre != $request->input('editNombre')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó el nombre del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->nombre . " a " . $request->input('editNombre') . ".";
+            $historia->detalle = "Editó el nombre del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->nombre . " a " . $request->input('editNombre') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $router->id;
             $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -223,7 +223,7 @@ class RouterController extends Controller
         if ($router->identificador != $request->input('editIdentificador')) {
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = "editó el identificador del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->identificador . " a " . $request->input('editIdentificador') . ".";
+            $historia->detalle = "Editó el identificador del router: " . $router->identificador . " - " . $router->nombre . " de " . $router->identificador . " a " . $request->input('editIdentificador') . ".";
             $historia->motivo = $request->input('editMotivo');
             $historia->componente_id = $router->id;
             $historia->tipo_dispositivo = 'Router'; // Tipo de transferencia
@@ -246,7 +246,7 @@ class RouterController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino el router: " . $router->identificador . " - " . $router->nombre;
+        $historia->detalle = "Eliminó el router: " . $router->identificador . " - " . $router->nombre;
         $historia->motivo = $request->input('removeMotivo');
         $historia->tipo_id = 9;
         $historia->save();

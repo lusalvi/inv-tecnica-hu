@@ -20,6 +20,11 @@ class ComponenteModel extends Model
         return $this->belongsTo(DepositoModel::class, 'deposito_id');
     }
 
+    public function depositoOrigen()
+    {
+        return $this->belongsTo(DepositoModel::class, 'deposito_origen_id');
+    }
+
     // Definir la relación con TipoComponenteModel
     public function tipo()
     {
@@ -75,6 +80,58 @@ class ComponenteModel extends Model
             ->where('estado_id', '=', 4)
             ->with(['tipo', 'deposito'])
             ->get();
+    }
+
+    public function getComponenteByTipoForPc($tipoNombre, $tipoNombre2)
+    {
+        // Traer disponibles, sin stock 
+        $filas = self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
+            $query->where('nombre', $tipoNombre)
+                ->orWhere('nombre', $tipoNombre2);
+        })
+            ->where(function ($query) {
+                $query->where('estado_id', 4)->where('stock', '>', 0)
+                    ->orWhere('estado_id', 7);
+            })
+            ->with(['tipo', 'deposito'])
+            ->get();
+
+        // Traer los En uso
+        $enUso = self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
+            $query->where('nombre', $tipoNombre)
+                ->orWhere('nombre', $tipoNombre2);
+        })
+            ->where('estado_id', 5)
+            ->with(['tipo', 'depositoOrigen'])
+            ->get();
+
+        // Por cada En uso, verificar si ya existe una fila hermana (estado 4 o 7)
+        // con el mismo nombre+tipo+deposito_origen_id. Si no existe, crear un objeto
+        // Sin stock virtual para que el técnico pueda cargarle stock desde el wizard.
+        foreach ($enUso as $eu) {
+            $yaExiste = $filas->first(function ($f) use ($eu) {
+                return mb_strtolower(trim($f->nombre))  === mb_strtolower(trim($eu->nombre))
+                    && (int) $f->tipo_id                === (int) $eu->tipo_id
+                    && (int) $f->deposito_id            === (int) $eu->deposito_origen_id;
+            });
+
+            if (!$yaExiste && $eu->deposito_origen_id !== null && stripos($eu->nombre, 'no identificad') === false) {
+                // Clonar la fila En uso como un objeto Sin stock virtual
+                // (no se guarda en BD, solo viaja al blade/JS)
+                $virtual = $eu->replicate();
+                $virtual->id = -$eu->id; 
+                $virtual->estado_id = 7; // Sin stock
+                $virtual->stock = 0;
+                $virtual->deposito_id = $eu->deposito_origen_id;
+                $virtual->deposito_origen_id = null;
+                // Cargar la relación deposito manualmente
+                $virtual->setRelation('deposito', $eu->depositoOrigen);
+
+                $filas->push($virtual);
+            }
+        }
+
+        return $filas;
     }
 
     public function pcs()

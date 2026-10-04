@@ -36,12 +36,12 @@ class DepositoController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "creo el deposito: ".$request->input('addNombre').".";
-        $historia->motivo = "creacion de deposito.";
+        $historia->detalle = "Creó el depósito: ".$request->input('addNombre').".";
+        $historia->motivo = "Creación de depósito.";
         $historia->tipo_id = 2;
         $historia->save();
 
-        return redirect()->back()->with('success', 'Deposito guardado correctamente.');
+        return redirect()->back()->with('success', 'Depósito guardado correctamente.');
     }
     public function edit(Request $request)
     {
@@ -55,7 +55,7 @@ class DepositoController extends Controller
 
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "edito el nombre del deposito: ".$deposito->nombre." a ".$request->input('editNombre').".";
+        $historia->detalle = "Editó el nombre del depósito: ".$deposito->nombre." a ".$request->input('editNombre').".";
         $historia->motivo = $request->input('editMotivo');
         $historia->tipo_id = 2;
         $historia->save();
@@ -65,7 +65,7 @@ class DepositoController extends Controller
 
         
 
-        return redirect()->back()->with('success', 'Deposito editado correctamente.');
+        return redirect()->back()->with('success', 'Depósito editado correctamente.');
     }
     public function delete(Request $request)
     {
@@ -76,13 +76,13 @@ class DepositoController extends Controller
         
         $historia = new HistoriaModel();
         $historia->tecnico = $user->name;
-        $historia->detalle = "elimino el deposito: ".$deposito->nombre.".";
+        $historia->detalle = "Eliminó el depósito: ".$deposito->nombre.".";
         $historia->motivo = $request->input("removeMotivo");
         $historia->tipo_id = 2;
         $historia->save();
 
         $deposito->delete();
 
-        return redirect()->back()->with('success', 'Deposito eliminado correctamente.');
+        return redirect()->back()->with('success', 'Depósito eliminado correctamente.');
     }
 }

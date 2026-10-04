@@ -1,63 +1,67 @@
 <x-guest-layout>
+
+    <h1 class="auth-title">Crear cuenta</h1>
+    <p class="auth-subtitle">Completá los datos para registrarte</p>
+
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Nombre Y Apellido')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        <div class="register-grid">
+
+            <div class="auth-field">
+                <label for="name">Nombre y Apellido</label>
+                <input id="name" type="text" name="name"
+                       class="auth-input @error('name') is-invalid @enderror"
+                       value="{{ old('name') }}"
+                       required autofocus autocomplete="name"
+                       placeholder="Tu nombre completo">
+                <x-input-error :messages="$errors->get('name')" class="mt-1" />
+            </div>
+
+            <div class="auth-field">
+                <label for="email">Usuario</label>
+                <input id="email" type="text" name="email"
+                       class="auth-input @error('email') is-invalid @enderror"
+                       value="{{ old('email') }}"
+                       required autocomplete="username"
+                       placeholder="Ingresá tu usuario">
+                <x-input-error :messages="$errors->get('email')" class="mt-1" />
+            </div>
+
+            <div class="auth-field">
+                <label for="password">Contraseña</label>
+                <input id="password" type="password" name="password"
+                       class="auth-input @error('password') is-invalid @enderror"
+                       required autocomplete="new-password"
+                       placeholder="••••••••">
+                <x-input-error :messages="$errors->get('password')" class="mt-1" />
+            </div>
+
+            <div class="auth-field">
+                <label for="password_confirmation">Confirmar contraseña</label>
+                <input id="password_confirmation" type="password" name="password_confirmation"
+                       class="auth-input @error('password_confirmation') is-invalid @enderror"
+                       required autocomplete="new-password"
+                       placeholder="••••••••">
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
+            </div>
+
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Usuario')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="text" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="auth-field" style="margin-top: 1.25rem;">
+            <label for="role">Rol asignado</label>
+            <input id="role" type="text" class="auth-input" value="Técnico" readonly
+                   style="color: #8a9ab0; cursor: default;">
+            <p class="register-role-note">Para cambiar el rol, comunicarse con el administrador.</p>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Contraseña')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirmar contraseña')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Rol')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="text" value="Visualizador"
-                            disabled readonly />
-        </div>
-        <p class="mt-2">
-            Para cambiar el rol, debes comunicarte con el administrador.
-        </p>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Ya esta registrado?') }}
+        <div class="register-actions">
+            <a href="{{ route('login') }}" class="register-login-link">
+                ¿Ya estás registrado? <span>Iniciar sesión</span>
             </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Registrarse') }}
-            </x-primary-button>
+            <button type="submit" class="btn-hu">Registrarse</button>
         </div>
+
     </form>
+
 </x-guest-layout>

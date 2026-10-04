@@ -1,871 +1,989 @@
 <?php use App\Models\ComponenteModel; ?>
 
 <x-app-layout>
+    @php
+        $rolActual = data_get(Auth::user(), 'rol.nombre');
+    @endphp
     <x-slot name="header">
-        <h2 class="font-semibold text-lg text-gray-800 leading-tight">
-            {{ __('Routers') }}
-            <button type="button" class="small-box-footer show" id="show" data-bs-toggle="modal"
-                data-bs-target="#infoModal" style="margin-left: 0.5%">
-                <i class="fa-solid fa-circle-info"></i>
+        <h2 class="font-semibold text-lg leading-tight" style="color: var(--hu-azul);">
+            Routers
+            <button type="button" class="btn btn-hu-outline-dorado btn-sm ms-2" data-bs-toggle="modal"
+                data-bs-target="#infoModal" style="padding: 2px 8px; font-size:.78rem;">
+                <span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">info</span>
             </button>
         </h2>
-
-        <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Routers</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Aqui debes agregar los Routers y asignarlos a un area o deposito.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="modal fade" id="infoRouterModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-auto">
-                <div class="modal-content bg-primaty" style="border-radius: 15px">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Información del router</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="flex" style="display: flex; flex-direction: column; gap:10px">
-                            <div class="flex" style="display: flex; flex-direction: column; gap:5px">
-                                <div class="flex" style="display: flex; flex-direction: row; gap:5px">
-                                    <h2><b>Nº Inventario: </b></h2>
-                                    <p id="idenInfo"></p>
-                                </div>
-                                <div class="flex" style="display: flex; flex-direction: row; gap:5px">
-                                    <h2><b>Nombre: </b></h2>
-                                    <p id="nombreInfo"></p>
-                                </div>
-                                <div class="flex" style="display: flex; flex-direction: row; gap:5px">
-                                    <h2><b>Marca y Modelo: </b></h2>
-                                    <p id="marcaInfo"></p>
-                                </div>
-                                <div class="flex" style="display: flex; flex-direction: row; gap:5px">
-                                    <h2><b>IP: </b></h2>
-                                    <p id="ipInfo"></p>
-                                </div>
-                                <div class="flex" style="display: flex; flex-direction: column; gap:5px">
-                                    <div class="flex" style="display: flex; flex-direction: row; gap:5px">
-                                        <b>
-                                            <h2 id="titleAsig"></h2>
-                                        </b>
-                                        <p id="infoAsig"></p>
-                                    </div>
-                                    <div class="flex" style="display: flex; flex-direction: row; gap:5px">
-                                        <b>
-                                            <h2 id="title2Asig"></h2>
-                                        </b>
-                                        <p id="info2Asig"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Cargar router</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="display: flex;">
-                        <form action="{{ route('store_routers') }}" method="POST" id="addModal"
-                            style="display: flex; flex-direction: column; gap: 20px; ">
-                            @csrf
-                            <!-- Mostrar errores de validación generales -->
-                            <div class="form-check d-flex align-items-top">
-                                <input class="form-check-input" type="checkbox" id="en-uso">
-                                <label class="form-check-label" for="en-uso">
-                                    En uso
-                                </label>
-                            </div>
-                            <div style="display: flex; flex-direction: row;">
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="addIdentificador" class="form-label">Nº Inventario:</label>
-                                    <input type="text"
-                                        class="form-control @error('addIdentificador') is-invalid @enderror"
-                                        id="addIdentificador" name="addIdentificador" placeholder="Nº Inventario"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="addNombre" class="form-label">Nombre:</label>
-                                    <input type="text"
-                                        class="form-control @error('addNombre') is-invalid @enderror" id="addNombre"
-                                        name="addNombre" placeholder="Nombre"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="addMarca" class="form-label">Marca y Modelo:</label>
-                                    <input type="text" class="form-control @error('addMarca') is-invalid @enderror"
-                                        id="addMarca" name="addMarca" placeholder="Marca y Modelo"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="addIp" class="form-label">IP:</label>
-                                    <input type="text" class="form-control @error('addIp') is-invalid @enderror"
-                                        id="addIp" name="addIp" placeholder="Direccion IPv4"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-
-                            </div>
-                            <div style="display: flex; flex-direction: row; gap: 20px;">
-                                <div id="content-container">
-                                    <div class="mb-3" id="area-select" style="flex: 1;">
-                                        <label for="addArea" class="form-label">Area:</label>
-                                        <select class="form-control @error('addArea') is-invalid @enderror"
-                                            id="addArea" name="addArea"
-                                            style="border: 1px solid gray; border-radius: 5px; min-width:165px; max-width: 165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona un área</option>
-                                            @foreach ($areas as $area)
-                                                <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                        <div class="mb-3" style="margin-top: 2.5%; display:none"
-                                            id="addNroConsul_div">
-                                            <label for="addNroConsul" class="form-label">Nº:</label>
-                                            <input type="text"
-                                                class="form-control @error('addNroConsul') is-invalid @enderror"
-                                                id="addNroConsul" name="addNroConsul" placeholder="Nº de consultorio"
-                                                style="border: 1px solid gray; border-radius: 5px; max-width: 165px;">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3" id="deposito-select" style="flex: 1;">
-                                    <label for="addDeposito" class="form-label">Deposito:</label>
-                                    <select class="form-control @error('addDeposito') is-invalid @enderror"
-                                        id="addDeposito" name="addDeposito"
-                                        style="border: 1px solid gray; border-radius: 5px; min-width:165px; max-width: 165px;"
-                                        required>
-                                        <option value="" disabled selected>Selecciona un depósito</option>
-                                        @foreach ($depositos as $deposito)
-                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="mb-3" style="flex: 1; display:none" id="div-detalle-area">
-                                    <label for="addAreaDetalle" class="form-label">Detalle de la ubicacion:</label>
-                                    <input type="text"
-                                        class="form-control @error('addAreaDetalle') is-invalid @enderror"
-                                        id="addAreaDetalle" name="addAreaDetalle"
-                                        style="border: 1px solid gray; border-radius: 5px;"
-                                        placeholder="Area detalle">
-                                </div>
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-dark">Cargar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="editRouterModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Mantenimiento router</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="display: flex;">
-                        <form action="{{ route('edit_routers') }}" method="POST" id="editImpModal"
-                            style="display: flex; flex-direction: column; gap: 20px; ">
-                            @method('PATCH')
-                            @csrf
-                            <!-- Mostrar errores de validación generales -->
-                            <div class="form-check d-flex align-items-top">
-                                <input type="hidden" name="editId" id="editId">
-                                <input class="form-check-input" type="checkbox" id="editEn-uso" name="en-uso">
-                                <label class="form-check-label" for="editEn-uso">
-                                    En uso
-                                </label>
-                            </div>
-                            <div style="display: flex; flex-direction: row;">
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="editIdentificador" class="form-label">Nº Inventario:</label>
-                                    <input type="text"
-                                        class="form-control @error('editIdentificador') is-invalid @enderror"
-                                        id="editIdentificador" name="editIdentificador" placeholder="Nº Inventario"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="editNombre" class="form-label">Nombre:</label>
-                                    <input type="text"
-                                        class="form-control @error('editNombre') is-invalid @enderror" id="editNombre"
-                                        name="editNombre" placeholder="Nombre"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="editMarca" class="form-label">Marca y Modelo:</label>
-                                    <input type="text"
-                                        class="form-control @error('editMarca') is-invalid @enderror" id="editMarca"
-                                        name="editMarca" placeholder="Marca y modelo"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-                                <div class="mb-3" style="margin-right: 2.5%">
-                                    <label for="editIp" class="form-label">IP:</label>
-                                    <input type="text" class="form-control @error('editIp') is-invalid @enderror"
-                                        id="editIp" name="editIp" placeholder="Direccion IPv4"
-                                        style="border: 1px solid gray; border-radius: 5px; max-width: 165px;" required>
-                                </div>
-
-                            </div>
-                            <div style="display: flex; flex-direction: row; gap: 20px;">
-                                <div id="content-container">
-                                    <div class="mb-3" id="area-select" style="flex: 1;">
-                                        <label for="editArea" class="form-label">Area:</label>
-                                        <select class="form-control @error('editArea') is-invalid @enderror"
-                                            id="editArea" name="editArea"
-                                            style="border: 1px solid gray; border-radius: 5px; min-width:165px; max-width: 165px;"
-                                            required>
-                                            <option value="" disabled selected>Selecciona un área</option>
-                                            @foreach ($areas as $area)
-                                                <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                        <div class="mb-3" style="margin-top: 2.5%; display:none"
-                                            id="editNroConsul_div">
-                                            <label for="editNroConsul" class="form-label">Nº:</label>
-                                            <input type="text"
-                                                class="form-control @error('editNroConsul') is-invalid @enderror"
-                                                id="editNroConsul" name="editNroConsul"
-                                                placeholder="Nº de consultorio"
-                                                style="border: 1px solid gray; border-radius: 5px; max-width: 165px;">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3" id="deposito-select" style="flex: 1;">
-                                    <label for="editDeposito" class="form-label">Deposito:</label>
-                                    <select class="form-control @error('editDeposito') is-invalid @enderror"
-                                        id="editDeposito" name="editDeposito"
-                                        style="border: 1px solid gray; border-radius: 5px; min-width:165px; max-width: 165px;"
-                                        required>
-                                        <option value="" disabled selected>Selecciona un depósito</option>
-                                        @foreach ($depositos as $deposito)
-                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="mb-3" style="flex: 1; display:none" id="edit-div-detalle-area">
-                                    <label for="editAreaDetalle" class="form-label">Detalle de la ubicacion:</label>
-                                    <input type="text"
-                                        class="form-control @error('editAreaDetalle') is-invalid @enderror"
-                                        id="editAreaDetalle" name="editAreaDetalle"
-                                        style="border: 1px solid gray; border-radius: 5px;"
-                                        placeholder="Area detalle">
-                                </div>
-                            </div>
-                            <div class="form-check d-flex align-items-top">
-                                <input class="form-check-input" type="checkbox" id="en-uso-mantenimineto">
-                                <label class="form-check-label" for="en-uso-mantenimineto">
-                                    Se realizo manteniminto
-                                </label>
-                            </div>
-                            <div id="div-detalle-mant">
-                                <div class="mb-3" style="flex: 1; display:none">
-                                    <label for="editDetalle" class="form-label">Detalle:</label>
-                                    <input type="text"
-                                        class="form-control @error('editDetalle') is-invalid @enderror"
-                                        id="editDetalle" name="editDetalle"
-                                        style="border: 1px solid gray; border-radius: 5px;">
-                                </div>
-                            </div>
-                            <div class="mb-3" style="flex: 1;">
-                                <label for="editMotivo" class="form-label">Motivo:</label>
-                                <input type="text" class="form-control @error('editMotivo') is-invalid @enderror"
-                                    id="editMotivo" name="editMotivo"
-                                    style="border: 1px solid gray; border-radius: 5px;" required>
-                            </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-dark">Realizado</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">¿Seguro?</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('delete_routers') }}" method="POST" id="addModal">
-                            @csrf
-                            <!-- Mostrar errores de validación generales -->
-
-                            <div class="mb-3">
-                                <input type="hidden" id="deleteId" name="deleteId">
-                                <label for="removeMotivo" class="form-label">Motivo:</label>
-                                <input type="text"
-                                    class="form-control @error('removeMotivo') is-invalid @enderror"
-                                    id="removeMotivo" name="removeMotivo"
-                                    style="border: 1px solid gray; border-radius:5px" required>
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal"
-                            aria-label="Close">No</button>
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="historyPcModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Historia del router:</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="container mt-4">
-                        <table id="table_historias_pc" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Tecnico</th>
-                                    <th>Detalle</th>
-                                    <th>Motivo</th>
-                                    <th>Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table_historias_tbody">
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                @error('addNombre')
-                    <div class="alert-danger" style="text-align: center">
-                        {{ $message }}
-                    </div>
-                @enderror
-                @if (session('success'))
-                    <div class="alert-success">
-                        <p style="padding: 0.3%; text-align: center">{{ session('success') }}</p>
-                    </div>
-                @endif
-                <div class="d-flex justify-content-left p-3 bg-light rounded shadow-sm">
+    {{-- Modal info general --}}
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Routers</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0 text-muted" style="font-size:.9rem;">
+                    Aquí se agregan los routers y se asignan a un área o depósito.
+                </div>
+            </div>
+        </div>
+    </div>
 
+    {{-- Modal detalle del router --}}
+    <div class="modal fade" id="infoRouterModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Información del router</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row g-2 mb-0" style="font-size:.88rem;">
+                        <dt class="col-5 text-muted fw-semibold">Nº Inventario</dt>
+                        <dd class="col-7 mb-1 fw-semibold" id="idenInfo" style="color:var(--hu-texto);"></dd>
+                        <dt class="col-5 text-muted fw-semibold">Nombre</dt>
+                        <dd class="col-7 mb-1" id="nombreInfo"></dd>
+                        <dt class="col-5 text-muted fw-semibold">Marca y Modelo</dt>
+                        <dd class="col-7 mb-1" id="marcaInfo"></dd>
+                        <dt class="col-5 text-muted fw-semibold">IP</dt>
+                        <dd class="col-7 mb-1" id="ipInfo"></dd>
+                        <dt class="col-5 text-muted fw-semibold" id="titleAsig"></dt>
+                        <dd class="col-7 mb-1" id="infoAsig"></dd>
+                        <dt class="col-5 text-muted fw-semibold" id="title2Asig"></dt>
+                        <dd class="col-7 mb-1" id="info2Asig"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
 
-
-
-                    <!--
-                    <div class="small-box bg-danger" style="margin: 5px;">
-                        <div class="inner">
-                            <h3 class="text-lg">Eliminar</h3>
-
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-bag"></i>
-                        </div>
-                        <a href="#" class="small-box-footer"><i class="fas fa-trash-alt"></i></a>
-                    </div>
-                -->
-                    <div class="container mt-4">
-                        <div style="display: flex; justify-content: space-between;">
-                            @if (Auth::user()->rol->nombre == 'Administrador' || Auth::user()->rol->nombre == 'Super administrador' || Auth::user()->rol->nombre == 'Tecnico')
+    {{-- Modal cargar router — Wizard --}}
+    <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content hu-wizard"
+                style="border-radius:12px;border:none;box-shadow:0 12px 40px rgba(0,55,100,.16);">
+                <div class="modal-header border-0 pb-0">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
-                                <button id="addButton" class="btn btn-dark mr-2" data-bs-toggle="modal"
-                                    data-bs-target="#addModal">
-                                    <i class="fas fa-plus"></i> Cargar router
-                                </button>
+                                <h5 class="modal-title fw-semibold mb-1" style="color:var(--hu-azul);">Cargar router
+                                </h5>
+                                <div class="text-muted" style="font-size:.72rem;">Completá los datos para registrar el
+                                    router.</div>
                             </div>
-                            @endif
-                            <div>
-                                <input class="search_input" id="search_rou" type="text" placeholder="Buscar">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="wizard-stepper" aria-label="Progreso">
+                            <div class="wizard-step is-active" data-rou-step="1">
+                                <div class="wizard-dot">1</div>
+                                <span class="wizard-label">Datos generales</span>
+                            </div>
+                            <div class="wizard-step" data-rou-step="2">
+                                <div class="wizard-dot">2</div>
+                                <span class="wizard-label">Ubicación</span>
+                            </div>
+                            <div class="wizard-step" data-rou-step="3">
+                                <div class="wizard-dot">3</div>
+                                <span class="wizard-label">Resumen</span>
                             </div>
                         </div>
-                        <div class="flex" id="div-router"
-                            style="margin-top:5%;margin-bottom:5%; flex-wrap:wrap; gap: 9px; justify-content:center">
+                    </div>
+                </div>
 
-                            @foreach ($routers as $router)
-                                <div class="card router-card" data-nombre="{{ strtolower($router->nombre) }}"
-                                    data-id="{{ strtolower($router->identificador) }}"
-                                    style="margin-top: -1.5%;max-width: 16%; display: flex; flex-direction: column; justify-content: space-between; height: auto;">
-                                    <!-- Ajusta la altura según tus necesidades -->
-                                    <span class="icon">
-                                        <img src="https://i.postimg.cc/kXNyhjyT/image-removebg-preview.png  "
-                                            alt="PC Icon" style="filter:invert(100%)">
-                                    </span>
-                                    <div style="display: flex; align-items:center;">
-                                        <h4>{{ $router->nombre }}</h4>
-                                        @if ($router->area_id != null)
-                                            <span class="icon">
-                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQodw79SG-RYSnRDBNISWEFfF2qZJ9V80TELg&s"
-                                                    alt="Status Icon"
-                                                    style="width:10px; border-radius: 50%; align-items: center; margin-top: 15%">
-                                            </span>
-                                        @endif
-                                        @if ($router->area_id == null)
-                                            <span class="icon">
-                                                <img src="https://freesvg.org/img/1286146771.png" alt="Status Icon"
-                                                    style="width:10px; border-radius: 50%; align-items: center; margin-top: 15%">
-                                            </span>
-                                        @endif
+                <div class="modal-body">
+                    <form action="{{ route('store_routers') }}" method="POST" id="addRouterWizardForm">
+                        @csrf
+                        <input type="hidden" name="addEnUso" id="rou-addEnUso" value="0">
+
+                        {{-- Paso 1: Datos generales --}}
+                        <div id="rou-step-1">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Datos generales</div>
+                                <div class="wizard-panel-help">Completá la información básica del router.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Nº de inventario <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addIdentificador') is-invalid @enderror"
+                                            id="rou-addIdentificador" name="addIdentificador"
+                                            placeholder="RT-2025-001" required>
                                     </div>
-                                    <p>{{ 'N° inv: ' . $router->identificador }}</p>
-                                    <p>{{ 'IPv4: ' . $router->ip }}</p>
-                                    @if ($router->area_id != null || $router->deposito_id != null)
-                                        @if ($router->area_id != null)
-                                            <p>{{ 'Area: ' . ($router->area->nombre ?? 'no asignado') }}</p>
-                                        @endif
-                                        @if ($router->area_id == null)
-                                            <p>{{ 'Deposito: ' . ($router->deposito->nombre ?? 'no asignado') }}</p>
-                                        @endif
-                                    @endif
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Nombre <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addNombre') is-invalid @enderror"
+                                            id="rou-addNombre" name="addNombre" placeholder="Router Pasillo Norte"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Marca y modelo <span style="color:#b02a37;">*</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addMarca') is-invalid @enderror"
+                                            id="rou-addMarca" name="addMarca" placeholder="TP-Link TL-WR840N"
+                                            required>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            IP <span class="text-muted fw-normal">(opcional)</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addIp') is-invalid @enderror" id="rou-addIp"
+                                            name="addIp" placeholder="192.168.x.x">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                                    <div style="margin-top: auto;">
-                                        <div class="flex" style="gap: 1px; justify-content: center;">
+                        {{-- Paso 2: Ubicación --}}
+                        <div id="rou-step-2" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Ubicación</div>
+                                <div class="wizard-panel-help">Indicá si el router está instalado en un área o guardado
+                                    en un depósito.</div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block is-selected" id="rou-location-use-card">
+                                            <input type="radio" name="rou_ubicacion" value="uso"
+                                                id="rou-location-use" class="visually-hidden" checked>
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">domain</span>
+                                                <div>
+                                                    <div class="location-choice-title">Está en uso</div>
+                                                    <div class="location-choice-help">Asignalo a un área de la
+                                                        institución.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="location-choice d-block" id="rou-location-storage-card">
+                                            <input type="radio" name="rou_ubicacion" value="deposito"
+                                                id="rou-location-storage" class="visually-hidden">
+                                            <div class="d-flex gap-2 align-items-start">
+                                                <span class="material-symbols-outlined">inventory_2</span>
+                                                <div>
+                                                    <div class="location-choice-title">No está en uso</div>
+                                                    <div class="location-choice-help">Asignalo a un depósito.</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
 
-                                            <button class="btn btn-dark icon infoBtn" data-bs-toggle="modal"
-                                                data-bs-target="#infoRouterModal" data-id="{{ $router->id }}"
-                                                data-identificador="{{ $router->identificador }}"
-                                                data-nombre="{{ $router->nombre }}" data-ip="{{ $router->ip }}"
-                                                data-area="{{ $router->area->nombre ?? 'Área no asignada' }}"
-                                                data-deposito="{{ $router->deposito->nombre ?? 'Depósito no asignado' }}"
-                                                data-enuso="{{ $router->area && $router->area->nombre ? 'true' : 'false' }}"
-                                                data-numero="{{ $router->numero }}"
-                                                data-marca="{{ $router->marca_modelo ?? '' }}"
-                                                data-area_detalle="{{ $router->area_detalle ?? '' }}">
-                                                <i class="fas fa-circle-info"></i>
-                                            </button>
-                                            @if (Auth::user()->rol->nombre == 'Administrador' || Auth::user()->rol->nombre == 'Super administrador' || Auth::user()->rol->nombre == 'Tecnico')
-                                            <button class="btn btn-dark icon maintenanceBtn" data-bs-toggle="modal"
-                                                data-bs-target="#editRouterModal" data-id="{{ $router->id }}"
-                                                data-identificador="{{ $router->identificador }}"
-                                                data-nombre="{{ $router->nombre }}" data-ip="{{ $router->ip }}"
-                                                data-area="{{ $router->area->id ?? 'Área no asignada' }}"
-                                                data-deposito="{{ $router->deposito->id ?? 'Depósito no asignado' }}"
-                                                data-enuso="{{ $router->area && $router->area->nombre ? 'true' : 'false' }}"
-                                                data-numero="{{ $router->numero }}"
-                                                data-marca="{{ $router->marca_modelo ?? '' }}"
-                                                data-area_detalle="{{ $router->area_detalle ?? '' }}">
-                                                <i class="fa-solid fa-wrench"></i>
-                                            </button>
-                                            @endif
-                                            <button class="btn btn-dark icon historyBtn" data-bs-toggle="modal"
-                                                data-bs-target="#historyPcModal" data-id="{{ $router->id }}"
-                                                data-nro_inv="{{ $router->identificador }}"
-                                                data-nombre="{{ $router->nombre }}" data-tipo="{{ 'Router' }}">
-                                                <i class="fa-solid fa-book"></i>
-                                            </button>
-                                            @if (Auth::user()->rol->nombre == 'Super administrador')
-                                                <button class="btn btn-dark icon" data-bs-toggle="modal"
-                                                    data-bs-target="#deleteModal" data-id="{{ $router->id }}">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            @endif
+                                <div id="rou-location-area-panel">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                        Área <span style="color:#b02a37;">*</span>
+                                    </label>
+                                    <select class="form-control @error('addArea') is-invalid @enderror"
+                                        id="rou-addArea" name="addArea">
+                                        <option value="" selected>Seleccioná un área</option>
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="mt-2" id="rou-addNroConsul_div" style="display:none;">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">Nº de
+                                            consultorio</label>
+                                        <input type="text"
+                                            class="form-control @error('addNroConsul') is-invalid @enderror"
+                                            id="rou-addNroConsul" name="addNroConsul" placeholder="Nº">
+                                    </div>
+                                    <div class="mt-2">
+                                        <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                            Detalle de ubicación <span class="text-muted fw-normal">(opcional)</span>
+                                        </label>
+                                        <input type="text"
+                                            class="form-control @error('addAreaDetalle') is-invalid @enderror"
+                                            id="rou-addAreaDetalle" name="addAreaDetalle"
+                                            placeholder="Ej: Pasillo norte, piso 2">
+                                    </div>
+                                </div>
+
+                                <div id="rou-location-storage-panel" style="display:none;">
+                                    <label class="form-label fw-semibold" style="font-size:.78rem;">
+                                        Depósito <span style="color:#b02a37;">*</span>
+                                    </label>
+                                    <select class="form-control @error('addDeposito') is-invalid @enderror"
+                                        id="rou-addDeposito" name="addDeposito">
+                                        <option value="" selected>Seleccioná un depósito</option>
+                                        @foreach ($depositos as $deposito)
+                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Paso 3: Resumen --}}
+                        <div id="rou-step-3" style="display:none;">
+                            <div class="wizard-panel">
+                                <div class="wizard-panel-title">Resumen</div>
+                                <div class="wizard-panel-help">Revisá la información antes de guardar.</div>
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Datos generales</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-rou-summary-back="1"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nº inventario</div>
+                                                <div class="hu-summary-value" id="rou-summary-identificador">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Nombre</div>
+                                                <div class="hu-summary-value" id="rou-summary-nombre">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Marca y modelo</div>
+                                                <div class="hu-summary-value" id="rou-summary-marca">—</div>
+                                            </div>
+                                            <div>
+                                                <div class="hu-summary-label">IP</div>
+                                                <div class="hu-summary-value" id="rou-summary-ip">—</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="hu-summary-section">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="hu-summary-label">Ubicación</span>
+                                                <button type="button" class="btn btn-sm btn-link p-0"
+                                                    data-rou-summary-back="2"
+                                                    style="color:var(--hu-azul);font-size:.7rem;">Editar</button>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Estado</div>
+                                                <div class="hu-summary-value" id="rou-summary-estado">—</div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="hu-summary-label">Ubicación asignada</div>
+                                                <div class="hu-summary-value" id="rou-summary-ubicacion">—</div>
+                                            </div>
+                                            <div id="rou-summary-detalle-wrap" style="display:none;">
+                                                <div class="hu-summary-label">Detalle</div>
+                                                <div class="hu-summary-value" id="rou-summary-detalle">—</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                            </div>
                         </div>
 
+                        {{-- Footer --}}
+                        <div class="modal-footer border-0 px-0 pb-0 d-flex justify-content-between mt-3">
+                            <button type="button" id="rou-btn-back" class="btn btn-hu-outline"
+                                style="display:none;">
+                                <span class="material-symbols-outlined"
+                                    style="font-size:16px;vertical-align:middle;">arrow_back</span> Atrás
+                            </button>
+                            <div class="ms-auto d-flex gap-2">
+                                <button type="button" id="rou-btn-next" class="btn btn-hu-confirm">
+                                    Siguiente <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">arrow_forward</span>
+                                </button>
+                                <button type="submit" id="rou-btn-submit" class="btn btn-hu-gold"
+                                    style="display:none;">
+                                    <span class="material-symbols-outlined"
+                                        style="font-size:16px;vertical-align:middle;">check</span> Guardar router
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal mantenimiento --}}
+    <div class="modal fade" id="editRouterModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content hu-maintenance-modal">
+                <div class="modal-header border-0 maintenance-header">
+                    <div class="d-flex align-items-center gap-3"><div class="maintenance-icon"><span class="material-symbols-outlined">router</span></div><div><h5 class="modal-title maintenance-title">Mantenimiento de router</h5><div class="maintenance-subtitle">Modificá los datos del equipo o registrá un mantenimiento.</div></div></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body maintenance-body p-0">
+                    <form action="{{ route('edit_routers') }}" method="POST">
+                        @method('PATCH')
+                        @csrf
+                        <input type="hidden" name="editId" id="editId">
+                        <div class="maintenance-layout">
+                            <aside class="maintenance-sidebar">
+                                <div class="maintenance-nav-title">Secciones</div>
+                                <button type="button" class="maintenance-nav-link active" data-bs-target="#editRouterDatos"><span class="material-symbols-outlined">description</span><span><strong>Datos generales</strong><small>Información básica</small></span></button>
+                                <button type="button" class="maintenance-nav-link" data-bs-target="#editRouterUbicacion"><span class="material-symbols-outlined">location_on</span><span><strong>Ubicación</strong><small>Área y depósito</small></span></button>
+                                <button type="button" class="maintenance-nav-link" data-bs-target="#editRouterMantenimiento"><span class="material-symbols-outlined">build</span><span><strong>Mantenimiento</strong><small>Registro y cambios</small></span></button>
+                            </aside>
+                            <main class="maintenance-content">
+                                <div class="tab-content maintenance-tab-content">
+                                    <div class="tab-pane fade show active" id="editRouterDatos">
+                                        <div class="maintenance-section">
+                                            <div class="maintenance-section-heading"><span class="material-symbols-outlined">description</span><div><h6>Datos generales</h6><p>Información básica del router.</p></div></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nº Inventario</label>
+                                <input type="text"
+                                    class="form-control @error('editIdentificador') is-invalid @enderror"
+                                    id="editIdentificador" name="editIdentificador" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Nombre</label>
+                                <input type="text" class="form-control @error('editNombre') is-invalid @enderror"
+                                    id="editNombre" name="editNombre" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Marca y Modelo</label>
+                                <input type="text" class="form-control @error('editMarca') is-invalid @enderror"
+                                    id="editMarca" name="editMarca" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">IP</label>
+                                <input type="text" class="form-control @error('editIp') is-invalid @enderror"
+                                    id="editIp" name="editIp" placeholder="192.168.x.x">
+                            </div>
+                        </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="editRouterUbicacion">
+                                <div class="maintenance-status"><div class="d-flex align-items-center gap-3"><div class="maintenance-status-icon"><span class="material-symbols-outlined">router</span></div><div><div class="maintenance-status-title">Estado del equipo</div><div class="maintenance-status-text">Indicá si el router está asignado a un área.</div></div></div><label class="maintenance-status-action"><input class="form-check-input m-0" type="checkbox" id="editEn-uso" name="en-uso"><span>En uso — asignado a un área</span></label></div>
+                                        <div class="maintenance-section">
+                                            <div class="maintenance-section-heading"><span class="material-symbols-outlined">location_on</span><div><h6>Ubicación</h6><p>Área, consultorio y depósito.</p></div></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Área</label>
+                                <select class="form-control @error('editArea') is-invalid @enderror" id="editArea"
+                                    name="editArea" disabled>
+                                    <option value="" disabled selected>Seleccioná un área</option>
+                                    @foreach ($areas as $area)
+                                        <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                    @endforeach
+                                </select>
+                                <div id="editNroConsul_div" class="mt-2" style="display:none;">
+                                    <label class="form-label fw-semibold" style="font-size:.85rem;">Nº
+                                        consultorio</label>
+                                    <input type="text"
+                                        class="form-control @error('editNroConsul') is-invalid @enderror"
+                                        id="editNroConsul" name="editNroConsul" placeholder="Nº">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Depósito</label>
+                                <select class="form-control @error('editDeposito') is-invalid @enderror"
+                                    id="editDeposito" name="editDeposito">
+                                    <option value="" disabled selected>Seleccioná un depósito</option>
+                                    @foreach ($depositos as $deposito)
+                                        <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="edit-detalle-area-div" style="display:none;" class="mb-3">
+                            <label class="form-label fw-semibold" style="font-size:.85rem;">Detalle de la
+                                ubicación</label>
+                            <input type="text" class="form-control @error('editAreaDetalle') is-invalid @enderror"
+                                id="editAreaDetalle" name="editAreaDetalle" placeholder="Ej: Pasillo norte, piso 2">
+                        </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="editRouterMantenimiento">
+                                        <div class="maintenance-section">
+                                            <div class="maintenance-section-heading"><span class="material-symbols-outlined">build</span><div><h6>Mantenimiento</h6><p>Registrá el mantenimiento y el motivo del cambio.</p></div></div>
+                        <div class="p-3 mb-3 d-flex align-items-center gap-2 maintenance-toggle">
+                            <input class="form-check-input m-0" type="checkbox" id="en-uso-mantenimineto"
+                                style="cursor:pointer;">
+                            <label class="form-check-label fw-semibold mb-0" for="en-uso-mantenimineto"
+                                style="font-size:.88rem;cursor:pointer;color:#92400E;">
+                                Se realizó mantenimiento
+                            </label>
+                        </div>
+                        <div id="div-detalle-mant">
+                            <div class="mb-3" style="display:none;">
+                                <label class="form-label fw-semibold" style="font-size:.85rem;">Detalle del
+                                    mantenimiento</label>
+                                <input type="text" class="form-control @error('editDetalle') is-invalid @enderror"
+                                    id="editDetalle" name="editDetalle">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" style="font-size:.85rem;">Motivo del cambio</label>
+                            <input type="text" class="form-control @error('editMotivo') is-invalid @enderror"
+                                id="editMotivo" name="editMotivo" required>
+                        </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </main>
+                        </div>
+                        <div class="maintenance-footer mt-3">
+                            <button type="submit" class="btn btn-hu w-100">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal eliminar --}}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content"
+                style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">¿Eliminar router?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('delete_routers') }}" method="POST">
+                        @csrf
+                        <input type="hidden" id="deleteId" name="deleteId">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" style="font-size:.85rem;">Motivo</label>
+                            <input type="text" class="form-control @error('removeMotivo') is-invalid @enderror"
+                                id="removeMotivo" name="removeMotivo" required>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-hu-outline flex-fill"
+                                data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger flex-fill">Eliminar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal historial --}}
+    <div class="modal fade" id="historyPcModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content"
+                style="border-radius:12px;border:none;box-shadow:0 8px 32px rgba(0,55,100,.15);">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-semibold" style="color:var(--hu-azul);">Historial del router</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="table_historias_pc" class="table hu-modern-table w-100">
+                        <thead>
+                            <tr>
+                                <th>Técnico</th>
+                                <th>Detalle</th>
+                                <th>Motivo</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_historias_tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Contenido principal --}}
+    <div class="px-4 px-md-5 py-4" style="max-width:1400px;margin:0 auto;">
+        <div class="bg-white rounded-3 p-4" style="box-shadow:0 2px 12px rgba(0,55,100,.08);">
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <span class="fw-semibold"
+                    style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--hu-azul);">
+                    Listado de routers
+                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="input-group input-group-sm"
+                        style="max-width:220px;border:1px solid #ced4da;border-radius:.375rem;">
+                        <span class="input-group-text" style="background:#fff;border:0;">
+                            <span class="material-symbols-outlined"
+                                style="font-size:15px; color:var(--hu-azul);">search</span>
+                        </span>
+                        <input type="text" id="search_rou" class="form-control" placeholder="Buscar..."
+                            style="border:0;box-shadow:none;">
                     </div>
+                    @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
+                        <button type="button" class="btn btn-hu btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#addModal" style="min-width: 180px; white-space: nowrap;">
+                            <span class="material-symbols-outlined"
+                                style="font-size: 16px; vertical-align: middle;">add</span>
+                            Cargar router
+                        </button>
+                    @endif
                 </div>
             </div>
 
-        </div>
+            <div id="div-router" class="d-flex flex-wrap gap-3 justify-content-start">
+                @foreach ($routers as $router)
+                    @php $enUso = $router->area_id !== null; @endphp
+                    <div class="router-card" data-nombre="{{ strtolower($router->nombre) }}"
+                        data-id="{{ strtolower($router->identificador) }}"
+                        style="width:250px;background:#fff;border:1px solid rgba(0,55,100,.12);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.4rem;transition:box-shadow .2s,transform .2s;cursor:pointer;"
+                        onmouseenter="this.style.boxShadow='0 8px 24px rgba(0,55,100,.12)';this.style.transform='translateY(-2px)'"
+                        onmouseleave="this.style.boxShadow='none';this.style.transform='none'">
 
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="material-symbols-outlined"
+                                style="font-size:32px;color:var(--hu-azul);">router</span>
+                            <span class="badge"
+                                style="background:{{ $enUso ? '#D1FAE5' : '#FEF3C7' }};color:{{ $enUso ? '#065F46' : '#92400E' }};font-size:.7rem;font-weight:600;border-radius:6px;">
+                                {{ $enUso ? 'En uso' : 'Depósito' }}
+                            </span>
+                        </div>
+
+                        <div class="fw-semibold" style="font-size:.9rem;color:var(--hu-azul);line-height:1.2;">
+                            {{ $router->nombre }}</div>
+                        <div style="font-size:.78rem;color:var(--hu-texto);">
+                            <span class="text-muted">Inv:</span> {{ $router->identificador }}
+                        </div>
+                        <div style="font-size:.78rem;color:var(--hu-texto);">
+                            <span class="text-muted">IP:</span> {{ $router->ip ?? '—' }}
+                        </div>
+                        <div style="font-size:.78rem;color:var(--hu-texto);">
+                            @if ($enUso)
+                                <span class="text-muted">Área:</span> {{ $router->area->nombre ?? '—' }}
+                            @else
+                                <span class="text-muted">Depósito:</span> {{ $router->deposito->nombre ?? '—' }}
+                            @endif
+                        </div>
+
+                        <div class="d-flex gap-1 mt-auto pt-2">
+                            <button type="button" class="btn btn-hu btn-sm flex-fill infoBtn" data-bs-toggle="modal"
+                                data-bs-target="#infoRouterModal" data-id="{{ $router->id }}"
+                                data-identificador="{{ $router->identificador }}"
+                                data-nombre="{{ $router->nombre }}" data-ip="{{ $router->ip }}"
+                                data-area="{{ $router->area->nombre ?? 'Área no asignada' }}"
+                                data-deposito="{{ $router->deposito->nombre ?? 'Depósito no asignado' }}"
+                                data-enuso="{{ $enUso ? 'true' : 'false' }}"
+                                data-marca="{{ $router->marca_modelo ?? '' }}"
+                                data-area_detalle="{{ $router->area_detalle ?? '' }}" title="Ver detalle">
+                                <span class="material-symbols-outlined" style="font-size:14px;">info</span>
+                            </button>
+
+                            @if (in_array($rolActual, ['Administrador', 'Super administrador', 'Tecnico'], true))
+                                <button type="button" class="btn btn-hu btn-sm flex-fill maintenanceBtn"
+                                    data-bs-toggle="modal" data-bs-target="#editRouterModal"
+                                    data-id="{{ $router->id }}" data-identificador="{{ $router->identificador }}"
+                                    data-nombre="{{ $router->nombre }}" data-ip="{{ $router->ip }}"
+                                    data-area="{{ $router->area_id }}" data-deposito="{{ $router->deposito_id }}"
+                                    data-enuso="{{ $enUso ? 'true' : 'false' }}"
+                                    data-marca="{{ $router->marca_modelo ?? '' }}"
+                                    data-area_detalle="{{ $router->area_detalle ?? '' }}" title="Editar">
+                                    <span class="material-symbols-outlined" style="font-size:14px;">build</span>
+                                </button>
+                            @endif
+
+                            <button type="button" class="btn btn-hu btn-sm flex-fill historyBtn"
+                                data-bs-toggle="modal" data-bs-target="#historyPcModal"
+                                data-id="{{ $router->id }}" data-nro_inv="{{ $router->identificador }}"
+                                data-nombre="{{ $router->nombre }}" data-tipo="Router" title="Historial">
+                                <span class="material-symbols-outlined" style="font-size:14px;">history</span>
+                            </button>
+
+                            @if ($rolActual === 'Super administrador')
+                                <button type="button" class="btn btn-danger btn-sm flex-fill" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal" data-id="{{ $router->id }}" title="Eliminar">
+                                    <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+
+                @if ($routers->isEmpty())
+                    <div class="text-center text-muted py-5 w-100" style="font-size:.9rem;">
+                        <span class="material-symbols-outlined d-block mb-2" style="font-size:2.5rem;">router</span>
+                        No hay routers registrados.
+                    </div>
+                @endif
+            </div>
+        </div>
     </div>
 
+    @push('styles')
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    @endpush
 
+    @push('vendor-scripts')
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.1.0/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.1.0/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    @endpush
 
-</x-app-layout>
-<script>
-    $(document).ready(function() {
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
 
-        $('#en-uso').on('change', function() {
-            var isChecked = $(this).is(':checked');
-
-            // Ajustar habilitación/deshabilitación en función del estado del checkbox
-            if (!isChecked) {
-                $('#addNroConsul_div').css('display', 'none');
-                $('#addNroConsul_div').attr('required', false);
-                $('#editNroConsul_div').css('display', 'none');
-                $('#editNroConsul_div').attr('required', false);
-            }
-        });
-
-        $('#editEn-uso').on('change', function() {
-            var isChecked = $(this).is(':checked');
-
-            // Ajustar habilitación/deshabilitación en función del estado del checkbox
-            if (!isChecked) {
-                $('#addNroConsul_div').css('display', 'none');
-                $('#addNroConsul_div').attr('required', false);
-                $('#editNroConsul_div').css('display', 'none');
-                $('#editNroConsul_div').attr('required', false);
-            }
-        });
-
-        $('#addArea').on('change', function() {
-            if ($(this).val() == 27) {
-                $('#addNroConsul_div').css('display', 'block');
-                $('#addNroConsul_div').attr('required', true);
-
-            } else {
-                $('#addNroConsul_div').css('display', 'none');
-                $('#addNroConsul_div').attr('required', false);
-            }
-        });
-
-        $('#editArea').on('change', function() {
-            if ($(this).val() == 27) {
-                $('#editNroConsul_div').css('display', 'block');
-                $('#editNroConsul_div').css('required', true);
-            } else {
-                $('#editNroConsul_div').css('display', 'none');
-                $('#editNroConsul_div').css('required', false);
-            }
-        });
-
-        $('#en-uso').on('change', function() {
-            div = document.getElementById('div-detalle-area');
-            input = document.getElementById('addAreaDetalle');
-
-            if ($(this).prop('checked')) {
-                div.style.display = "block"; // Muestra el div
-                input.setAttribute('required', 'required'); // Hace el campo requerido
-            } else {
-                div.style.display = "none"; // Oculta el div
-                input.removeAttribute('required'); // Quita el atributo requerido
-            }
-        });
-
-
-
-        $('#search_rou').on('input', function() {
-            var searchTerm = $(this).val().toLowerCase();
-
-            // Filtrar las tarjetas de PC
-            $('.card').each(function() {
-                var nombre = String($(this).data('nombre'));
-                var id = String($(this).data('id'));
-
-                // Mostrar la tarjeta si el nombre o la IP contiene el término de búsqueda
-                if (nombre.includes(searchTerm) || id.includes(searchTerm)) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
+                // ── Checkbox "en uso" al AGREGAR ──
+                function syncAddEnUso() {
+                    const checked = $('#add-en-uso').is(':checked');
+                    $('#addArea').prop('disabled', !checked);
+                    $('#addDeposito').prop('disabled', checked);
+                    if (checked) {
+                        $('#add-detalle-area-div').show();
+                        $('#addDeposito').val('');
+                    } else {
+                        $('#add-detalle-area-div').hide();
+                        $('#addAreaDetalle').val('');
+                        $('#addArea').val('');
+                        $('#addNroConsul_div').hide();
+                    }
                 }
-            });
-        });
-        var modalHandlerAttached = false;
-        var nro_inv = "";
-        var nombre = "";
+                $('#add-en-uso').on('change', syncAddEnUso);
+                syncAddEnUso();
 
-        $('#historyPcModal').on('show.bs.modal', function(event) {
-            if (modalHandlerAttached) return;
-            modalHandlerAttached = true;
-            var button = $(event.relatedTarget); // Botón que abrió el modal
-            var componenteId = button.data('id'); // Obtener el ID del componente
-            var componenteTipo = button.data('tipo'); // Obtener el ID del componente
+                $('#addArea').on('change', function() {
+                    if ($(this).val() == 27) {
+                        $('#addNroConsul_div').show().find('input').attr('required', 'required');
+                    } else {
+                        $('#addNroConsul_div').hide().find('input').removeAttr('required');
+                    }
+                });
 
-            nro_inv = button.data('nro_inv');
-            nombre = button.data('nombre');
+                // ── Checkbox "en uso" al EDITAR ──
+                function syncEditEnUso(enUso) {
+                    const checked = (enUso !== undefined) ? enUso : $('#editEn-uso').is(':checked');
+                    $('#editArea').prop('disabled', !checked);
+                    $('#editDeposito').prop('disabled', checked);
+                    if (checked) {
+                        $('#edit-detalle-area-div').show().find('input').attr('required', 'required');
+                        if (!checked) {
+                            $('#editDeposito').val('');
+                        }
+                    } else {
+                        $('#edit-detalle-area-div').hide().find('input').removeAttr('required').val('');
+                        $('#editArea').prop('disabled', true);
+                    }
+                }
 
-            // Limpiar cualquier dato previo en la tabla
-            var table = $('#table_historias_pc').DataTable();
-            table.order([3, 'desc']).draw();
-            table.clear().draw();
+                $('#editEn-uso').on('change', function() {
+                    const checked = $(this).is(':checked');
+                    if (!checked) {
+                        $('#editDeposito').prop('disabled', false);
+                        $('#editArea').prop('disabled', true);
+                        $('#editDeposito').val('');
+                        $('#editArea').val('');
+                        $('#edit-detalle-area-div').hide().find('input').removeAttr('required').val('');
+                        $('#editNroConsul_div').hide();
+                    } else {
+                        $('#editDeposito').prop('disabled', true);
+                        $('#editArea').prop('disabled', false);
+                        $('#editArea').val('');
+                        $('#editDeposito').val('');
+                        $('#edit-detalle-area-div').show().find('input').attr('required', 'required');
+                    }
+                });
 
-            var historiaUrl = '{{ route('historia.get', ['tipo' => ':tipo', 'id' => ':id']) }}';
-            historiaUrl = historiaUrl.replace(':tipo', componenteTipo);
-            historiaUrl = historiaUrl.replace(':id', componenteId);
+                $('#editArea').on('change', function() {
+                    if ($(this).val() == 27) {
+                        $('#editNroConsul_div').show().find('input').attr('required', 'required');
+                    } else {
+                        $('#editNroConsul_div').hide().find('input').removeAttr('required');
+                    }
+                });
 
-            // Realizar la solicitud AJAX para obtener los registros de historia
-            $.ajax({
-                url: historiaUrl, // Cambia la URL a la ruta de tu controlador
-                method: 'GET',
-                success: function(response) {
-                    var data = [];
+                // ── Abrir modal editar ──
+                $('#editRouterModal').on('show.bs.modal', function(event) {
+                    const btn = $(event.relatedTarget);
+                    const enUso = btn.data('enuso') === true || btn.data('enuso') === 'true';
 
-                    response.historia.forEach(function(historia) {
-                        var fechaFormateada = new Date(historia.created_at)
-                            .toLocaleDateString('es-ES', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
+                    $(this).find('#editId').val(btn.data('id'));
+                    $(this).find('#editIdentificador').val(btn.data('identificador'));
+                    $(this).find('#editNombre').val(btn.data('nombre'));
+                    $(this).find('#editMarca').val(btn.data('marca'));
+                    $(this).find('#editIp').val(btn.data('ip'));
+                    $(this).find('#editAreaDetalle').val(btn.data('area_detalle'));
+                    $(this).find('#editEn-uso').prop('checked', enUso);
 
-                        var motivo = historia.motivo || '';
+                    if (enUso) {
+                        $(this).find('#editArea').prop('disabled', false).val(btn.data('area'));
+                        $(this).find('#editDeposito').prop('disabled', true).val('');
+                        $('#edit-detalle-area-div').show().find('input').attr('required', 'required');
+                    } else {
+                        $(this).find('#editArea').prop('disabled', true).val('');
+                        $(this).find('#editDeposito').prop('disabled', false).val(btn.data('deposito'));
+                        $('#edit-detalle-area-div').hide().find('input').removeAttr('required');
+                    }
+                });
 
-                        data.push([
-                            `<b>${historia.tecnico}</b>`,
-                            `<b>${historia.detalle}</b>`,
-                            `<b>${motivo}</b>`,
-                            `<b>${fechaFormateada}</b>`
-                        ]);
+                // ── Mantenimiento checkbox ──
+                $('#editRouterModal').off('change.maintenance', '#en-uso-mantenimineto')
+                    .on('change.maintenance', '#en-uso-mantenimineto', function() {
+                        const div = $('#editRouterModal #div-detalle-mant > div');
+                        const input = div.find('input');
+                        div.toggle(this.checked);
+                        input.prop('required', this.checked);
                     });
 
-                    // Añadir los datos a la tabla y refrescarla
-                    table.rows.add(data).draw();
-                },
-                error: function() {
-                    alert('Error al cargar las historias.');
-                }
+                // ── Abrir modal eliminar ──
+                $('#deleteModal').on('show.bs.modal', function(event) {
+                    $(this).find('#deleteId').val($(event.relatedTarget).data('id'));
+                });
+
+                // ── Abrir modal info ──
+                $('#infoRouterModal').on('show.bs.modal', function(event) {
+                    const btn = $(event.relatedTarget);
+                    const enUso = btn.data('enuso') === true || btn.data('enuso') === 'true';
+                    $(this).find('#idenInfo').text(btn.data('identificador'));
+                    $(this).find('#nombreInfo').text(btn.data('nombre'));
+                    $(this).find('#marcaInfo').text(btn.data('marca') || '—');
+                    $(this).find('#ipInfo').text(btn.data('ip') || '—');
+                    if (enUso) {
+                        $(this).find('#titleAsig').text('Área');
+                        $(this).find('#infoAsig').text(btn.data('area'));
+                        $(this).find('#title2Asig').text('Detalle');
+                        $(this).find('#info2Asig').text(btn.data('area_detalle') || '—');
+                    } else {
+                        $(this).find('#titleAsig').text('Depósito');
+                        $(this).find('#infoAsig').text(btn.data('deposito'));
+                        $(this).find('#title2Asig').text('');
+                        $(this).find('#info2Asig').text('');
+                    }
+                });
+
+                // ── Buscador ──
+                $('#search_rou').on('input', function() {
+                    const term = $(this).val().toLowerCase();
+                    $('.router-card').each(function() {
+                        const nombre = String($(this).data('nombre'));
+                        const id = String($(this).data('id'));
+                        $(this).toggle(nombre.includes(term) || id.includes(term));
+                    });
+                });
+
+                // ── Click en tarjeta abre info ──
+                $(document).on('click', '.router-card', function(e) {
+                    if (!$(e.target).closest('button').length) {
+                        $(this).find('.infoBtn').trigger('click');
+                    }
+                });
+                $('.maintenanceBtn, .historyBtn').on('click', function(e) {
+                    e.stopPropagation();
+                });
+
+                // ── Historial AJAX ──
+                var modalHandlerAttached = false;
+                var nro_inv = '',
+                    nombre = '';
+
+                $('#historyPcModal').on('show.bs.modal', function(event) {
+                    if (modalHandlerAttached) return;
+                    modalHandlerAttached = true;
+                    const btn = $(event.relatedTarget);
+                    nro_inv = btn.data('nro_inv');
+                    nombre = btn.data('nombre');
+                    const table = $('#table_historias_pc').DataTable();
+                    table.clear().draw();
+                    let url = '{{ route('historia.get', ['tipo' => ':tipo', 'id' => ':id']) }}';
+                    url = url.replace(':tipo', btn.data('tipo')).replace(':id', btn.data('id'));
+                    $.ajax({
+                        url,
+                        method: 'GET',
+                        success: function(response) {
+                            const data = response.historia.map(h => {
+                                const fecha = new Date(h.created_at).toLocaleDateString(
+                                    'es-ES', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
+                                return [h.tecnico, h.detalle,
+                                    h.motivo || '', fecha
+                                ];
+                            });
+                            table.rows.add(data).draw();
+                        },
+                        error: () => alert('Error al cargar las historias.')
+                    });
+                });
+                $('#historyPcModal').on('hide.bs.modal', function() {
+                    modalHandlerAttached = false;
+                });
+
+                // ── DataTable historial ──
+                $('#table_historias_pc').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [{
+                        extend: 'excelHtml5',
+                        text: 'Exportar a Excel',
+                        className: 'btn btn-hu btn-sm',
+                        title: () => 'Historia de ' + nro_inv + ' - ' + nombre
+                    }],
+                    responsive: true,
+                    lengthChange: true,
+                    autoWidth: true,
+                    language: {
+                        emptyTable: 'No hay datos disponibles en la tabla.',
+                        info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+                        infoEmpty: 'Mostrando 0 a 0 de 0 entradas',
+                        infoFiltered: '(filtrado de _MAX_ totales)',
+                        search: 'Buscar:',
+                        zeroRecords: 'No se encontraron registros',
+                        paginate: {
+                            first: 'Primero',
+                            last: 'Último',
+                            next: 'Siguiente',
+                            previous: 'Anterior'
+                        }
+                    }
+                });
+                // ── Wizard: Cargar router ────────────────────────────────────────────
+                (function() {
+                    var rouStep = 1;
+
+                    function rouUpdateStepper(step) {
+                        $('[data-rou-step]').each(function() {
+                            var n = parseInt($(this).data('rou-step'), 10);
+                            $(this).removeClass('is-active is-complete');
+                            if (n < step) {
+                                $(this).addClass('is-complete');
+                                $(this).find('.wizard-dot').text('✓');
+                            }
+                            if (n === step) {
+                                $(this).addClass('is-active');
+                                $(this).find('.wizard-dot').text(n);
+                            }
+                            if (n > step) $(this).find('.wizard-dot').text(n);
+                        });
+                    }
+
+                    function rouSetLocationMode(mode) {
+                        var enUso = mode === 'uso';
+                        $('#rou-location-use-card').toggleClass('is-selected', enUso);
+                        $('#rou-location-storage-card').toggleClass('is-selected', !enUso);
+                        $('#rou-location-area-panel').toggle(enUso);
+                        $('#rou-location-storage-panel').toggle(!enUso);
+                        $('#rou-addEnUso').val(enUso ? '1' : '0');
+                        if (enUso) {
+                            $('#rou-addDeposito').val('');
+                        } else {
+                            $('#rou-addArea').val('');
+                            $('#rou-addNroConsul').val('');
+                            $('#rou-addNroConsul_div').hide();
+                            $('#rou-addAreaDetalle').val('');
+                        }
+                    }
+
+                    function rouValidateStep(step) {
+                        if (step === 1) {
+                            var valid = true;
+                            ['#rou-addIdentificador', '#rou-addNombre', '#rou-addMarca'].forEach(function(sel) {
+                                var $f = $(sel),
+                                    ok = $f.val().trim() !== '';
+                                $f.toggleClass('is-invalid', !ok);
+                                if (!ok && valid) $f.focus();
+                                valid = valid && ok;
+                            });
+                            return valid;
+                        }
+                        if (step === 2) {
+                            var enUso = $('#rou-location-use').is(':checked');
+                            if (enUso) {
+                                var ok = !!$('#rou-addArea').val();
+                                $('#rou-addArea').toggleClass('is-invalid', !ok);
+                                if (!ok) $('#rou-addArea').focus();
+                                return ok;
+                            }
+                            var ok = !!$('#rou-addDeposito').val();
+                            $('#rou-addDeposito').toggleClass('is-invalid', !ok);
+                            if (!ok) $('#rou-addDeposito').focus();
+                            return ok;
+                        }
+                        return true;
+                    }
+
+                    function rouUpdateSummary() {
+                        $('#rou-summary-identificador').text($('#rou-addIdentificador').val().trim() || '—');
+                        $('#rou-summary-nombre').text($('#rou-addNombre').val().trim() || '—');
+                        $('#rou-summary-marca').text($('#rou-addMarca').val().trim() || '—');
+                        $('#rou-summary-ip').text($('#rou-addIp').val().trim() || 'Sin asignar');
+
+                        var enUso = $('#rou-location-use').is(':checked');
+                        $('#rou-summary-estado').text(enUso ? 'Está en uso' : 'No está en uso');
+
+                        if (enUso) {
+                            $('#rou-summary-ubicacion').text($('#rou-addArea option:selected').text().trim() ||
+                            '—');
+                            var detalle = $('#rou-addAreaDetalle').val().trim();
+                            $('#rou-summary-detalle-wrap').toggle(!!detalle);
+                            $('#rou-summary-detalle').text(detalle || '—');
+                        } else {
+                            $('#rou-summary-ubicacion').text($('#rou-addDeposito option:selected').text().trim() ||
+                                '—');
+                            $('#rou-summary-detalle-wrap').hide();
+                        }
+                    }
+
+                    function rouGoToStep(step) {
+                        rouStep = step;
+                        $('#rou-step-1, #rou-step-2, #rou-step-3').hide();
+                        $('#rou-step-' + step).show();
+                        $('#rou-btn-back').toggle(step > 1);
+                        $('#rou-btn-next').toggle(step < 3);
+                        $('#rou-btn-submit').toggle(step === 3);
+                        rouUpdateStepper(step);
+                        if (step === 3) rouUpdateSummary();
+                    }
+
+                    // Navegación
+                    $('#rou-btn-next').on('click', function() {
+                        if (rouValidateStep(rouStep)) rouGoToStep(rouStep + 1);
+                    });
+                    $('#rou-btn-back').on('click', function() {
+                        rouGoToStep(rouStep - 1);
+                    });
+                    $(document).on('click', '[data-rou-summary-back]', function() {
+                        rouGoToStep(parseInt($(this).data('rou-summary-back'), 10));
+                    });
+
+                    // Tarjetas de ubicación
+                    $('#rou-location-use, #rou-location-storage').on('change', function() {
+                        rouSetLocationMode($(this).val());
+                    });
+
+                    // Nº consultorio
+                    $('#rou-addArea').on('change', function() {
+                        if ($(this).val() == 27) {
+                            $('#rou-addNroConsul_div').show();
+                        } else {
+                            $('#rou-addNroConsul_div').hide();
+                            $('#rou-addNroConsul').val('');
+                        }
+                    });
+
+                    // Reset al abrir
+                    $('#addModal').on('show.bs.modal', function() {
+                        $('#addRouterWizardForm')[0].reset();
+                        $('#rou-addEnUso').val('0');
+                        rouSetLocationMode('uso');
+                        rouGoToStep(1);
+                        $('#rou-addIdentificador, #rou-addNombre, #rou-addMarca').removeClass('is-invalid');
+                    });
+
+                    // Submit con validación completa
+                    $('#addRouterWizardForm').on('submit', function(e) {
+                        if (!rouValidateStep(1) || !rouValidateStep(2)) {
+                            e.preventDefault();
+                            if (!rouValidateStep(1)) rouGoToStep(1);
+                            else rouGoToStep(2);
+                        }
+                    });
+                })();
             });
-        });
+        </script>
+    @endpush
 
-        $('#historyImpModal').on('hide.bs.modal', function() {
-            modalHandlerAttached = false;
-        });
-
-        // Variable global para el detalle del área
-        var Area_Detalle = "";
-
-        $('#editRouterModal').on('show.bs.modal', function(event) {
-            var modal = $(this);
-            var container = modal.find('#input-container-2');
-
-            var button = $(event.relatedTarget); // Botón que abrió el modal
-            var Id = button.data('id');
-            var Identificador = button.data('identificador');
-            var Nombre = button.data('nombre');
-            var Marca = button.data('marca');
-            var Deposito = button.data('deposito');
-            var Ip = button.data('ip');
-            var Area_id = button.data('area');
-            var Deposito_id = button.data('deposito');
-            var enUso = button.data('enuso');
-            var Numero = button.data('numero');
-            var AreaDetalle = button.data('area_detalle');
-
-            // Asignar el valor a la variable global
-            Area_Detalle = AreaDetalle;
-
-            modal.find('#editEn-uso').prop('checked', enUso);
-
-            var div = modal.find('#edit-div-detalle-area'); // Usar jQuery para seleccionar
-            var input = modal.find('#editAreaDetalle'); // Usar jQuery para seleccionar
-
-            if (!enUso) {
-                modal.find('#editDeposito').prop('disabled', false);
-                modal.find('#editArea').prop('disabled', true);
-                modal.find('#editDeposito').val(Deposito_id);
-                div.hide(); // Oculta el div usando jQuery
-                input.removeAttr('required'); // Quita el atributo requerido usando jQuery
-            } else {
-                div.show(); // Muestra el div usando jQuery
-                input.attr('required', 'required'); // Hace el campo requerido usando jQuery
-                modal.find('#editDeposito').prop('disabled', true);
-                modal.find('#editArea').prop('disabled', false);
-                modal.find('#editArea').val(Area_id);
-            }
-
-            modal.find('#editNombre').val(Nombre);
-            modal.find('#editId').val(Id);
-            modal.find('#editIdentificador').val(Identificador);
-            modal.find('#editIp').val(Ip);
-            modal.find('#editNumero').val(Numero);
-            modal.find('#editMarca').val(Marca);
-            modal.find('#editAreaDetalle').val(Area_Detalle); // Establece el valor correctamente
-
-        });
-
-        $('#editEn-uso').on('change', function() {
-            var modal = $('#editRouterModal'); // Asegúrate de usar el mismo modal
-            var isChecked = $(this).is(':checked');
-
-            var div = modal.find('#edit-div-detalle-area'); // Usar jQuery para seleccionar
-            var input = modal.find('#editAreaDetalle'); // Usar jQuery para seleccionar
-
-            if (!isChecked) {
-                modal.find('#editDeposito').prop('disabled', false);
-                modal.find('#editArea').prop('disabled', true);
-                modal.find('#editDeposito').val(null);
-                modal.find('#editArea').val(null);
-                div.hide(); // Oculta el div usando jQuery
-                input.removeAttr('required'); // Quita el atributo requerido usando jQuery
-                input.val(null); // Asegúrate de vaciar el campo
-            } else {
-                modal.find('#editDeposito').prop('disabled', true);
-                modal.find('#editArea').prop('disabled', false);
-                modal.find('#editArea').val(null);
-                modal.find('#editDeposito').val(null);
-                div.show(); // Muestra el div usando jQuery
-                input.attr('required', 'required'); // Hace el campo requerido usando jQuery
-                input.val(Area_Detalle); // Establece el valor correctamente
-            }
-        });
-
-
-        const checkbox = document.getElementById('en-uso-mantenimineto');
-        const detalleInput = document.getElementById('div-detalle-mant');
-
-        checkbox.addEventListener('change', function() {
-            const div = detalleInput.querySelector('div');
-            const input = div.querySelector(
-                'input'); // Suponiendo que es un input el que quieres hacer requerido
-
-            if (checkbox.checked) {
-                div.style.display = "block"; // Muestra el div
-                input.setAttribute('required', 'required'); // Hace el campo requerido
-            } else {
-                div.style.display = "none"; // Oculta el div
-                input.removeAttribute('required'); // Quita el atributo requerido
-            }
-        });
-
-        $('#infoRouterModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget); // Botón que abrió el modal
-            var Id = button.data('id');
-            var Ip = button.data('ip');
-            var Identificador = button.data('identificador');
-            var Nombre = button.data('nombre');
-            var Area = button.data('area');
-            var Deposito = button.data('deposito');
-            var enUso = button.data('enuso');
-            var Numero = button.data('numero');
-            var Marca = button.data('marca');
-            var Area_detalle = button.data('area_detalle');
-
-            var modal = $(this);
-            modal.find('#idenInfo').text(Identificador);
-            modal.find('#nombreInfo').text(Nombre);
-            modal.find('#marcaInfo').text(Marca);
-            modal.find('#ipInfo').text(Ip);
-            modal.find('#numeroInfo').text(Numero);
-
-            if (enUso == true) {
-                modal.find('#titleAsig').text("Area:");
-                modal.find('#infoAsig').text(Area);
-                modal.find('#titleAsig').text("Area detalle:");
-                modal.find('#infoAsig').text(Area_detalle);
-            } else {
-                modal.find('#titleAsig').text("Deposito:");
-                modal.find('#infoAsig').text(Deposito);
-            }
-        });
-
-        // Manejador para el click en el div con la clase 'card'
-        $('.card').on('click', function() {
-            // Dispara el click en el botón infoBtn dentro del div
-            $(this).find('.infoBtn').trigger('click');
-        });
-
-        // Manejador para el click en el botón infoBtn
-        $('.infoBtn').on('click', function(event) {
-            // Evita que el modal se abra inmediatamente
-            event.preventDefault();
-
-            // Cargar los datos en el modal
-            const modal = $('#infoRouterModal');
-            modal.find('#idenInfo').text($(this).data('identificador'));
-            modal.find('#nombreInfo').text($(this).data('nombre'));
-            modal.find('#marcaInfo').text($(this).data('marca'));
-            modal.find('#ipInfo').text($(this).data('ip'));
-            if ($(this).data('enuso')) {
-                modal.find('#titleAsig').text("Area:");
-                modal.find('#infoAsig').text($(this).data('area'));
-
-            } else {
-                modal.find('#titleAsig').text("Deposito:");
-                modal.find('#infoAsig').text($(this).data('deposito'));
-
-            }
-            modal.find('#title2Asig').text('Detalle de la ubicacion:');
-            modal.find('#info2Asig').text($(this).data('area_detalle'));
-
-            // Mostrar el modal
-            modal.modal('show');
-        });
-
-        // Manejador para el click en el botón de mantenimiento
-        $('.maintenanceBtn').on('click', function(event) {
-            event.stopPropagation();
-            // Código específico para el botón de mantenimiento
-        });
-
-        // Manejador para el click en el botón de historial
-        $('.historyBtn').on('click', function(event) {
-            event.stopPropagation();
-            // Código específico para el botón de historial
-        });
-
-
-        $("#table_historias_pc").DataTable({
-            dom: 'Bfrtip',
-            buttons: [{
-                extend: 'excelHtml5',
-                text: 'Exportar a Excel',
-                className: 'btn btn-dark custom-export-btn',
-                title: function() {
-
-                    return "Historia de " + nro_inv + " - " + nombre;
-
-                }
-            }],
-            "responsive": true,
-            "lengthChange": true,
-            "autoWidth": true,
-            "language": {
-                "decimal": "",
-                "emptyTable": "No hay datos disponibles en la tabla",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
-                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
-                "infoPostFix": "",
-                "thousands": ",",
-                "lengthMenu": " _MENU_ ",
-                "loadingRecords": "Cargando...",
-                "processing": "Procesando...",
-                "search": "Buscar:",
-                "zeroRecords": "No se encontraron registros coincidentes",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Último",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                },
-                "aria": {
-                    "sortAscending": ": activar para ordenar la columna ascendente",
-                    "sortDescending": ": activar para ordenar la columna descendente"
-                }
-            }
-        });
-
-    });
-</script>
+</x-app-layout>

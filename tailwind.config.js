@@ -12,7 +12,12 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                'hu-azul':   '#003764',
+                'hu-dorado': '#C7A36E',
+                'hu-texto':  '#59595B',
             },
         },
     },
