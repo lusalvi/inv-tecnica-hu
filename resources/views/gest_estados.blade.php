@@ -144,7 +144,7 @@
                 </div>
             @else
                 <div class="table-responsive">
-                    <table id="table" class="table table-bordered table-striped w-100">
+                    <table id="table" class="table hu-modern-table w-100">
                         <thead>
                             <tr>
                                 <th>Nombre</th>
@@ -180,38 +180,55 @@
                 </div>
             @endif
 
-            <h2 class="mt-4 mb-3 fw-semibold"
-                style="font-size:1rem;color:var(--hu-azul);border-top:2px solid var(--hu-azul);padding-top:1rem;">
-                Historial de cambios
-            </h2>
-            <div class="table-responsive">
-                <table id="table_historias" class="table table-bordered table-striped w-100">
-                    <thead>
-                        <tr>
-                            <th>Técnico</th>
-                            <th>Detalle</th>
-                            <th>Motivo</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($historias as $historia)
+            <div class="hu-table-section">
+                <h2 class="hu-table-section-title">
+                    <span class="material-symbols-outlined" style="font-size:18px;">history</span>
+                    Historial de cambios
+                </h2>
+                <div class="table-responsive">
+                    <table id="table_historias" class="table hu-modern-table w-100">
+                        <thead>
                             <tr>
-                                <td>{{ $historia->tecnico }}</td>
-                                <td>{{ $historia->detalle }}</td>
-                                <td>{{ $historia->motivo }}</td>
-                                <td>{{ $historia->created_at }}</td>
+                                <th>Técnico</th>
+                                <th>Detalle</th>
+                                <th>Motivo</th>
+                                <th>Fecha</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($historias as $historia)
+                                <tr>
+                                    <td>{{ $historia->tecnico }}</td>
+                                    <td>{{ $historia->detalle }}</td>
+                                    <td>{{ $historia->motivo }}</td>
+                                    <td>{{ $historia->created_at->format('d/m/Y H:i') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
+    @push('styles')
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    @endpush
+
+    @push('vendor-scripts')
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    @endpush
+
     @push('scripts')
         <script>
             $(document).ready(function() {
+                // Tablas principales e historial con paginación uniforme.
+                $('#table, #table_historias').DataTable({
+                    order: [],
+                    autoWidth: false
+                });
+
                 $('#editModal').on('show.bs.modal', function(event) {
                     const btn = $(event.relatedTarget);
                     $(this).find('#editId').val(btn.data('id'));

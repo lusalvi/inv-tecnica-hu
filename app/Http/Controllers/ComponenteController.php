@@ -572,18 +572,25 @@ class ComponenteController extends Controller
                 ]);
             }
 
-            // Tanto Disponible como Roto representan componentes que se
-            // encuentran físicamente en un depósito.
-            if ($componente->deposito_id === null) {
+            // Un componente Roto puede quedar temporalmente sin depósito cuando
+            // se retira desde un equipo cuyo depósito de origen era desconocido.
+            // En ese caso no existe un "depósito de origen" que transferir: la
+            // operación consiste en asignar físicamente el componente al depósito
+            // seleccionado. Para Disponible seguimos exigiendo un depósito de origen.
+            $esRotoSinDeposito = $estadoOrigen === self::ESTADO_ROTO
+                && $componente->deposito_id === null;
+
+            if ($componente->deposito_id === null && ! $esRotoSinDeposito) {
                 throw ValidationException::withMessages([
                     'transferNombre' => 'El componente seleccionado no tiene un depósito físico asignado.',
                 ]);
             }
 
-            $depositoOrigen = (int) $componente->deposito_id;
+            $depositoOrigen = $componente->deposito_id !== null
+                ? (int) $componente->deposito_id
+                : null;
 
-            // No tiene sentido transferir al mismo depósito.
-            if ($depositoOrigen === $depositoDestino) {
+            if ($depositoOrigen !== null && $depositoOrigen === $depositoDestino) {
                 throw ValidationException::withMessages([
                     'transferDeposito' => 'El depósito de destino debe ser diferente al depósito de origen.',
                 ]);
@@ -596,10 +603,12 @@ class ComponenteController extends Controller
                 ]);
             }
 
-            $depositoOrigenModel = DepositoModel::find($depositoOrigen);
+            $depositoOrigenModel = $depositoOrigen !== null
+                ? DepositoModel::find($depositoOrigen)
+                : null;
             $depositoDestinoModel = DepositoModel::find($depositoDestino);
 
-            if (! $depositoOrigenModel || ! $depositoDestinoModel) {
+            if (($depositoOrigen !== null && ! $depositoOrigenModel) || ! $depositoDestinoModel) {
                 throw ValidationException::withMessages([
                     'transferDeposito' => 'El depósito de origen o destino no existe.',
                 ]);
@@ -625,7 +634,16 @@ class ComponenteController extends Controller
                 $componente->estado_id = self::ESTADO_SIN_STOCK;
             }
 
-            $componente->save();
+            // Si era un Roto sin depósito y se asignaron todas sus unidades,
+            // la fila de origen ya no representa ningún stock físico y se elimina.
+            if (
+                $esRotoSinDeposito
+                && $componente->stock === 0
+            ) {
+                $componente->delete();
+            } else {
+                $componente->save();
+            }
 
             // ─────────────────────────────────────────────────────────────
             // 2. Buscar la fila equivalente en el depósito destino.
@@ -697,10 +715,13 @@ class ComponenteController extends Controller
 
             $historia = new HistoriaModel();
             $historia->tecnico = $user->name;
-            $historia->detalle = 'Transfirió ' . $stockToTransfer . ' '
+            $origenNombre = $depositoOrigenModel?->nombre ?? 'Sin depósito';
+
+            $historia->detalle = ($depositoOrigen === null ? 'Asignó ' : 'Transfirió ')
+                . $stockToTransfer . ' '
                 . $nombreComponente
                 . ' (' . $estadoNombre . ')'
-                . ' del depósito: ' . $depositoOrigenModel->nombre
+                . ' del depósito: ' . $origenNombre
                 . ' al depósito: ' . $depositoDestinoModel->nombre . '.';
             $historia->motivo  = $motivo;
             $historia->tipo_id = 4;

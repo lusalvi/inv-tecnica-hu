@@ -47,67 +47,250 @@
             color: var(--hu-texto);
         }
 
-        /* ── DataTables: búsqueda y paginación ── */
-        .dataTables_filter {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+        /* ── DataTables: controles y paginación ── */
+        .table-responsive {
+            overflow: visible !important;
         }
 
-        .dataTables_filter input {
-            border: 1px solid #ced4da !important;
-            border-radius: 8px !important;
-            padding: 0.375rem 0.75rem !important;
-            font-size: 0.875rem !important;
+        .dataTables_wrapper {
+            width: 100%;
             font-family: 'Montserrat', sans-serif;
+            color: var(--hu-texto);
         }
 
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            border: 1px solid var(--hu-azul) !important;
-            background-color: #f0f4f8 !important;
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 1rem;
+            font-size: .75rem;
+            color: #718096;
+        }
+
+        .dataTables_wrapper .dataTables_length label,
+        .dataTables_wrapper .dataTables_filter label {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            min-height: 34px;
+            border: 1px solid #dbe3ea !important;
+            border-radius: 8px !important;
+            background: #fff;
+            color: #46576a;
+            padding: .35rem .65rem !important;
+            font-size: .76rem !important;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: none !important;
+            outline: none;
+        }
+
+        .dataTables_wrapper .dataTables_length select:focus,
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #9db5c9 !important;
+            box-shadow: 0 0 0 3px rgba(0, 55, 100, .07) !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            padding-top: .55rem;
+            font-size: .72rem;
+            color: #8290a0;
+        }
+
+        .dataTables_wrapper .dataTables_paginate {
+            padding-top: .25rem;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            min-width: 32px;
+            height: 32px;
+            margin-left: 4px !important;
+            padding: .35rem .6rem !important;
+            border: 1px solid transparent !important;
+            border-radius: 8px !important;
+            background: transparent !important;
+            color: #66778a !important;
+            font-size: .72rem;
+            line-height: 1.3;
+            transition: all .15s ease;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover .page-link {
+            background: #f8fafc !important;
+            border-color: #cbd9e3 !important;
             color: var(--hu-azul) !important;
+            box-shadow: none !important;
         }
 
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            border-color: var(--hu-azul) !important;
             background: var(--hu-azul) !important;
             color: #fff !important;
-            border: 1px solid var(--hu-azul) !important;
-            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 55, 100, .14);
         }
 
-        /* ── Tablas ── */
-        table.dataTable tbody tr:hover>td {
-            background-color: #e8eff7 !important;
-            cursor: pointer;
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+            opacity: .4;
+            cursor: default !important;
+            background: transparent !important;
+            border-color: transparent !important;
         }
 
-        table.dataTable thead th {
-            background-color: #fff !important;
-            color: var(--hu-azul) !important;
-            font-weight: 600;
-            border-bottom: 2px solid var(--hu-azul) !important;
+        .dataTables_wrapper .dataTables_paginate .ellipsis {
+            padding: .35rem .25rem;
+            color: #8a98a8;
         }
 
-        table.dataTable tbody td {
+        .dataTables_wrapper .dataTables_processing {
+            border: 1px solid #e3e9ef;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .96);
+            box-shadow: 0 8px 24px rgba(0, 55, 100, .1);
+            color: var(--hu-azul);
+        }
+
+        /* ── Tablas modernas ── */
+        table.hu-modern-table {
+            width: 100% !important;
+            margin: 0 !important;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            border: 1px solid #e4eaf0 !important;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table.hu-modern-table thead th {
+            background: #f7f9fb !important;
+            color: #66778a !important;
+            border: 0 !important;
+            border-bottom: 1px solid #e4eaf0 !important;
+            padding: 10px 14px !important;
+            font-size: .71rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        table.hu-modern-table tbody td {
+            background: #fff !important;
             color: var(--hu-texto) !important;
-            font-weight: 400 !important;
-            border: none !important;
+            border: 0 !important;
+            border-bottom: 1px solid #edf1f5 !important;
+            padding: 9px 14px !important;
+            font-size: .79rem;
             vertical-align: middle;
         }
 
-        table tbody td b,
-        table tbody td strong {
-            font-weight: 400 !important;
+        table.hu-modern-table tbody tr:last-child td {
+            border-bottom: 0 !important;
         }
 
-        table.dataTable {
-            border: none !important;
+        table.hu-modern-table tbody tr:hover td {
+            background: #fafcff !important;
+            cursor: default;
         }
 
-        /* Excepciones para tablas de historia */
-        #table_historias thead,
-        #table_historias_pc thead {
-            display: table-header-group !important;
+        .hu-table-section {
+            border-top: 1px solid #e8edf2;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+        }
+
+        .hu-table-section-title {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            margin: 0 0 1rem;
+            color: var(--hu-azul);
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 767.98px) {
+            .table-responsive {
+                overflow-x: auto !important;
+                overflow-y: visible !important;
+            }
+
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter,
+            .dataTables_wrapper .dataTables_info,
+            .dataTables_wrapper .dataTables_paginate {
+                float: none !important;
+                text-align: left !important;
+            }
+
+            .dataTables_wrapper .dataTables_filter {
+                margin-top: .75rem;
+            }
+
+            .dataTables_wrapper .dataTables_paginate {
+                margin-top: .5rem;
+            }
+        }
+
+        /* ── Paginación Laravel / Bootstrap ── */
+
+        .pagination {
+            gap: 4px;
+            margin-bottom: 0;
+        }
+
+        .pagination .page-item {
+            margin: 0;
+        }
+
+        .pagination .page-link {
+            min-width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: .35rem .65rem;
+            border: 1px solid #d8e2ea !important;
+            border-radius: 8px !important;
+
+            background: #fff !important;
+            color: #66778a !important;
+
+            font-family: 'Montserrat', sans-serif;
+            font-size: .72rem;
+            font-weight: 600;
+
+            box-shadow: none !important;
+            transition: all .15s ease;
+        }
+
+        .pagination .page-link:hover {
+            background: #f5f8fb !important;
+            border-color: #cbd9e3 !important;
+            color: var(--hu-azul) !important;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: var(--hu-azul) !important;
+            border-color: var(--hu-azul) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 6px rgba(0, 55, 100, .14) !important;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background: #f7f9fb !important;
+            border-color: #e4eaf0 !important;
+            color: #a5afb8 !important;
+            opacity: .75;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 3px rgba(0, 55, 100, .07) !important;
         }
 
         /* ── Cards del home ── */
@@ -918,7 +1101,7 @@
             background: var(--hu-azul);
         }
 
-        .hu-maintenance-modal .maintenance-nav-link > .material-symbols-outlined {
+        .hu-maintenance-modal .maintenance-nav-link>.material-symbols-outlined {
             flex: 0 0 22px;
             font-size: 20px;
         }
@@ -1028,7 +1211,7 @@
             display: none;
         }
 
-        .hu-maintenance-modal .maintenance-tab-content > .tab-pane {
+        .hu-maintenance-modal .maintenance-tab-content>.tab-pane {
             min-width: 0;
             width: 100%;
         }
@@ -1056,7 +1239,7 @@
             padding: .1rem .05rem .65rem;
         }
 
-        .hu-maintenance-modal .maintenance-section > .fw-bold.mb-3 {
+        .hu-maintenance-modal .maintenance-section>.fw-bold.mb-3 {
             display: flex;
             align-items: center;
             gap: .4rem;
@@ -1069,7 +1252,7 @@
             letter-spacing: 0 !important;
         }
 
-        .hu-maintenance-modal .maintenance-section > .fw-bold.mb-3 .material-symbols-outlined {
+        .hu-maintenance-modal .maintenance-section>.fw-bold.mb-3 .material-symbols-outlined {
             width: 34px;
             height: 34px;
             display: inline-flex;
@@ -1091,7 +1274,7 @@
             border-bottom: 1px solid #eef1f4;
         }
 
-        .hu-maintenance-modal .maintenance-section-heading > .material-symbols-outlined {
+        .hu-maintenance-modal .maintenance-section-heading>.material-symbols-outlined {
             width: 34px;
             height: 34px;
             display: inline-flex;
@@ -1116,10 +1299,10 @@
             font-size: .68rem;
         }
 
-        .hu-maintenance-modal .maintenance-section > .row,
-        .hu-maintenance-modal .maintenance-section > .mb-3,
-        .hu-maintenance-modal .maintenance-section > .p-3,
-        .hu-maintenance-modal .maintenance-section > hr {
+        .hu-maintenance-modal .maintenance-section>.row,
+        .hu-maintenance-modal .maintenance-section>.mb-3,
+        .hu-maintenance-modal .maintenance-section>.p-3,
+        .hu-maintenance-modal .maintenance-section>hr {
             margin-bottom: .85rem !important;
         }
 
@@ -1177,8 +1360,8 @@
             border-color: #f0b7b2;
         }
 
-        .hu-maintenance-modal .input-group > .form-control,
-        .hu-maintenance-modal .input-group > .form-select {
+        .hu-maintenance-modal .input-group>.form-control,
+        .hu-maintenance-modal .input-group>.form-select {
             min-width: 0;
         }
 
@@ -1283,44 +1466,54 @@
                 right: calc(-50% + 16px);
             }
         }
-            .maintenance-component-danger-btn {
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            border:1px solid #f1b8b5;
-            background:#fff7f6;
-            color:#b42318;
-            border-radius:8px;
-            padding:7px 10px;
-            font-size:.74rem;
-            font-weight:600;
-            transition:.15s ease;
-        }
-        .maintenance-component-danger-btn:hover {
-            background:#fef0ef;
-            border-color:#e99b96;
-        }
-        .maintenance-component-danger-btn.is-active {
-            background:#b42318;
-            border-color:#b42318;
-            color:#fff;
-        }
-        .maintenance-component-danger-btn .material-symbols-outlined { font-size:17px; }
-        .maintenance-component-warning {
-            display:flex;
-            align-items:flex-start;
-            gap:7px;
-            padding:9px 10px;
-            border:1px solid #f3d19c;
-            background:#fff9ed;
-            color:#8a5a00;
-            border-radius:8px;
-            font-size:.72rem;
-            line-height:1.35;
-        }
-        .maintenance-component-warning .material-symbols-outlined { font-size:17px; flex:0 0 auto; }
 
-</style>
+        .maintenance-component-danger-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #f1b8b5;
+            background: #fff7f6;
+            color: #b42318;
+            border-radius: 8px;
+            padding: 7px 10px;
+            font-size: .74rem;
+            font-weight: 600;
+            transition: .15s ease;
+        }
+
+        .maintenance-component-danger-btn:hover {
+            background: #fef0ef;
+            border-color: #e99b96;
+        }
+
+        .maintenance-component-danger-btn.is-active {
+            background: #b42318;
+            border-color: #b42318;
+            color: #fff;
+        }
+
+        .maintenance-component-danger-btn .material-symbols-outlined {
+            font-size: 17px;
+        }
+
+        .maintenance-component-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            padding: 9px 10px;
+            border: 1px solid #f3d19c;
+            background: #fff9ed;
+            color: #8a5a00;
+            border-radius: 8px;
+            font-size: .72rem;
+            line-height: 1.35;
+        }
+
+        .maintenance-component-warning .material-symbols-outlined {
+            font-size: 17px;
+            flex: 0 0 auto;
+        }
+    </style>
 </head>
 
 <body class="font-sans antialiased">
@@ -1364,27 +1557,58 @@
     {{-- JS opcionales: cada vista pushea solo lo que necesita --}}
     @stack('vendor-scripts')
 
+    {{-- Configuración común de DataTables --}}
+    <script>
+        if (window.jQuery && $.fn.DataTable) {
+            $.extend(true, $.fn.dataTable.defaults, {
+                pageLength: 10,
+                lengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, 'Todos']
+                ],
+                pagingType: 'simple_numbers',
+                language: {
+                    emptyTable: 'No hay datos disponibles.',
+                    info: 'Mostrando _START_ a _END_ de _TOTAL_',
+                    infoEmpty: 'Mostrando 0 a 0 de 0',
+                    infoFiltered: '(filtrado de _MAX_ registros)',
+                    lengthMenu: 'Mostrar _MENU_',
+                    loadingRecords: 'Cargando...',
+                    processing: 'Procesando...',
+                    search: 'Buscar:',
+                    zeroRecords: 'No se encontraron registros coincidentes.',
+                    paginate: {
+                        first: 'Primero',
+                        last: 'Último',
+                        next: 'Siguiente',
+                        previous: 'Anterior'
+                    }
+                }
+            });
+        }
+    </script>
+
     {{-- Navegación de los modales de mantenimiento --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.hu-maintenance-modal').forEach(function (modal) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.hu-maintenance-modal').forEach(function(modal) {
                 const buttons = modal.querySelectorAll('.maintenance-nav-link[data-bs-target]');
                 const panes = modal.querySelectorAll('.maintenance-tab-content > .tab-pane');
 
-                buttons.forEach(function (button) {
-                    button.addEventListener('click', function () {
+                buttons.forEach(function(button) {
+                    button.addEventListener('click', function() {
                         const targetSelector = button.getAttribute('data-bs-target');
                         if (!targetSelector) return;
 
                         const target = modal.querySelector(targetSelector);
                         if (!target) return;
 
-                        buttons.forEach(function (item) {
+                        buttons.forEach(function(item) {
                             item.classList.remove('active');
                             item.setAttribute('aria-selected', 'false');
                         });
 
-                        panes.forEach(function (pane) {
+                        panes.forEach(function(pane) {
                             pane.classList.remove('show', 'active');
                         });
 
@@ -1394,7 +1618,7 @@
 
                         // Permite que la transición .fade de Bootstrap se ejecute
                         // incluso cuando cambiamos de sección manualmente.
-                        requestAnimationFrame(function () {
+                        requestAnimationFrame(function() {
                             target.classList.add('show');
                         });
                     });

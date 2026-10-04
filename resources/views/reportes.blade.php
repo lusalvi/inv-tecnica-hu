@@ -114,7 +114,7 @@
                 {{-- Estados --}}
                 <template id="estados_template">
                     <div class="table-responsive">
-                        <table id="table-estados" class="table table-bordered table-striped w-100">
+                        <table id="table-estados" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -134,7 +134,7 @@
                 {{-- Categorías --}}
                 <template id="categorias_template">
                     <div class="table-responsive">
-                        <table id="table-categorias" class="table table-bordered table-striped w-100">
+                        <table id="table-categorias" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -154,7 +154,7 @@
                 {{-- Depósitos --}}
                 <template id="depositos_template">
                     <div class="table-responsive">
-                        <table id="table-depositos" class="table table-bordered table-striped w-100">
+                        <table id="table-depositos" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -174,7 +174,7 @@
                 {{-- Áreas --}}
                 <template id="areas_template">
                     <div class="table-responsive">
-                        <table id="table-areas" class="table table-bordered table-striped w-100">
+                        <table id="table-areas" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -241,7 +241,7 @@
                         Exportar Excel
                     </button>
                     <div class="table-responsive mt-3">
-                        <table id="table-historias" class="table table-bordered table-striped w-100">
+                        <table id="table-historias" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Técnico</th>
@@ -338,7 +338,7 @@
                         Exportar Excel
                     </button>
                     <div class="table-responsive mt-3">
-                        <table id="table-componentes" class="table table-bordered table-striped w-100">
+                        <table id="table-componentes" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Categoría</th>
@@ -388,7 +388,7 @@
                         Exportar Excel
                     </button>
                     <div class="table-responsive mt-3">
-                        <table id="table-routers" class="table table-bordered table-striped w-100">
+                        <table id="table-routers" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nº inventario</th>
@@ -442,7 +442,7 @@
                         Exportar Excel
                     </button>
                     <div class="table-responsive mt-3">
-                        <table id="table-telefonos" class="table table-bordered table-striped w-100">
+                        <table id="table-telefonos" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nº inventario</th>
@@ -496,7 +496,7 @@
                         Exportar Excel
                     </button>
                     <div class="table-responsive mt-3">
-                        <table id="table-impresoras" class="table table-bordered table-striped w-100">
+                        <table id="table-impresoras" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nº inventario</th>
@@ -546,7 +546,7 @@
                         Exportar Excel
                     </button>
                     <div class="table-responsive mt-3">
-                        <table id="table-pcs" class="table table-bordered table-striped w-100">
+                        <table id="table-pcs" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Nº inventario</th>
@@ -761,11 +761,6 @@
     @endpush
 
     @push('scripts')
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
         <script>
             $(document).ready(function() {
                 let table, titulo;
@@ -827,8 +822,8 @@
                                     return $('#addTitulo').val() || titulo;
                                 }
                             }],
-                            paging: false,
-                            searching: false,
+                            paging: true,
+                            searching: true,
                             info: false,
                             autoWidth: true,
                             language: {
@@ -837,8 +832,8 @@
                         });
                     } else {
                         table = $('#table-' + getTableId()).DataTable({
-                            paging: false,
-                            searching: false,
+                            paging: true,
+                            searching: true,
                             info: false,
                             autoWidth: true,
                             language: {
@@ -953,8 +948,8 @@
                                     );
                                 });
                                 table = $('#table-historias').DataTable({
-                                    paging: false,
-                                    searching: false,
+                                    paging: true,
+                                    searching: true,
                                     info: false,
                                     autoWidth: true,
                                     language: {
@@ -986,8 +981,8 @@
                                     );
                                 });
                                 table = $('#table-componentes').DataTable({
-                                    paging: false,
-                                    searching: false,
+                                    paging: true,
+                                    searching: true,
                                     info: false,
                                     autoWidth: true,
                                     language: {

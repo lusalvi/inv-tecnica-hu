@@ -1094,7 +1094,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="table-responsive">
-                        <table id="table_historias_pc" class="table table-bordered table-striped w-100">
+                        <table id="table_historias_pc" class="table hu-modern-table w-100">
                             <thead>
                                 <tr>
                                     <th>Técnico</th>

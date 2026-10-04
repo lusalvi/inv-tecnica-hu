@@ -1051,12 +1051,13 @@
             </div>
 
             {{-- Historial de cambios --}}
-            <h2 class="mt-4 mb-3 fw-semibold"
-                style="font-size:1rem; color:var(--hu-azul); border-top:2px solid var(--hu-azul); padding-top:1rem;">
+            <div class="hu-table-section"></div>
+            <h2 class="hu-table-section-title">
+                <span class="material-symbols-outlined" style="font-size:18px;">history</span>
                 Historial de cambios
             </h2>
             <div class="table-responsive">
-                <table id="table_historias" class="table table-bordered table-striped w-100">
+                <table id="table_historias" class="table hu-modern-table w-100">
                     <thead>
                         <tr>
                             <th>Técnico</th>
@@ -1071,22 +1072,77 @@
                                 <td>{{ $historia->tecnico }}</td>
                                 <td>{{ $historia->detalle }}</td>
                                 <td>{{ $historia->motivo }}</td>
-                                <td>{{ $historia->created_at }}</td>
+                                <td>{{ $historia->created_at->format('d/m/Y H:i') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+        </div>
 
-        </div>{{-- /tarjeta --}}
+    </div>{{-- /tarjeta --}}
     </div>{{-- /container --}}
 
+
+    @push('styles')
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    @endpush
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    @push('vendor-scripts')
+    @endpush
 
     @push('scripts')
         <script>
             $(document).ready(function() {
 
                 let componente_seleccionado = null;
+
+                // ── Tablas: stock e historial ─────────────────────────────────────
+                const componentesTable = $('#table_componentes').DataTable({
+                    order: [],
+                    autoWidth: false,
+                    columnDefs: [{
+                        orderable: false,
+                        targets: 5
+                    }]
+                });
+
+                $('#table_historias').DataTable({
+                    order: [
+                        [3, 'desc']
+                    ],
+                    autoWidth: false
+                });
+
+                // Los filtros de stock se integran con DataTables para que también
+                // respeten la paginación y no queden filas ocultas fuera de página.
+                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                    if (!settings.nTable || settings.nTable.id !== 'table_componentes') return true;
+                    const row = settings.aoData[dataIndex]?.nTr;
+                    if (!row) return true;
+
+                    const $row = $(row);
+                    const deposito = String($('#filtro-deposito').val() || '').toLowerCase();
+                    const estado = String($('#filtro-estado').val() || '').toLowerCase();
+                    const categoria = String($('#filtro-categoria').val() || '').toLowerCase();
+                    const stockFilter = $('#filtro-stock').val();
+
+                    const rowDeposito = String($row.data('deposito') || '').toLowerCase();
+                    const rowEstado = String($row.data('estados') || '').toLowerCase();
+                    const rowCategoria = String($row.data('categoria') || '').toLowerCase();
+                    const rowStock = Number($row.data('disponible') || 0);
+
+                    const matchesEstado = !estado || rowEstado.split('|').includes(estado);
+                    const matchesStock = !stockFilter ||
+                        (stockFilter === 'poco-stock' && rowStock > 0 && rowStock < 10) ||
+                        (stockFilter === 'sin-stock' && rowStock === 0);
+
+                    return (!deposito || rowDeposito === deposito) &&
+                        matchesEstado &&
+                        (!categoria || rowCategoria === categoria) &&
+                        matchesStock;
+                });
 
                 // ── Seleccionar componente desde la tabla ──
                 $('#table_componentes tbody').on('click', '.select-button', function() {
@@ -1154,30 +1210,7 @@
                 }
 
                 function applyFilters() {
-                    const deposito = $('#filtro-deposito').val().toLowerCase();
-                    const estado = $('#filtro-estado').val().toLowerCase();
-                    const categoria = $('#filtro-categoria').val().toLowerCase();
-                    const stockFilter = $('#filtro-stock').val();
-
-                    $('#table_componentes tbody tr').each(function() {
-                        const $row = $(this);
-                        const rowDeposito = String($row.data('deposito') || '').toLowerCase();
-                        const rowEstado = String($row.data('estados') || '').toLowerCase();
-                        const rowCategoria = String($row.data('categoria') || '').toLowerCase();
-                        const rowStock = Number($row.data('disponible') || 0);
-
-                        const matchesEstado = !estado || rowEstado.split('|').includes(estado);
-                        const matchesStock = !stockFilter ||
-                            (stockFilter === 'poco-stock' && rowStock > 0 && rowStock < 10) ||
-                            (stockFilter === 'sin-stock' && rowStock === 0);
-
-                        $row.toggle(
-                            (!deposito || rowDeposito === deposito) &&
-                            matchesEstado &&
-                            (!categoria || rowCategoria === categoria) &&
-                            matchesStock
-                        );
-                    });
+                    componentesTable.draw();
                 }
 
                 $('#filtro-deposito, #filtro-estado, #filtro-categoria, #filtro-stock').on('change', function() {
