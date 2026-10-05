@@ -73,6 +73,9 @@ class User extends Authenticatable
      *   $user->hasRol('Tecnico')
      *   $user->hasRol(['Administrador', 'Super administrador'])
      */
+    /**
+     * Comprueba si el usuario posee alguno de los roles indicados; acepta un nombre o una lista de nombres.
+     */
     public function hasRol(string|array $roles): bool
     {
         $nombre = $this->getRolNombre();

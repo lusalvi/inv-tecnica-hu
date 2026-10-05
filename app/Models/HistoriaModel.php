@@ -15,6 +15,9 @@ class HistoriaModel extends Model
 
     protected $table = 'historia';
 
+    /**
+     * Obtiene los dispositivos modificados más recientemente a partir de los registros de historial.
+     */
     public function getLastDevicesUpdated()
     {
         return HistoriaModel::whereNotNull('componente_id')

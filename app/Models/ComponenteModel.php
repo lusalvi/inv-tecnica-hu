@@ -15,22 +15,34 @@ class ComponenteModel extends Model
     protected $table = 'componente';
     public $timestamps = false;
 
+    /**
+     * Define la relación con el depósito físico actual del componente.
+     */
     public function deposito()
     {
         return $this->belongsTo(DepositoModel::class, 'deposito_id');
     }
 
+    /**
+     * Define la relación con el depósito de procedencia de un componente que está en uso.
+     */
     public function depositoOrigen()
     {
         return $this->belongsTo(DepositoModel::class, 'deposito_origen_id');
     }
 
     // Definir la relación con TipoComponenteModel
+    /**
+     * Define la relación con el tipo de componente.
+     */
     public function tipo()
     {
         return $this->belongsTo(TipoComponenteModel::class, 'tipo_id');
     }
 
+    /**
+     * Define la relación con el estado actual del componente.
+     */
     public function estado()
     {
         return $this->belongsTo(EstadoComponenteModel::class, 'estado_id');
@@ -38,6 +50,9 @@ class ComponenteModel extends Model
 
 
 
+    /**
+     * Obtiene los registros de componentes para consultas generales.
+     */
     public function getComponentes()
     {
         return DB::table('componente')
@@ -47,6 +62,9 @@ class ComponenteModel extends Model
 
     // En ComponenteModel.php
     // En ComponenteModel.php
+    /**
+     * Devuelve componentes de los tipos indicados que tienen stock y están disponibles.
+     */
     public function getComponenteByTipo($tipoNombre, $tipoNombre2)
     {
         return self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
@@ -59,6 +77,9 @@ class ComponenteModel extends Model
             ->get();
     }
 
+    /**
+     * Devuelve componentes de los tipos indicados que se encuentran en uso.
+     */
     public function getComponenteByTipoBystate($tipoNombre, $tipoNombre2)
     {
         return self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
@@ -71,6 +92,9 @@ class ComponenteModel extends Model
             ->get();
     }
 
+    /**
+     * Busca componentes de los tipos indicados sin unidades disponibles.
+     */
     public function getComponenteByTipoWithoutStock($tipoNombre, $tipoNombre2)
     {
         return self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
@@ -82,6 +106,9 @@ class ComponenteModel extends Model
             ->get();
     }
 
+    /**
+     * Prepara el catálogo de componentes que pueden seleccionarse al gestionar una PC, contemplando sus estados.
+     */
     public function getComponenteByTipoForPc($tipoNombre, $tipoNombre2)
     {
         // Traer disponibles, sin stock 
@@ -134,6 +161,9 @@ class ComponenteModel extends Model
         return $filas;
     }
 
+    /**
+     * Realiza una consulta reutilizable sobre los componentes del inventario.
+     */
     public function pcs()
     {
         return $this->belongsToMany(PcModel::class, 'componente_pc', 'componente_id', 'pc_id');
