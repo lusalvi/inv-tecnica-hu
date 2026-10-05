@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Log;
 class RouterController extends Controller
 {
 
+    /**
+     * Prepara los datos necesarios para mostrar el listado y los filtros de la sección.
+     */
     public function index()
     {
 
@@ -44,6 +47,11 @@ class RouterController extends Controller
     }
 
 
+    /**
+     * Valida la solicitud y registra un nuevo elemento, aplicando las reglas de negocio correspondientes.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -96,6 +104,11 @@ class RouterController extends Controller
     }
 
 
+    /**
+     * Valida y actualiza los datos del elemento existente, conservando la consistencia de sus relaciones.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function edit(Request $request)
     {
         $user = Auth::user();
@@ -237,6 +250,11 @@ class RouterController extends Controller
         return redirect()->back()->with('success', 'Router editado correctamente.');
     }
 
+    /**
+     * Valida la operación y elimina el registro cuando las reglas del sistema lo permiten.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function delete(Request $request)
     {
         $user = Auth::user();
@@ -256,6 +274,9 @@ class RouterController extends Controller
         return redirect()->back()->with('success', 'Router eliminado correctamente.');
     }
 
+    /**
+     * Obtiene el historial de cambios asociado al dispositivo solicitado.
+     */
     public function getHistoria($id)
     {
         $historias = HistoriaModel::where('componente_id', $id)->get();

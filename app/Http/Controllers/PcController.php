@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Log;
 
 class PcController extends Controller
 {
+    /**
+     * Prepara los datos necesarios para mostrar el listado y los filtros de la sección.
+     */
     public function index()
     {
         $componentesModel = new ComponenteModel();
@@ -79,6 +82,11 @@ class PcController extends Controller
     }
 
 
+    /**
+     * Valida la solicitud y registra un nuevo elemento, aplicando las reglas de negocio correspondientes.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function store(Request $request)
     {
         $user      = Auth::user();
@@ -270,9 +278,9 @@ class PcController extends Controller
                 }
 
                 /*
-     * Una unidad se asigna directamente a la PC.
-     * Las unidades restantes quedan disponibles en el depósito de origen.
-     */
+                * Una unidad se asigna directamente a la PC.
+                * Las unidades restantes quedan disponibles en el depósito de origen.
+                */
                 $nuevo = new ComponenteModel();
                 $nuevo->nombre             = $nombre;
                 $nuevo->tipo_id            = $tipo_id;
@@ -572,6 +580,11 @@ class PcController extends Controller
     //   3. Los IDs de estado se referencian a través de las constantes
     //      de ComponenteController en lugar de literales.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida y actualiza los datos del elemento existente, conservando la consistencia de sus relaciones.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function edit(Request $request)
     {
         $user      = Auth::user();
@@ -1050,6 +1063,11 @@ class PcController extends Controller
     //
     // Toda la operación ocurre dentro de DB::transaction.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida la operación y elimina el registro cuando las reglas del sistema lo permiten.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function delete(Request $request)
     {
         $user = Auth::user();
@@ -1156,6 +1174,9 @@ class PcController extends Controller
         return redirect()->back()->with('success', 'PC eliminado correctamente.');
     }
 
+    /**
+     * Obtiene el historial de cambios asociado al dispositivo solicitado.
+     */
     public function getHistoria($tipo, $id)
     {
         $historias = HistoriaModel::where('componente_id', $id)

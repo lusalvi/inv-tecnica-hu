@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\DB;
 
 class ImpresoraController extends Controller
 {
+    /**
+     * Prepara los datos necesarios para mostrar el listado y los filtros de la sección.
+     */
     public function index()
     {
         $componentesModel = new ComponenteModel();
@@ -41,6 +44,11 @@ class ImpresoraController extends Controller
         ]);
     }
 
+    /**
+     * Valida la solicitud y registra un nuevo elemento, aplicando las reglas de negocio correspondientes.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function store(Request $request)
     {
         $user      = Auth::user();
@@ -314,6 +322,11 @@ class ImpresoraController extends Controller
         return redirect()->back()->with('success', 'Impresora guardada correctamente.');
     }
 
+    /**
+     * Valida y actualiza los datos del elemento existente, conservando la consistencia de sus relaciones.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function edit(Request $request)
     {
         $user = Auth::user();
@@ -602,6 +615,11 @@ class ImpresoraController extends Controller
         return redirect()->back()->with('success', 'Impresora editada correctamente.');
     }
 
+    /**
+     * Valida la operación y elimina el registro cuando las reglas del sistema lo permiten.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function delete(Request $request)
     {
         $user = Auth::user();
@@ -623,6 +641,9 @@ class ImpresoraController extends Controller
         return redirect()->back()->with('success', 'Impresora eliminada correctamente.');
     }
 
+    /**
+     * Obtiene el historial de cambios asociado al dispositivo solicitado.
+     */
     public function getHistoria($id)
     {
         $historias = HistoriaModel::where('componente_id', $id)->get();
