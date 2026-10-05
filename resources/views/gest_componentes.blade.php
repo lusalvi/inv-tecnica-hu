@@ -592,15 +592,10 @@
      TABLA AGRUPADA DE COMPONENTES
      ============================================================ --}}
             <style>
-                .componentes-table-wrapper {
-                    overflow-x: auto;
-                    border: 1px solid #e4eaf0;
-                    border-radius: 12px;
-                }
-
                 #table_componentes {
                     margin: 0 !important;
-                    border: 0 !important;
+                    border: 1px solid #e4eaf0;
+                    border-radius: 12px;
                     border-collapse: separate;
                     border-spacing: 0;
                     color: #263b53;
@@ -1087,9 +1082,10 @@
     @push('styles')
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     @endpush
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
     @push('vendor-scripts')
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     @endpush
 
     @push('scripts')

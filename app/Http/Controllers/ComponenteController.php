@@ -572,15 +572,14 @@ class ComponenteController extends Controller
                 ]);
             }
 
-            // Un componente Roto puede quedar temporalmente sin depósito cuando
-            // se retira desde un equipo cuyo depósito de origen era desconocido.
-            // En ese caso no existe un "depósito de origen" que transferir: la
-            // operación consiste en asignar físicamente el componente al depósito
-            // seleccionado. Para Disponible seguimos exigiendo un depósito de origen.
-            $esRotoSinDeposito = $estadoOrigen === self::ESTADO_ROTO
-                && $componente->deposito_id === null;
+            // Permitir asignar al depósito destino componentes Disponibles
+            // o Rotos que hayan quedado sin ubicación física.
+            $esSinDeposito = in_array($estadoOrigen, [
+                self::ESTADO_DISPONIBLE,
+                self::ESTADO_ROTO,
+            ], true) && $componente->deposito_id === null;
 
-            if ($componente->deposito_id === null && ! $esRotoSinDeposito) {
+            if ($componente->deposito_id === null && ! $esSinDeposito) {
                 throw ValidationException::withMessages([
                     'transferNombre' => 'El componente seleccionado no tiene un depósito físico asignado.',
                 ]);
@@ -634,12 +633,9 @@ class ComponenteController extends Controller
                 $componente->estado_id = self::ESTADO_SIN_STOCK;
             }
 
-            // Si era un Roto sin depósito y se asignaron todas sus unidades,
-            // la fila de origen ya no representa ningún stock físico y se elimina.
-            if (
-                $esRotoSinDeposito
-                && $componente->stock === 0
-            ) {
+            // Si el componente no tenía depósito y se transfirieron
+            // todas sus unidades, eliminar la fila de origen.
+            if ($esSinDeposito && (int) $componente->stock === 0) {
                 $componente->delete();
             } else {
                 $componente->save();
