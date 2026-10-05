@@ -760,6 +760,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     @endpush
 
+        {{-- Lógica de reportes: configuración de tablas, selección de columnas, filtros y exportación. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
@@ -776,6 +777,7 @@
                 const impresorasTemplate = $('#impresoras_template').html();
                 const pcsTemplate = $('#pcs_template').html();
 
+                // Determina qué tabla de reporte está activa para aplicar las acciones correspondientes.
                 function getTableId() {
                     switch ($('#addTipo').val()) {
                         case '10':
@@ -803,6 +805,7 @@
                     }
                 }
 
+                // Inicializa la tabla de reporte con la configuración y las columnas del tipo seleccionado.
                 function initializeTable(templateToUse) {
                     if (table) {
                         table.destroy();
@@ -916,6 +919,7 @@
                     }
                 });
 
+                // Da formato uniforme a las fechas que se muestran en los reportes.
                 function formatDate(dateString) {
                     const date = new Date(dateString);
                     return date.toLocaleDateString(undefined, {

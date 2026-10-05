@@ -126,6 +126,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/daterangepicker/3.1.0/daterangepicker.js"></script>
     @endpush
 
+        {{-- Filtros del historial: normalización de fechas, rango temporal, técnico y búsqueda textual. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
@@ -168,6 +169,7 @@
                     }
                 });
 
+                // Normaliza una fecha para que pueda compararse de forma consistente en los filtros del historial.
                 function normalizeDate(dateString) {
                     return moment(dateString, 'YYYY-MM-DD').startOf('day');
                 }
@@ -207,6 +209,7 @@
                     $filterDiv.toggleClass('d-none', visible);
                 });
 
+                // Muestra u oculta la acción para limpiar filtros según los criterios activos.
                 function updateClearFiltersButton() {
                     var hasActiveFilters = $('#filtro-tecnicos').val() ||
                         $('#date').val() ||

@@ -861,6 +861,7 @@
     @endpush
 
 
+        {{-- Interacciones propias de impresoras: asistente de alta, selección de ubicación y gestión de tóners. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
@@ -892,6 +893,7 @@
                     var impTonerMode = 'stock'; // 'stock' | 'sin-stock' | 'registrar' | 'no-identificado'
 
                     // ── Helpers ubicación ─────────────────────────────────────────
+                    // Alterna los campos de ubicación según la impresora esté asignada a un área o a un depósito.
                     function impSetLocationMode(mode) {
                         var enUso = mode === 'uso';
                         $('#imp-location-use-card').toggleClass('is-selected', enUso);
@@ -911,6 +913,7 @@
                     }
 
                     // ── Stepper ───────────────────────────────────────────────────
+                    // Actualiza el indicador visual del paso activo del formulario de alta.
                     function impUpdateStepper(step) {
                         $('[data-imp-step]').each(function() {
                             var n = parseInt($(this).data('imp-step'), 10);
@@ -926,6 +929,7 @@
                     }
 
                     // ── Validación por paso ───────────────────────────────────────
+                    // Valida los campos del paso actual antes de permitir continuar en el asistente.
                     function impValidateStep(step) {
                         if (step === 1) {
                             var valid = true;
@@ -971,6 +975,7 @@
                     }
 
                     // ── Navegar a un paso ─────────────────────────────────────────
+                    // Navega entre los pasos del asistente y actualiza su estado visual.
                     function impGoToStep(step) {
                         // Si el selector de tóner está abierto, cerrarlo antes de navegar
                         if ($('#imp-toner-detail-view').is(':visible')) {
@@ -987,6 +992,7 @@
                     }
 
                     // ── Resumen ───────────────────────────────────────────────────
+                    // Refresca el resumen de los datos ingresados en el asistente de alta.
                     function impUpdateSummary() {
                         $('#imp-summary-identificador').text($('#addImpIdentificador').val().trim() || '—');
                         $('#imp-summary-nombre').text($('#addImpNombre').val().trim() || '—');
@@ -1055,6 +1061,7 @@
                     }
 
                     // ── Selector de tóner: renderizar tabla stock ─────────────────
+                    // Renderiza las opciones de tóners y su disponibilidad para la impresora.
                     function impRenderTonerStock() {
                         var search = ($('#imp-toner-search').val() || '').trim().toLowerCase();
                         var $body = $('#imp-toner-stock-body').empty();
@@ -1091,6 +1098,7 @@
                     }
 
                     // ── Selector de tóner: cambiar pestaña ───────────────────────
+                    // Cambia entre los modos de selección de tóner disponibles en el formulario.
                     function impSetTonerMode(mode) {
                         impTonerMode = mode;
                         $('.hu-component-tab[data-toner-mode]').each(function() {

@@ -599,11 +599,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     @endpush
 
+        {{-- Interacciones propias de teléfonos: formularios dependientes del estado de uso, búsqueda e historial. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
 
                 // ── Checkbox en uso AGREGAR ──
+                // Mantiene sincronizados el estado de uso del teléfono y los campos de ubicación del alta.
                 function syncAddEnUso() {
                     const checked = $('#add-en-uso').is(':checked');
                     $('#addArea').prop('disabled', !checked);

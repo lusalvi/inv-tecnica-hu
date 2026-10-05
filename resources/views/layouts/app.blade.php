@@ -1588,7 +1588,8 @@
         }
     </script>
 
-    {{-- Navegación de los modales de mantenimiento --}}
+    {{-- Comportamiento compartido de los modales de mantenimiento:
+         cambia de pestaña y panel sin duplicar lógica en cada pantalla. --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.hu-maintenance-modal').forEach(function(modal) {
