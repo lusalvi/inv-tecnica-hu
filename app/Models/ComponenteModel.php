@@ -146,7 +146,7 @@ class ComponenteModel extends Model
                 // Clonar la fila En uso como un objeto Sin stock virtual
                 // (no se guarda en BD, solo viaja al blade/JS)
                 $virtual = $eu->replicate();
-                $virtual->id = -$eu->id; 
+                $virtual->id = -$eu->id;
                 $virtual->estado_id = 7; // Sin stock
                 $virtual->stock = 0;
                 $virtual->deposito_id = $eu->deposito_origen_id;
@@ -159,6 +159,22 @@ class ComponenteModel extends Model
         }
 
         return $filas;
+    }
+
+    public function getComponentesDisponiblesParaPc($tipoNombre, $tipoNombre2 = '')
+    {
+        return self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
+            $query->where('nombre', $tipoNombre);
+
+            if ($tipoNombre2 !== '') {
+                $query->orWhere('nombre', $tipoNombre2);
+            }
+        })
+            ->where('estado_id', 4) // Disponible
+            ->where('stock', '>', 0)
+            ->with(['tipo', 'deposito'])
+            ->orderBy('nombre')
+            ->get();
     }
 
     /**

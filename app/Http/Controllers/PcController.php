@@ -33,6 +33,16 @@ class PcController extends Controller
         $rams         = $componentesModel->getComponenteByTipoForPc('RAM', '');
         $discos       = $componentesModel->getComponenteByTipoForPc('HDD', 'SDD');
 
+        // Colecciones exclusivas del modal de mantenimiento: solo componentes
+        // disponibles (estado 4) con stock positivo. Las consultas anteriores
+        // se conservan para no alterar el asistente de alta de PC.
+        $motherboardsMantenimiento = $componentesModel->getComponenteByTipo('Placa madre', '');
+        $procesadoresMantenimiento = $componentesModel->getComponenteByTipo('Procesador', '');
+        $fuentesMantenimiento      = $componentesModel->getComponenteByTipo('Fuente', '');
+        $placasvidMantenimiento    = $componentesModel->getComponenteByTipo('Placa de video', '');
+        $ramsMantenimiento         = $componentesModel->getComponenteByTipo('RAM', '');
+        $discosMantenimiento      = $componentesModel->getComponenteByTipo('HDD', 'SDD');
+
         $motherboardsEnUso = $componentesModel->getComponenteByTipoBystate('Placa madre', '');
         $procesadoresEnUso = $componentesModel->getComponenteByTipoBystate('Procesador', '');
         $fuentesEnUso      = $componentesModel->getComponenteByTipoBystate('Fuente', '');
@@ -78,15 +88,16 @@ class PcController extends Controller
             'pcs'                      => $pcs,
             'placasvidEnUso'           => $placasvidEnUso,
             'placasvid'                => $placasvid,
+            'motherboardsMantenimiento' => $motherboardsMantenimiento,
+            'procesadoresMantenimiento' => $procesadoresMantenimiento,
+            'fuentesMantenimiento'      => $fuentesMantenimiento,
+            'placasvidMantenimiento'    => $placasvidMantenimiento,
+            'ramsMantenimiento'         => $ramsMantenimiento,
+            'discosMantenimiento'       => $discosMantenimiento,
         ]);
     }
 
 
-    /**
-     * Valida la solicitud y registra un nuevo elemento, aplicando las reglas de negocio correspondientes.
-     *
-     * @param Request $request Datos enviados por la solicitud HTTP.
-     */
     public function store(Request $request)
     {
         $user      = Auth::user();
@@ -278,9 +289,9 @@ class PcController extends Controller
                 }
 
                 /*
-                * Una unidad se asigna directamente a la PC.
-                * Las unidades restantes quedan disponibles en el depósito de origen.
-                */
+     * Una unidad se asigna directamente a la PC.
+     * Las unidades restantes quedan disponibles en el depósito de origen.
+     */
                 $nuevo = new ComponenteModel();
                 $nuevo->nombre             = $nombre;
                 $nuevo->tipo_id            = $tipo_id;
