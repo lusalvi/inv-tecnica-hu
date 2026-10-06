@@ -111,17 +111,37 @@ class ComponenteModel extends Model
      */
     public function getComponenteByTipoForPc($tipoNombre, $tipoNombre2)
     {
-        // Traer disponibles, sin stock 
-        $filas = self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
+        // Traer disponibles con stock (estado 4, stock > 0)
+        $disponibles = self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
             $query->where('nombre', $tipoNombre)
                 ->orWhere('nombre', $tipoNombre2);
         })
-            ->where(function ($query) {
-                $query->where('estado_id', 4)->where('stock', '>', 0)
-                    ->orWhere('estado_id', 7);
-            })
+            ->where('estado_id', 4)
+            ->where('stock', '>', 0)
             ->with(['tipo', 'deposito'])
             ->get();
+
+        // Traer filas reales con estado 7 (Sin stock), pero solo si NO existe
+        // ya una fila hermana disponible (estado 4, stock > 0) con el mismo
+        // nombre + tipo + depósito. Si hay hermana disponible, la fila Sin stock
+        // es redundante y no debe aparecer en el wizard.
+        $sinStockReales = self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
+            $query->where('nombre', $tipoNombre)
+                ->orWhere('nombre', $tipoNombre2);
+        })
+            ->where('estado_id', 7)
+            ->with(['tipo', 'deposito'])
+            ->get()
+            ->filter(function ($ss) use ($disponibles) {
+                $tieneHermanaDisponible = $disponibles->first(function ($d) use ($ss) {
+                    return mb_strtolower(trim($d->nombre)) === mb_strtolower(trim($ss->nombre))
+                        && (int) $d->tipo_id    === (int) $ss->tipo_id
+                        && (int) $d->deposito_id === (int) $ss->deposito_id;
+                });
+                return $tieneHermanaDisponible === null; // solo pasa si no tiene hermana
+            });
+
+        $filas = $disponibles->merge($sinStockReales);
 
         // Traer los En uso
         $enUso = self::whereHas('tipo', function ($query) use ($tipoNombre, $tipoNombre2) {
