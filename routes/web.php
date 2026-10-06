@@ -24,6 +24,8 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
+// Las rutas de consulta general y de gestión operativa requieren sesión iniciada
+// y correo verificado. Los permisos administrativos se delimitan en grupos separados.
 // ─── Rutas accesibles para todos los roles autenticados ──────────────────────
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -36,7 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/filter-reportes', [ReportesController::class, 'filterReportes'])->name('filter_historias');
     Route::get('/filter-stock',    [ReportesController::class, 'filterStock'])->name('filter_stock');
 
-    // Dispositivos — crear, editar, transferir (todos los roles)
+    // Inventario operativo: los usuarios autenticados pueden gestionar componentes
+    // y dispositivos; las operaciones administrativas se restringen más abajo.
     Route::get('/gest_componentes', [ComponenteController::class, 'index'])->name('gest_componentes');
     Route::post('/gest_componentes/store',        [ComponenteController::class, 'store'])->name('store_componentes');
     Route::post('/gest_componentes/add_stock',    [ComponenteController::class, 'add_stock'])->name('add_stock_componentes');
@@ -71,6 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // ─── Datos maestros — Administrador y Superadmin ─────────────────────────────
 
+// Mantenimiento de catálogos y entidades maestras reservado a roles administrativos.
 Route::middleware(['auth', 'verified', 'role:Administrador,Super administrador'])->group(function () {
 
     Route::get('/gest_tipo_componente',         [TipoComponente::class,   'index'])->name('gest_tipo_componente');
@@ -92,6 +96,7 @@ Route::middleware(['auth', 'verified', 'role:Administrador,Super administrador']
 
 // ─── Eliminaciones — solo Superadmin ─────────────────────────────────────────
 
+// Operaciones de configuración crítica limitadas al rol de Super administrador.
 Route::middleware(['auth', 'verified', 'role:Super administrador'])->group(function () {
 
     Route::post('/gest_tipo_componente/delete', [TipoComponente::class,   'delete'])->name('delete_tipo');

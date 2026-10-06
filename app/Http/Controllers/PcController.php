@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Log;
 
 class PcController extends Controller
 {
+    /**
+     * Prepara los datos necesarios para mostrar el listado y los filtros de la sección.
+     */
     public function index()
     {
         $componentesModel = new ComponenteModel();
@@ -29,6 +32,16 @@ class PcController extends Controller
         $placasvid    = $componentesModel->getComponenteByTipoForPc('Placa de video', '');
         $rams         = $componentesModel->getComponenteByTipoForPc('RAM', '');
         $discos       = $componentesModel->getComponenteByTipoForPc('HDD', 'SDD');
+
+        // Colecciones exclusivas del modal de mantenimiento: solo componentes
+        // disponibles (estado 4) con stock positivo. Las consultas anteriores
+        // se conservan para no alterar el asistente de alta de PC.
+        $motherboardsMantenimiento = $componentesModel->getComponenteByTipo('Placa madre', '');
+        $procesadoresMantenimiento = $componentesModel->getComponenteByTipo('Procesador', '');
+        $fuentesMantenimiento      = $componentesModel->getComponenteByTipo('Fuente', '');
+        $placasvidMantenimiento    = $componentesModel->getComponenteByTipo('Placa de video', '');
+        $ramsMantenimiento         = $componentesModel->getComponenteByTipo('RAM', '');
+        $discosMantenimiento      = $componentesModel->getComponenteByTipo('HDD', 'SDD');
 
         $motherboardsEnUso = $componentesModel->getComponenteByTipoBystate('Placa madre', '');
         $procesadoresEnUso = $componentesModel->getComponenteByTipoBystate('Procesador', '');
@@ -75,6 +88,12 @@ class PcController extends Controller
             'pcs'                      => $pcs,
             'placasvidEnUso'           => $placasvidEnUso,
             'placasvid'                => $placasvid,
+            'motherboardsMantenimiento' => $motherboardsMantenimiento,
+            'procesadoresMantenimiento' => $procesadoresMantenimiento,
+            'fuentesMantenimiento'      => $fuentesMantenimiento,
+            'placasvidMantenimiento'    => $placasvidMantenimiento,
+            'ramsMantenimiento'         => $ramsMantenimiento,
+            'discosMantenimiento'       => $discosMantenimiento,
         ]);
     }
 
@@ -572,6 +591,11 @@ class PcController extends Controller
     //   3. Los IDs de estado se referencian a través de las constantes
     //      de ComponenteController en lugar de literales.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida y actualiza los datos del elemento existente, conservando la consistencia de sus relaciones.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function edit(Request $request)
     {
         $user      = Auth::user();
@@ -1050,6 +1074,11 @@ class PcController extends Controller
     //
     // Toda la operación ocurre dentro de DB::transaction.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida la operación y elimina el registro cuando las reglas del sistema lo permiten.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function delete(Request $request)
     {
         $user = Auth::user();
@@ -1156,6 +1185,9 @@ class PcController extends Controller
         return redirect()->back()->with('success', 'PC eliminado correctamente.');
     }
 
+    /**
+     * Obtiene el historial de cambios asociado al dispositivo solicitado.
+     */
     public function getHistoria($tipo, $id)
     {
         $historias = HistoriaModel::where('componente_id', $id)

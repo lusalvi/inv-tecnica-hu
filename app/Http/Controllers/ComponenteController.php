@@ -38,6 +38,9 @@ class ComponenteController extends Controller
     // ─────────────────────────────────────────────────────────────────────
     // index
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Prepara los datos necesarios para mostrar el listado y los filtros de la sección.
+     */
     public function index()
     {
         $componentes = ComponenteModel::with(['tipo', 'deposito', 'depositoOrigen', 'estado'])->get();
@@ -142,6 +145,11 @@ class ComponenteController extends Controller
     // ─────────────────────────────────────────────────────────────────────
     // store — nuevo componente
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida la solicitud y registra un nuevo elemento, aplicando las reglas de negocio correspondientes.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -171,6 +179,11 @@ class ComponenteController extends Controller
     // ─────────────────────────────────────────────────────────────────────
     // edit — editar nombre / categoría
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida y actualiza los datos del elemento existente, conservando la consistencia de sus relaciones.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function edit(Request $request)
     {
         $user = Auth::user();
@@ -297,6 +310,11 @@ class ComponenteController extends Controller
     // ─────────────────────────────────────────────────────────────────────
     // add_stock
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Incorpora unidades al stock y registra la operación para mantener la trazabilidad del inventario.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function add_stock(Request $request)
     {
         $user = Auth::user();
@@ -344,6 +362,11 @@ class ComponenteController extends Controller
     // ─────────────────────────────────────────────────────────────────────
     // remove_stock
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Descuenta unidades del stock después de validar la cantidad solicitada y la disponibilidad.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function remove_stock(Request $request)
     {
         $user = Auth::user();
@@ -399,6 +422,11 @@ class ComponenteController extends Controller
     // ─────────────────────────────────────────────────────────────────────
     // delete
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida la operación y elimina el registro cuando las reglas del sistema lo permiten.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function delete(Request $request)
     {
         $user = Auth::user();
@@ -521,6 +549,11 @@ class ComponenteController extends Controller
     // Si en el depósito destino ya existe una fila Disponible o Sin Stock
     // del mismo componente, se reutiliza esa fila.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Transfiere componentes entre depósitos o ubicaciones y registra los cambios de inventario.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function transfer(Request $request)
     {
         $user = Auth::user();
@@ -750,6 +783,11 @@ class ComponenteController extends Controller
     //   - Si la fila destino existe pero estaba en Sin Stock (7) y el destino
     //     es Disponible (4), se reactiva a Disponible al recibir el stock.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Gestiona el cambio de estado de los componentes y valida que la transición esté permitida.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function transferState(Request $request)
     {
         $user = Auth::user();
@@ -881,6 +919,11 @@ class ComponenteController extends Controller
     //
     // Retorna: true en éxito, false si el vínculo o la fila En uso no existe.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Valida los datos enviados por la interfaz para retirar un componente roto de un dispositivo.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function retirarComponenteRotoFromRequest(Request $request)
     {
         $data = $request->validate([
@@ -902,6 +945,9 @@ class ComponenteController extends Controller
         return redirect()->back()->with('success', 'El componente fue retirado como roto correctamente.');
     }
 
+    /**
+     * Retira un componente roto de una PC y actualiza las asociaciones y el historial involucrados.
+     */
     public function retirarComponenteRoto(
         int $componente_id,
         int $pc_id,
@@ -1019,6 +1065,9 @@ class ComponenteController extends Controller
     // Disponible ni crea un estado artificial: la unidad deja de formar parte
     // del inventario cuando se consume.
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Consume la cantidad indicada de un componente que se encuentra asignado o en uso.
+     */
     public function consumirComponenteEnUso($id_attr, $cantidad = 1)
     {
         $cantidad = (int) $cantidad;
@@ -1074,6 +1123,9 @@ class ComponenteController extends Controller
     // transferStateByPc — asignación / devolución a través de PcController
     // (sin cambios respecto al original salvo uso de constantes)
     // ─────────────────────────────────────────────────────────────────────
+    /**
+     * Actualiza el estado de un componente asociado a una PC siguiendo las reglas de transición definidas.
+     */
     public function transferStateByPc(
         $id_attr,
         $stockToTransfer_attr,

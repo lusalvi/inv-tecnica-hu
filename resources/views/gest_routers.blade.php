@@ -621,11 +621,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     @endpush
 
+        {{-- Interacciones propias de routers: formularios dependientes del estado de uso, búsqueda e historial. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
 
                 // ── Checkbox "en uso" al AGREGAR ──
+                // Mantiene sincronizados el estado de uso del router y los campos de ubicación del alta.
                 function syncAddEnUso() {
                     const checked = $('#add-en-uso').is(':checked');
                     $('#addArea').prop('disabled', !checked);
@@ -652,6 +654,7 @@
                 });
 
                 // ── Checkbox "en uso" al EDITAR ──
+                // Actualiza los campos de edición según el estado de uso del router.
                 function syncEditEnUso(enUso) {
                     const checked = (enUso !== undefined) ? enUso : $('#editEn-uso').is(':checked');
                     $('#editArea').prop('disabled', !checked);

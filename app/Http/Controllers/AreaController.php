@@ -11,6 +11,9 @@ class AreaController extends Controller
 {   
     
 
+    /**
+     * Prepara los datos necesarios para mostrar el listado y los filtros de la sección.
+     */
     public function index(){
         $areas = AreaModel::all();
         $historias = HistoriaModel::where('tipo_id', 3)
@@ -22,6 +25,11 @@ class AreaController extends Controller
         return view('gest_areas', ['areas' => $areas, 'historias' => $historias]);
     }
 
+    /**
+     * Valida la solicitud y registra un nuevo elemento, aplicando las reglas de negocio correspondientes.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -43,6 +51,11 @@ class AreaController extends Controller
 
         return redirect()->back()->with('success', 'Área guardada correctamente.');
     }
+    /**
+     * Valida y actualiza los datos del elemento existente, conservando la consistencia de sus relaciones.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function edit(Request $request)
     {
         $user = Auth::user();
@@ -67,6 +80,11 @@ class AreaController extends Controller
 
         return redirect()->back()->with('success', 'Área editada correctamente.');
     }
+    /**
+     * Valida la operación y elimina el registro cuando las reglas del sistema lo permiten.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function delete(Request $request)
     {
         $user = Auth::user();

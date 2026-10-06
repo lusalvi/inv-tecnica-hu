@@ -15,13 +15,27 @@ use Illuminate\Support\Facades\DB;
 
 class ImpresoraController extends Controller
 {
+    /**
+     * Prepara los datos necesarios para mostrar el listado y los filtros de la sección.
+     */
     public function index()
     {
         $componentesModel = new ComponenteModel();
 
-        // Para el wizard necesitamos TODOS los tóners disponibles
-        // (con stock, sin stock y en uso) igual que hace PcController con getComponenteByTipoForPc
+        // El asistente de alta conserva el catálogo completo para permitir
+        // seleccionar stock existente, reponer componentes sin stock o registrar tóners.
         $toners = $componentesModel->getComponenteByTipoForPc('Toner', '');
+
+        // En el mantenimiento solo se ofrecen tóners realmente disponibles para reemplazo.
+        $tonersDisponibles = ComponenteModel::whereHas('tipo', function ($query) {
+            $query->where('nombre', 'Toner');
+        })
+            ->where('estado_id', ComponenteController::ESTADO_DISPONIBLE)
+            ->where('stock', '>', 0)
+            ->with(['tipo', 'deposito'])
+            ->orderBy('nombre')
+            ->get();
+
         $impresoras = ImpresoraModel::with(['area', 'deposito', 'componentes.tipo'])->get();
 
         $historias = HistoriaModel::where('tipo_id', 7)
@@ -36,11 +50,17 @@ class ImpresoraController extends Controller
             'historias'  => $historias,
             'depositos'  => $depositos,
             'areas'      => $areas,
-            'toners'     => $toners,
-            'impresoras' => $impresoras,
+            'toners'             => $toners,
+            'tonersDisponibles'  => $tonersDisponibles,
+            'impresoras'         => $impresoras,
         ]);
     }
 
+    /**
+     * Valida la solicitud y registra un nuevo elemento, aplicando las reglas de negocio correspondientes.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function store(Request $request)
     {
         $user      = Auth::user();
@@ -314,6 +334,11 @@ class ImpresoraController extends Controller
         return redirect()->back()->with('success', 'Impresora guardada correctamente.');
     }
 
+    /**
+     * Valida y actualiza los datos del elemento existente, conservando la consistencia de sus relaciones.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function edit(Request $request)
     {
         $user = Auth::user();
@@ -445,6 +470,20 @@ class ImpresoraController extends Controller
             }
 
             DB::transaction(function () use ($impresora, $request, $user, $tonerNuevoId) {
+                $tonerNuevo = ComponenteModel::whereKey($tonerNuevoId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (
+                    ! $tonerNuevo
+                    || (int) $tonerNuevo->estado_id !== ComponenteController::ESTADO_DISPONIBLE
+                    || (int) $tonerNuevo->stock < 1
+                ) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'editToner' => 'El tóner seleccionado no está disponible en stock.'
+                    ]);
+                }
+
                 $historia = new HistoriaModel();
                 $historia->tecnico = $user->name;
                 $historia->detalle = 'Cambió el toner de la impresora: '
@@ -602,6 +641,11 @@ class ImpresoraController extends Controller
         return redirect()->back()->with('success', 'Impresora editada correctamente.');
     }
 
+    /**
+     * Valida la operación y elimina el registro cuando las reglas del sistema lo permiten.
+     *
+     * @param Request $request Datos enviados por la solicitud HTTP.
+     */
     public function delete(Request $request)
     {
         $user = Auth::user();
@@ -623,6 +667,9 @@ class ImpresoraController extends Controller
         return redirect()->back()->with('success', 'Impresora eliminada correctamente.');
     }
 
+    /**
+     * Obtiene el historial de cambios asociado al dispositivo solicitado.
+     */
     public function getHistoria($id)
     {
         $historias = HistoriaModel::where('componente_id', $id)->get();

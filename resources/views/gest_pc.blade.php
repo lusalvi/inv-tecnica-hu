@@ -885,7 +885,7 @@
                                     <select class="form-control @error('editMotherboard') is-invalid @enderror"
                                         id="editMotherboard" name="editMotherboard" required>
                                         <option value="" disabled selected>Seleccioná una placa madre</option>
-                                        @foreach ($motherboards as $motherboard)
+                                        @foreach ($motherboardsMantenimiento as $motherboard)
                                             <option value="{{ $motherboard->id }}">{{ $motherboard->nombre . ' — ' . ($motherboard->deposito->nombre ?? 'sin depósito') }}</option>
                                         @endforeach
                                     </select>
@@ -895,7 +895,7 @@
                                     <select class="form-control @error('editProcesador') is-invalid @enderror"
                                         id="editProcesador" name="editProcesador" required>
                                         <option value="" disabled selected>Seleccioná un procesador</option>
-                                        @foreach ($procesadores as $procesador)
+                                        @foreach ($procesadoresMantenimiento as $procesador)
                                             <option value="{{ $procesador->id }}">{{ $procesador->nombre . ' — ' . ($procesador->deposito->nombre ?? 'sin depósito') }}</option>
                                         @endforeach
                                     </select>
@@ -905,7 +905,7 @@
                                     <select class="form-control @error('editPlacavid') is-invalid @enderror"
                                         id="editPlacavid" name="editPlacavid">
                                         <option value="" disabled selected>Seleccioná una placa de video</option>
-                                        @foreach ($placasvid as $placavid)
+                                        @foreach ($placasvidMantenimiento as $placavid)
                                             <option value="{{ $placavid->id }}">{{ $placavid->nombre . ' — ' . ($placavid->deposito->nombre ?? 'sin depósito') }}</option>
                                         @endforeach
                                     </select>
@@ -915,7 +915,7 @@
                                     <select class="form-control @error('editFuente') is-invalid @enderror"
                                         id="editFuente" name="editFuente" required>
                                         <option value="" disabled selected>Seleccioná una fuente</option>
-                                        @foreach ($fuentes as $fuente)
+                                        @foreach ($fuentesMantenimiento as $fuente)
                                             <option value="{{ $fuente->id }}">{{ $fuente->nombre . ' — ' . ($fuente->deposito->nombre ?? 'sin depósito') }}</option>
                                         @endforeach
                                     </select>
@@ -926,7 +926,7 @@
                                         <div class="form-group input-group select">
                                             <select id="discos2-1" name="discos2[]" class="form-control" style="border-top-left-radius:6px;border-bottom-left-radius:6px;">
                                                 <option value="" disabled selected>Seleccioná un disco</option>
-                                                @foreach ($discos as $disco)
+                                                @foreach ($discosMantenimiento as $disco)
                                                     <option value="{{ $disco->id }}" data-stock="{{ $disco->stock }}">
                                                         @if ($disco->tipo->nombre == 'SDD') {{ $disco->nombre . ' - SDD - ' . ($disco->deposito->nombre ?? 'sin depósito') }} @endif
                                                         @if ($disco->tipo->nombre == 'HDD') {{ $disco->nombre . ' - HDD - ' . ($disco->deposito->nombre ?? 'sin depósito') }} @endif
@@ -945,7 +945,7 @@
                                         <div class="form-group input-group select">
                                             <select id="rams2-1" name="rams2[]" class="form-control" style="border-top-left-radius:6px;border-bottom-left-radius:6px;">
                                                 <option value="" disabled selected>Seleccioná una RAM</option>
-                                                @foreach ($rams as $ram)
+                                                @foreach ($ramsMantenimiento as $ram)
                                                     <option value="{{ $ram->id }}" data-stock="{{ $ram->stock }}">{{ $ram->nombre . ' — ' . ($ram->deposito->nombre ?? 'sin depósito') }}</option>
                                                 @endforeach
                                             </select>
@@ -1264,12 +1264,14 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     @endpush
 
+    {{-- Interacciones propias de PCs: edición dinámica de componentes y sincronización de campos de ubicación. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
 
                 let componentesPcActuales = [];
 
+                // Agrega dinámicamente un campo para registrar otro disco en la configuración de la PC.
                 function addInputDisc(button) {
                     const $group = $(button).closest('.input-group');
                     if (!$group.length) return;
@@ -1534,6 +1536,7 @@
                 // ── Wizard: Armar PC ─────────────────────────────────────────────────
                 var currentStep = 1;
 
+                // Muestra los campos de ubicación correspondientes al modo de asignación seleccionado.
                 function setLocationMode(mode) {
                     var enUso = mode === 'uso';
                     $('#location-use-card').toggleClass('is-selected', enUso);

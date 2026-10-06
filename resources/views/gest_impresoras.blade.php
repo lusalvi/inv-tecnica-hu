@@ -541,131 +541,230 @@
 
     {{-- Modal mantenimiento --}}
     <div class="modal fade" id="editImpModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl"><div class="modal-content hu-maintenance-modal">
-            <div class="modal-header border-0 maintenance-header"><div class="d-flex align-items-center gap-3"><div class="maintenance-icon"><span class="material-symbols-outlined">print</span></div><div><h5 class="modal-title maintenance-title">Mantenimiento de impresora</h5><div class="maintenance-subtitle">Modificá los datos del equipo o registrá un mantenimiento.</div></div></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
-            <div class="modal-body maintenance-body p-0"><form action="{{ route('edit_impresoras') }}" method="POST">
-                @method('PATCH') @csrf
-                <input type="hidden" name="editId" id="editId">
-                <div class="maintenance-layout"><aside class="maintenance-sidebar"><div class="maintenance-nav-title">Secciones</div>
-                    <button type="button" class="maintenance-nav-link active" data-bs-target="#editImpDatos"><span class="material-symbols-outlined">description</span><span><strong>Datos generales</strong><small>Información básica</small></span></button>
-                    <button type="button" class="maintenance-nav-link" data-bs-target="#editImpUbicacion"><span class="material-symbols-outlined">location_on</span><span><strong>Ubicación</strong><small>Área, depósito y tóner</small></span></button>
-                    <button type="button" class="maintenance-nav-link" data-bs-target="#editImpMantenimiento"><span class="material-symbols-outlined">build</span><span><strong>Mantenimiento</strong><small>Registro y cambios</small></span></button>
-                </aside><main class="maintenance-content">
-                    <div class="tab-content maintenance-tab-content">
-                        <div class="tab-pane fade show active" id="editImpDatos">                        {{-- Sección: Datos generales --}}
-                        <div class="maintenance-section">
-                            <div class="fw-bold mb-3" style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
-                                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">info</span>Datos generales
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Nº inventario</label>
-                                    <input type="text" class="form-control @error('editIdentificador') is-invalid @enderror"
-                                        id="editIdentificador" name="editIdentificador" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Nombre</label>
-                                    <input type="text" class="form-control @error('editNombre') is-invalid @enderror"
-                                        id="editNombre" name="editNombre" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Marca y modelo</label>
-                                    <input type="text" class="form-control @error('editMarca') is-invalid @enderror"
-                                        id="editMarca" name="editMarca" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold" style="font-size:.78rem;">IP</label>
-                                    <input type="text" class="form-control @error('editIp') is-invalid @enderror"
-                                        id="editIp" name="editIp" placeholder="192.168.x.x" required>
-                                </div>
-                            </div>
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content hu-maintenance-modal">
+                <div class="modal-header border-0 maintenance-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="maintenance-icon"><span class="material-symbols-outlined">print</span></div>
+                        <div>
+                            <h5 class="modal-title maintenance-title">Mantenimiento de impresora</h5>
+                            <div class="maintenance-subtitle">Modificá los datos del equipo o registrá un
+                                mantenimiento.</div>
                         </div>
+                    </div><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body maintenance-body p-0">
+                    <form action="{{ route('edit_impresoras') }}" method="POST">
+                        @method('PATCH') @csrf
+                        <input type="hidden" name="editId" id="editId">
+                        <div class="maintenance-layout">
+                            <aside class="maintenance-sidebar">
+                                <div class="maintenance-nav-title">Secciones</div>
+                                <button type="button" class="maintenance-nav-link active"
+                                    data-bs-target="#editImpDatos"><span
+                                        class="material-symbols-outlined">description</span><span><strong>Datos
+                                            generales</strong><small>Información básica</small></span></button>
+                                <button type="button" class="maintenance-nav-link"
+                                    data-bs-target="#editImpUbicacion"><span
+                                        class="material-symbols-outlined">location_on</span><span><strong>Ubicación</strong><small>Área,
+                                            depósito y tóner</small></span></button>
+                                <button type="button" class="maintenance-nav-link"
+                                    data-bs-target="#editImpMantenimiento"><span
+                                        class="material-symbols-outlined">build</span><span><strong>Mantenimiento</strong><small>Registro
+                                            y cambios</small></span></button>
+                            </aside>
+                            <main class="maintenance-content">
+                                <div class="tab-content maintenance-tab-content">
+                                    <div class="tab-pane fade show active" id="editImpDatos">
+                                        {{-- Sección: Datos generales --}}
+                                        <div class="maintenance-section">
+                                            <div class="fw-bold mb-3"
+                                                style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
+                                                <span class="material-symbols-outlined"
+                                                    style="font-size:13px;vertical-align:middle;margin-right:4px;">info</span>Datos
+                                                generales
+                                            </div>
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Nº
+                                                        inventario</label>
+                                                    <input type="text"
+                                                        class="form-control @error('editIdentificador') is-invalid @enderror"
+                                                        id="editIdentificador" name="editIdentificador" required>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">Nombre</label>
+                                                    <input type="text"
+                                                        class="form-control @error('editNombre') is-invalid @enderror"
+                                                        id="editNombre" name="editNombre" required>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">Marca y modelo</label>
+                                                    <input type="text"
+                                                        class="form-control @error('editMarca') is-invalid @enderror"
+                                                        id="editMarca" name="editMarca" required>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">IP</label>
+                                                    <input type="text"
+                                                        class="form-control @error('editIp') is-invalid @enderror"
+                                                        id="editIp" name="editIp" placeholder="192.168.x.x"
+                                                        required>
+                                                </div>
+                                            </div>
+                                        </div>
 
-</div>
-                        <div class="tab-pane fade" id="editImpUbicacion">
-                    <div class="maintenance-status"><div class="d-flex align-items-center gap-3"><div class="maintenance-status-icon"><span class="material-symbols-outlined">print</span></div><div><div class="maintenance-status-title">Estado del equipo</div><div class="maintenance-status-text">Indicá si la impresora está asignada a un área.</div></div></div><label class="maintenance-status-action"><input class="form-check-input m-0" type="checkbox" id="editEn-uso" name="en-uso"><span>En uso — asignada a un área</span></label></div>                        {{-- Sección: Ubicación y tóner --}}
-                        <div class="maintenance-section">
-                            <div class="fw-bold mb-3" style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
-                                <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;margin-right:4px;">location_on</span>Ubicación y consumibles
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Área</label>
-                                    <select class="form-control @error('editArea') is-invalid @enderror" id="editArea" name="editArea" disabled>
-                                        <option value="" disabled selected>Seleccioná un área</option>
-                                        @foreach ($areas as $area)
-                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                    <div id="editNroConsul_div" class="mt-2" style="display:none;">
-                                        <label class="form-label fw-semibold" style="font-size:.78rem;">Nº consultorio</label>
-                                        <input type="text" class="form-control @error('editNroConsul') is-invalid @enderror"
-                                            id="editNroConsul" name="editNroConsul" placeholder="Nº">
+                                    </div>
+                                    <div class="tab-pane fade" id="editImpUbicacion">
+                                        <div class="maintenance-status">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="maintenance-status-icon"><span
+                                                        class="material-symbols-outlined">print</span></div>
+                                                <div>
+                                                    <div class="maintenance-status-title">Estado del equipo</div>
+                                                    <div class="maintenance-status-text">Indicá si la impresora está
+                                                        asignada a un área.</div>
+                                                </div>
+                                            </div><label class="maintenance-status-action"><input
+                                                    class="form-check-input m-0" type="checkbox" id="editEn-uso"
+                                                    name="en-uso"><span>En uso — asignada a un área</span></label>
+                                        </div> {{-- Sección: Ubicación y tóner --}}
+                                        <div class="maintenance-section">
+                                            <div class="fw-bold mb-3"
+                                                style="font-size:.7rem;color:#8a9099;text-transform:uppercase;letter-spacing:.07em;">
+                                                <span class="material-symbols-outlined"
+                                                    style="font-size:13px;vertical-align:middle;margin-right:4px;">location_on</span>Ubicación
+                                                y consumibles
+                                            </div>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">Área</label>
+                                                    <select
+                                                        class="form-control @error('editArea') is-invalid @enderror"
+                                                        id="editArea" name="editArea" disabled>
+                                                        <option value="" disabled selected>Seleccioná un área
+                                                        </option>
+                                                        @foreach ($areas as $area)
+                                                            <option value="{{ $area->id }}">{{ $area->nombre }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <div id="editNroConsul_div" class="mt-2" style="display:none;">
+                                                        <label class="form-label fw-semibold"
+                                                            style="font-size:.78rem;">Nº consultorio</label>
+                                                        <input type="text"
+                                                            class="form-control @error('editNroConsul') is-invalid @enderror"
+                                                            id="editNroConsul" name="editNroConsul" placeholder="Nº">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">Depósito</label>
+                                                    <select
+                                                        class="form-control @error('editDeposito') is-invalid @enderror"
+                                                        id="editDeposito" name="editDeposito">
+                                                        <option value="" disabled selected>Seleccioná un depósito
+                                                        </option>
+                                                        @foreach ($depositos as $deposito)
+                                                            <option value="{{ $deposito->id }}">
+                                                                {{ $deposito->nombre }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">Tóner <span
+                                                            style="color:#b02a37;">*</span></label>
+                                                    <input type="hidden" name="editTonerRoto" id="editTonerRoto"
+                                                        value="0">
+                                                    <input type="hidden" id="editTonerActual" value="">
+                                                    <select
+                                                        class="form-control @error('editToner') is-invalid @enderror"
+                                                        id="editToner" name="editToner" required>
+                                                        <option value="" disabled selected>Seleccioná un tóner
+                                                        </option>
+                                                        @foreach ($tonersDisponibles as $toner)
+                                                            <option value="{{ $toner->id }}">
+                                                                {{ $toner->nombre . ' — ' . ($toner->deposito->nombre ?? 'sin depósito') }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <button type="button"
+                                                        class="maintenance-component-danger-btn mt-2"
+                                                        id="editTonerRotoBtn">
+                                                        <span class="material-symbols-outlined">delete_sweep</span>
+                                                        Marcar tóner actual como roto
+                                                    </button>
+                                                    <div id="editTonerRotoNotice"
+                                                        class="maintenance-component-warning mt-2"
+                                                        style="display:none;">
+                                                        <span class="material-symbols-outlined">warning</span>
+                                                        <span>El tóner actual se retirará como <strong>ROTO</strong>.
+                                                            Seleccioná un tóner nuevo para reemplazarlo.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="tab-pane fade" id="editImpMantenimiento">
+                                        <div class="maintenance-section">
+                                            <div class="maintenance-section-heading"><span
+                                                    class="material-symbols-outlined">build</span>
+                                                <div>
+                                                    <h6>Mantenimiento</h6>
+                                                    <p>Registrá el mantenimiento y el motivo del cambio.</p>
+                                                </div>
+                                            </div> {{-- Pill: Mantenimiento --}}
+                                            <div class="d-flex align-items-center gap-2 p-3 mb-2 maintenance-toggle">
+                                                <input class="form-check-input m-0 flex-shrink-0" type="checkbox"
+                                                    id="en-uso-mantenimineto"
+                                                    style="cursor:pointer;accent-color:#92400E;">
+                                                <label class="fw-semibold mb-0" for="en-uso-mantenimineto"
+                                                    style="font-size:.85rem;color:#92400E;cursor:pointer;">Se realizó
+                                                    mantenimiento</label>
+                                            </div>
+                                            <div id="div-detalle-mant">
+                                                <div class="mb-3" style="display:none;">
+                                                    <label class="form-label fw-semibold"
+                                                        style="font-size:.78rem;">Detalle del mantenimiento</label>
+                                                    <input type="text"
+                                                        class="form-control @error('editDetalle') is-invalid @enderror"
+                                                        id="editDetalle" name="editDetalle"
+                                                        placeholder="Ej: limpieza de cabezal, reemplazo de rodillo">
+                                                </div>
+                                            </div>
+
+                                            {{-- Motivo --}}
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold" style="font-size:.78rem;">Motivo
+                                                    del cambio <span style="color:#b02a37;">*</span></label>
+                                                <input type="text"
+                                                    class="form-control @error('editMotivo') is-invalid @enderror"
+                                                    id="editMotivo" name="editMotivo"
+                                                    placeholder="Ej: traslado de área, actualización de datos"
+                                                    required>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Depósito</label>
-                                    <select class="form-control @error('editDeposito') is-invalid @enderror" id="editDeposito" name="editDeposito">
-                                        <option value="" disabled selected>Seleccioná un depósito</option>
-                                        @foreach ($depositos as $deposito)
-                                            <option value="{{ $deposito->id }}">{{ $deposito->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold" style="font-size:.78rem;">Tóner <span style="color:#b02a37;">*</span></label>
-                                    <input type="hidden" name="editTonerRoto" id="editTonerRoto" value="0">
-                                    <input type="hidden" id="editTonerActual" value="">
-                                    <select class="form-control @error('editToner') is-invalid @enderror" id="editToner" name="editToner" required>
-                                        <option value="" disabled selected>Seleccioná un tóner</option>
-                                        @foreach ($toners as $toner)
-                                            <option value="{{ $toner->id }}">{{ $toner->nombre . ' — ' . ($toner->deposito->nombre ?? 'sin depósito') }}</option>
-                                        @endforeach
-                                    </select>
-                                    <button type="button" class="maintenance-component-danger-btn mt-2" id="editTonerRotoBtn">
-                                        <span class="material-symbols-outlined">delete_sweep</span>
-                                        Marcar tóner actual como roto
-                                    </button>
-                                    <div id="editTonerRotoNotice" class="maintenance-component-warning mt-2" style="display:none;">
-                                        <span class="material-symbols-outlined">warning</span>
-                                        <span>El tóner actual se retirará como <strong>ROTO</strong>. Seleccioná un tóner nuevo para reemplazarlo.</span>
-                                    </div>
-                                </div>
-                            </div>
+                            </main>
                         </div>
-
-</div>
-                        <div class="tab-pane fade" id="editImpMantenimiento"><div class="maintenance-section"><div class="maintenance-section-heading"><span class="material-symbols-outlined">build</span><div><h6>Mantenimiento</h6><p>Registrá el mantenimiento y el motivo del cambio.</p></div></div>                        {{-- Pill: Mantenimiento --}}
-                        <div class="d-flex align-items-center gap-2 p-3 mb-2 maintenance-toggle"
-                           >
-                            <input class="form-check-input m-0 flex-shrink-0" type="checkbox" id="en-uso-mantenimineto" style="cursor:pointer;accent-color:#92400E;">
-                            <label class="fw-semibold mb-0" for="en-uso-mantenimineto" style="font-size:.85rem;color:#92400E;cursor:pointer;">Se realizó mantenimiento</label>
-                        </div>
-                        <div id="div-detalle-mant">
-                            <div class="mb-3" style="display:none;">
-                                <label class="form-label fw-semibold" style="font-size:.78rem;">Detalle del mantenimiento</label>
-                                <input type="text" class="form-control @error('editDetalle') is-invalid @enderror"
-                                    id="editDetalle" name="editDetalle" placeholder="Ej: limpieza de cabezal, reemplazo de rodillo">
-                            </div>
-                        </div>
-
-                        {{-- Motivo --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" style="font-size:.78rem;">Motivo del cambio <span style="color:#b02a37;">*</span></label>
-                            <input type="text" class="form-control @error('editMotivo') is-invalid @enderror"
-                                id="editMotivo" name="editMotivo" placeholder="Ej: traslado de área, actualización de datos" required>
-                        </div>
-
-</div></div>
-                    </div>
-                </main></div>
                         {{-- Footer --}}
                         <div class="maintenance-footer">
                             <button type="submit" class="btn btn-hu w-100">Guardar cambios</button>
                         </div>
 
-            </form></div>
-        </div></div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Modal eliminar --}}
@@ -861,6 +960,7 @@
     @endpush
 
 
+        {{-- Interacciones propias de impresoras: asistente de alta, selección de ubicación y gestión de tóners. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
@@ -892,6 +992,7 @@
                     var impTonerMode = 'stock'; // 'stock' | 'sin-stock' | 'registrar' | 'no-identificado'
 
                     // ── Helpers ubicación ─────────────────────────────────────────
+                    // Alterna los campos de ubicación según la impresora esté asignada a un área o a un depósito.
                     function impSetLocationMode(mode) {
                         var enUso = mode === 'uso';
                         $('#imp-location-use-card').toggleClass('is-selected', enUso);
@@ -911,6 +1012,7 @@
                     }
 
                     // ── Stepper ───────────────────────────────────────────────────
+                    // Actualiza el indicador visual del paso activo del formulario de alta.
                     function impUpdateStepper(step) {
                         $('[data-imp-step]').each(function() {
                             var n = parseInt($(this).data('imp-step'), 10);
@@ -926,6 +1028,7 @@
                     }
 
                     // ── Validación por paso ───────────────────────────────────────
+                    // Valida los campos del paso actual antes de permitir continuar en el asistente.
                     function impValidateStep(step) {
                         if (step === 1) {
                             var valid = true;
@@ -971,6 +1074,7 @@
                     }
 
                     // ── Navegar a un paso ─────────────────────────────────────────
+                    // Navega entre los pasos del asistente y actualiza su estado visual.
                     function impGoToStep(step) {
                         // Si el selector de tóner está abierto, cerrarlo antes de navegar
                         if ($('#imp-toner-detail-view').is(':visible')) {
@@ -987,6 +1091,7 @@
                     }
 
                     // ── Resumen ───────────────────────────────────────────────────
+                    // Refresca el resumen de los datos ingresados en el asistente de alta.
                     function impUpdateSummary() {
                         $('#imp-summary-identificador').text($('#addImpIdentificador').val().trim() || '—');
                         $('#imp-summary-nombre').text($('#addImpNombre').val().trim() || '—');
@@ -1055,6 +1160,7 @@
                     }
 
                     // ── Selector de tóner: renderizar tabla stock ─────────────────
+                    // Renderiza las opciones de tóners y su disponibilidad para la impresora.
                     function impRenderTonerStock() {
                         var search = ($('#imp-toner-search').val() || '').trim().toLowerCase();
                         var $body = $('#imp-toner-stock-body').empty();
@@ -1078,7 +1184,7 @@
                                 '<td><input class="hu-stock-radio" type="radio" name="imp_toner_stock_radio" value="' +
                                 item.id + '"' + checked + '></td>' +
                                 '<td><span class="hu-stock-name">' + $('<div>').text(item.nombre)
-                            .html() + '</span></td>' +
+                                .html() + '</span></td>' +
                                 '<td>' + $('<div>').text(item.deposito).html() + '</td>' +
                                 '<td class="text-end">' + (isSinStock ?
                                     '<span class="badge bg-secondary">Sin stock</span>' : item.stock) +
@@ -1091,6 +1197,7 @@
                     }
 
                     // ── Selector de tóner: cambiar pestaña ───────────────────────
+                    // Cambia entre los modos de selección de tóner disponibles en el formulario.
                     function impSetTonerMode(mode) {
                         impTonerMode = mode;
                         $('.hu-component-tab[data-toner-mode]').each(function() {
@@ -1100,7 +1207,7 @@
                             $(this).toggle($(this).data('toner-panel') === mode);
                         });
                         $('#imp-toner-confirm').text(mode === 'stock' ? 'Seleccionar tóner' :
-                        'Confirmar selección');
+                            'Confirmar selección');
                         if (mode === 'stock') {
                             $('#imp-toner-replenishment').hide();
                             $('#imp-toner-quantity').val('1');
@@ -1403,7 +1510,9 @@
                     modal.find('#editToner option.deleteable-toner').remove();
                     modal.find('#editTonerRoto').val('0');
                     modal.find('#editTonerRotoNotice').hide();
-                    modal.find('#editTonerRotoBtn').removeClass('is-active').html('<span class="material-symbols-outlined">delete_sweep</span> Marcar tóner actual como roto');
+                    modal.find('#editTonerRotoBtn').removeClass('is-active').html(
+                        '<span class="material-symbols-outlined">delete_sweep</span> Marcar tóner actual como roto'
+                        );
                     modal.find('#editToner').prop('required', true);
                     modal.find('#editTonerActual').val(Toner ? Toner.id : '');
                     if (Toner && (Toner.stock == 0 || Toner.estado_id == 5)) {
@@ -1427,7 +1536,9 @@
                         if (activo) {
                             modal.find('#editTonerRoto').val('0');
                             modal.find('#editTonerRotoNotice').hide();
-                            $(this).removeClass('is-active').html('<span class="material-symbols-outlined">delete_sweep</span> Marcar tóner actual como roto');
+                            $(this).removeClass('is-active').html(
+                                '<span class="material-symbols-outlined">delete_sweep</span> Marcar tóner actual como roto'
+                                );
                             modal.find('#editToner').prop('required', true).val(actual);
                             return;
                         }
@@ -1436,7 +1547,8 @@
 
                         modal.find('#editTonerRoto').val('1');
                         modal.find('#editTonerRotoNotice').show();
-                        $(this).addClass('is-active').html('<span class="material-symbols-outlined">undo</span> Cancelar retiro como roto');
+                        $(this).addClass('is-active').html(
+                            '<span class="material-symbols-outlined">undo</span> Cancelar retiro como roto');
                         modal.find('#editToner').val('');
                         modal.find('#editToner').prop('required', true).trigger('focus');
                     });

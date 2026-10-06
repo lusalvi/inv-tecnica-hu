@@ -1088,6 +1088,7 @@
         <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     @endpush
 
+        {{-- Interacciones propias de la gestión de componentes: filtros combinados, selección de registros y preparación de modales. --}}
     @push('scripts')
         <script>
             $(document).ready(function() {
@@ -1195,6 +1196,7 @@
                     $div.toggleClass('d-none', visible).toggleClass('d-flex', !visible);
                 });
 
+                // Sincroniza la visibilidad del control para limpiar filtros con los filtros actualmente activos.
                 function updateClearFiltersButton() {
                     const hasActiveFilters = $('#filtro-deposito, #filtro-estado, #filtro-categoria, #filtro-stock')
                         .filter(function() {
@@ -1205,6 +1207,7 @@
                         .toggleClass('d-inline-flex', hasActiveFilters);
                 }
 
+                // Aplica los filtros seleccionados a la tabla de componentes sin alterar los datos almacenados.
                 function applyFilters() {
                     componentesTable.draw();
                 }
